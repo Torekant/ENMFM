@@ -1379,7 +1379,7 @@ class _AdminScreen extends State<AdminScreen> with SingleTickerProviderStateMixi
         builder: (context, snapshot){
           if(!snapshot.hasData)
             return Image.asset(
-                values.loadingAnimation
+                values.retrievingListAnimation
             );
           return new ListView.builder(
               controller: _scrollController,
