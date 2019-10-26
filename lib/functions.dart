@@ -49,7 +49,6 @@ Future<String> PickImage(Event event, BuildContext context) async {
 }
 
 String BuildEventDayText(String formattedDate){
-  print(formattedDate);
   String year = formattedDate.substring(0, 4);
   String month = formattedDate.substring(5, 7);
 

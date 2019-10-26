@@ -48,6 +48,7 @@ class _HomeScreen extends State<HomeScreen>{
 
   CalendarController _calendarController;
   Map<DateTime, List<Event>> _calendarEvents = Map();
+  ListView _eventListView = ListView(shrinkWrap: true,);
 
   @override
   void initState() {
@@ -60,7 +61,7 @@ class _HomeScreen extends State<HomeScreen>{
   void didChangeDependencies() async{
     // TODO: implement didChangeDependencies
     super.didChangeDependencies();
-    Event dummyEvent = new Event('', '', '', '', '', '', '', '');
+    Event dummyEvent = new Event('', '', '', '', '', '', '', '', '');
     await dummyEvent.RetrieveEvents(context).then((map){
      setState(() {
        _calendarEvents = map;
@@ -221,7 +222,7 @@ class _HomeScreen extends State<HomeScreen>{
                                     )
                                 ),
                                 onTap: (){
-                                  Event _event = new Event(ds.documentID, ds['title'], ds['image'], ds['place'], ds['date'], ds['time'], ds['description'], ds['host']);
+                                  Event _event = new Event(ds.documentID, ds['title'], ds['image'], ds['place'], ds['date'], ds['time'], ds['description'], ds['host'], ds['type']);
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(
@@ -234,31 +235,75 @@ class _HomeScreen extends State<HomeScreen>{
                         );
                       }
                   ),
-                  TableCalendar(
-                    calendarController: _calendarController,
-                    locale: 'es',
-                    initialSelectedDay: DateTime.now(),
-                    calendarStyle: CalendarStyle(
-                      canEventMarkersOverflow: false,
-                      markersAlignment: Alignment.bottomCenter,
-                      markersColor: hue.carmesi,
-                      markersMaxAmount: 5,
-                      outsideDaysVisible: true,
-                      todayColor: hue.ocean,
-                      weekdayStyle: values.calendarDayTextStyle,
-                      weekendStyle: values.calendarWeekendDayTextStyle,
-                    ),
-                    headerStyle: HeaderStyle(
-                        centerHeaderTitle: true,
-                        formatButtonShowsNext: false,
-                        titleTextStyle: values.contentTextStyle,
-                        formatButtonVisible: false
-                    ),
-                    onDaySelected: (day, events){
-                      print(day);
-                      print(events);
-                    },
-                    events: _calendarEvents,
+                  Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      TableCalendar(
+                        calendarController: _calendarController,
+                        locale: 'es',
+                        initialSelectedDay: DateTime.now(),
+                        calendarStyle: CalendarStyle(
+                          canEventMarkersOverflow: false,
+                          markersAlignment: Alignment.bottomCenter,
+                          markersColor: hue.carmesi,
+                          markersMaxAmount: 5,
+                          outsideDaysVisible: true,
+                          todayColor: hue.ocean,
+                          weekdayStyle: values.calendarDayTextStyle,
+                          weekendStyle: values.calendarWeekendDayTextStyle,
+                        ),
+                        headerStyle: HeaderStyle(
+                            centerHeaderTitle: true,
+                            formatButtonShowsNext: false,
+                            titleTextStyle: values.contentTextStyle,
+                            formatButtonVisible: false
+                        ),
+                        onDaySelected: (day, events){
+                          setState(() {
+                            _eventListView = ListView.builder(
+                                scrollDirection: Axis.vertical,
+                                controller: _scrollController,
+                                shrinkWrap: true,
+                                itemCount: events.length,
+                                itemBuilder: (context, index){
+                                  Event ds = events[index];
+
+                                  return new Container(
+                                    color: hue.outlines,
+                                    padding: EdgeInsets.fromLTRB(0.0, 3.0, 0.0, 0.0),
+                                    child: Container(
+                                      color: hue.background,
+                                      child: ListTile(
+                                        title: Container(
+                                          alignment: Alignment.centerLeft,
+                                          child: Text(ds.title),
+                                        ),
+                                        subtitle: Container(
+                                          alignment: Alignment.centerLeft,
+                                          child: Text(ds.type + ' - ' + ds.time + 'hrs.'),
+                                        ),
+                                        onTap: (){
+                                          if(ds.type == values.eventType['ceremony']){
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) => EventScreen(event: ds, adminView: false,)
+                                              )
+                                            );
+                                          }
+                                        },
+                                      ),
+                                    ),
+                                  );
+                                }
+                            );
+                          });
+                        },
+                        events: _calendarEvents,
+                      ),
+                      SizedBox(height: values.mediumSizedBoxStandardHeight,),
+                     Expanded(child: _eventListView,)
+                    ],
                   )
                 ],
               )
@@ -1390,7 +1435,7 @@ class _AdminScreen extends State<AdminScreen> with SingleTickerProviderStateMixi
         onPressed: (){
           switch(_tabIndex){
             case 0:
-              Event _event = new Event(null, null, null, null, null, null, null, null);
+              Event _event = new Event(null, null, null, null, null, null, null, null, null);
               Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -1495,7 +1540,7 @@ class _AdminScreen extends State<AdminScreen> with SingleTickerProviderStateMixi
                       )
                   ),
                   onTap: (){
-                    Event _event = new Event(ds.documentID, ds['title'], ds['image'], ds['place'], ds['date'], ds['time'], ds['description'], ds['host']);
+                    Event _event = new Event(ds.documentID, ds['title'], ds['image'], ds['place'], ds['date'], ds['time'], ds['description'], ds['host'], ds['type']);
                     Navigator.push(
                         context,
                         MaterialPageRoute(

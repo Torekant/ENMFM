@@ -477,8 +477,9 @@ class Event{
   String title;
   String description;
   String host;
+  String type;
 
-  Event(String id, String title, String image, String place, String date, String time, String description, String host){
+  Event(String id, String title, String image, String place, String date, String time, String description, String host, String type){
     this.id = id;
     this.title = title;
     this.image = image;
@@ -487,6 +488,7 @@ class Event{
     this.time = time;
     this.description = description;
     this.host = host;
+    this.type = type;
   }
 
   Future<String> ChangeImage(var image, String newImageName) async{
@@ -562,7 +564,8 @@ class Event{
         'time': this.time,
         'host': this.host,
         'description': this.description,
-        'image': this.image
+        'image': this.image,
+        'type': values.eventType['ceremony']
       });
 
       return true;
@@ -769,17 +772,17 @@ class Event{
     _documents.forEach((event){
 
       if(_lastDateTimeIteration == DateTime.parse(event['date'])){
-        Event dummyEvent = new Event(event.documentID, event['title'], event['image'], event['place'], event['date'], event['time'], event['description'], event['host']);
+        Event dummyEvent = new Event(event.documentID, event['title'], event['image'], event['place'], event['date'], event['time'], event['description'], event['host'], event['type']);
         _listEvent.add(dummyEvent);
       }else{
         if(_listEvent.isEmpty){
-          Event dummyEvent = new Event(event.documentID, event['title'], event['image'], event['place'], event['date'], event['time'], event['description'], event['host']);
+          Event dummyEvent = new Event(event.documentID, event['title'], event['image'], event['place'], event['date'], event['time'], event['description'], event['host'], event['type']);
           _listEvent.add(dummyEvent);
           _lastDateTimeIteration = DateTime.parse(event['date']);
         }else{
           events[_lastDateTimeIteration] = _listEvent;
           _listEvent = [];
-          Event dummyEvent = new Event(event.documentID, event['title'], event['image'], event['place'], event['date'], event['time'], event['description'], event['host']);
+          Event dummyEvent = new Event(event.documentID, event['title'], event['image'], event['place'], event['date'], event['time'], event['description'], event['host'], event['type']);
           _listEvent.add(dummyEvent);
           _lastDateTimeIteration = DateTime.parse(event['date']);
         }

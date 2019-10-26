@@ -50,8 +50,9 @@ class Values{
   //amounts
   int numberOfAdminTabs = 1;
 
-  //dialog form purpose list
+  //maps
   Map<String, int> dialogPurposes = {"Crear administrador": 0, "Recuperar contraseña": 1, "Cambiar correo": 2};
+  Map<String, String> eventType = {'ceremony': 'ceremonia', 'exam': 'exámen', 'delivery': 'entrega'};
 
   //timer
   int defaultTimer = 5;
