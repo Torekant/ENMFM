@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connectivity/connectivity.dart';
 import 'dart:io';
 import 'dart:async';
@@ -750,6 +751,45 @@ class Event{
       return false;
     }
 
+  }
+
+  Future<Map> RetrieveEvents(BuildContext context) async{
+    Values values = new Values();
+   QuerySnapshot _snapshots;
+   List<DocumentSnapshot> _documents;
+    Map<DateTime, List<Event>> events = new Map();
+    List<Event> _listEvent = new List();
+    DateTime _lastDateTimeIteration;
+
+    _snapshots = await values.firestoreReference.collection('events').getDocuments();
+    _documents = _snapshots.documents;
+
+    _documents.sort((a, b) => DateTime.parse(a['date']).compareTo(DateTime.parse(b['date'])));
+
+    _documents.forEach((event){
+
+      if(_lastDateTimeIteration == DateTime.parse(event['date'])){
+        Event dummyEvent = new Event(event.documentID, event['title'], event['image'], event['place'], event['date'], event['time'], event['description'], event['host']);
+        _listEvent.add(dummyEvent);
+      }else{
+        if(_listEvent.isEmpty){
+          Event dummyEvent = new Event(event.documentID, event['title'], event['image'], event['place'], event['date'], event['time'], event['description'], event['host']);
+          _listEvent.add(dummyEvent);
+          _lastDateTimeIteration = DateTime.parse(event['date']);
+        }else{
+          events[_lastDateTimeIteration] = _listEvent;
+          _listEvent = [];
+          Event dummyEvent = new Event(event.documentID, event['title'], event['image'], event['place'], event['date'], event['time'], event['description'], event['host']);
+          _listEvent.add(dummyEvent);
+          _lastDateTimeIteration = DateTime.parse(event['date']);
+        }
+      }
+
+    });
+
+    events[_lastDateTimeIteration] = _listEvent;
+
+    return events;
   }
 }
 

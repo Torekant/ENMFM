@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'values.dart';
 import 'dart:async';
@@ -11,6 +12,7 @@ import 'functions.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:table_calendar/table_calendar.dart';
 
 class HomeScreen extends StatefulWidget {
   HomeScreen({Key key}) : super(key: key);
@@ -44,6 +46,28 @@ class _HomeScreen extends State<HomeScreen>{
 
   StorageReference ref = values.storageReference;
 
+  CalendarController _calendarController;
+  Map _calendarEvents;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _calendarController = CalendarController();
+  }
+
+  @override
+  void didChangeDependencies() async{
+    // TODO: implement didChangeDependencies
+    super.didChangeDependencies();
+    Event dummyEvent = new Event('', '', '', '', '', '', '', '');
+    await dummyEvent.RetrieveEvents(context).then((map){
+     setState(() {
+       _calendarEvents = map;
+     });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
 
@@ -56,7 +80,7 @@ class _HomeScreen extends State<HomeScreen>{
 
     return WillPopScope( //Este widget nos permite describir el proceso de stack de las pantallas, principalmente el que pueda o no salir del stack de la aplicación
         child: DefaultTabController(
-          length: 2,
+          length: 3,
           child: Scaffold(
               appBar: AppBar(
                 backgroundColor: hue.carmesi,
@@ -64,7 +88,8 @@ class _HomeScreen extends State<HomeScreen>{
                 bottom: TabBar(
                   tabs: <Widget>[
                     Tab(text: 'ENMFM',),
-                    Tab(text: 'Eventos',)
+                    Tab(text: 'Eventos',),
+                    Tab(text: 'Calendario',)
                   ],
                 ),
                 actions: <Widget>[
@@ -209,6 +234,33 @@ class _HomeScreen extends State<HomeScreen>{
                         );
                       }
                   ),
+                  Container(
+                    child: TableCalendar(
+                      calendarController: _calendarController,
+                      locale: 'es',
+                      calendarStyle: CalendarStyle(
+                        canEventMarkersOverflow: false,
+                        markersAlignment: Alignment.bottomCenter,
+                        markersColor: hue.carmesi,
+                        markersMaxAmount: 5,
+                        outsideDaysVisible: true,
+                        todayColor: hue.ocean,
+                        weekdayStyle: values.calendarDayTextStyle,
+                        weekendStyle: values.calendarWeekendDayTextStyle,
+                      ),
+                      headerStyle: HeaderStyle(
+                        centerHeaderTitle: true,
+                        formatButtonShowsNext: false,
+                        titleTextStyle: values.contentTextStyle,
+                        formatButtonVisible: false
+                      ),
+                      onDaySelected: (day, events){
+                        print(day);
+                        print(events);
+                      },
+                      events: _calendarEvents,
+                    ),
+                  )
                 ],
               )
           ),
@@ -220,6 +272,7 @@ class _HomeScreen extends State<HomeScreen>{
   @override
   void dispose() {
     _scrollController.dispose();
+    _calendarController.dispose();
     super.dispose();
   }
 

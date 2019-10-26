@@ -14,6 +14,8 @@ class Values{
   TextStyle textFieldTextStyle = TextStyle(fontFamily: 'Montserrat', color: hue.outlines, fontWeight: FontWeight.normal);
   TextStyle flatButtonTextStyle = TextStyle(fontFamily: 'Montserrat', color: hue.outlines, fontWeight: FontWeight.normal, fontSize: 15.0);
   TextStyle plainTextStyle = TextStyle(fontFamily: 'Montserrat', color: hue.outlines, fontSize: 16.0);
+  TextStyle calendarDayTextStyle = TextStyle(fontFamily: 'Montserrat', color: hue.outlines, fontSize: 15.0);
+  TextStyle calendarWeekendDayTextStyle = TextStyle(fontFamily: 'Montserrat', color: hue.carmesi, fontSize: 15.0);
 
   //size values
   double standardPaddingLeft = 20.0, standardPaddingTop = 15.0, standardPaddingRight = 20.0, standardPaddingBottom = 15.0, standardBorderRadius = 10.0;

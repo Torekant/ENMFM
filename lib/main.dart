@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'values.dart';
 import 'dart:async';
 import 'screens.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 void main() => runApp(MyApp());
 
@@ -10,6 +11,16 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      localizationsDelegates: [
+        // ... app-specific localization delegate[s] here
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: [
+        const Locale('es'),
+        const Locale('en')
+      ],
       title: 'Flutter Demo',
       theme: ThemeData(
         // This is the theme of your application.
