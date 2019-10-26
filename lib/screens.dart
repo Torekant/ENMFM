@@ -47,7 +47,7 @@ class _HomeScreen extends State<HomeScreen>{
   StorageReference ref = values.storageReference;
 
   CalendarController _calendarController;
-  Map _calendarEvents;
+  Map<DateTime, List<Event>> _calendarEvents = Map();
 
   @override
   void initState() {
@@ -234,32 +234,31 @@ class _HomeScreen extends State<HomeScreen>{
                         );
                       }
                   ),
-                  Container(
-                    child: TableCalendar(
-                      calendarController: _calendarController,
-                      locale: 'es',
-                      calendarStyle: CalendarStyle(
-                        canEventMarkersOverflow: false,
-                        markersAlignment: Alignment.bottomCenter,
-                        markersColor: hue.carmesi,
-                        markersMaxAmount: 5,
-                        outsideDaysVisible: true,
-                        todayColor: hue.ocean,
-                        weekdayStyle: values.calendarDayTextStyle,
-                        weekendStyle: values.calendarWeekendDayTextStyle,
-                      ),
-                      headerStyle: HeaderStyle(
+                  TableCalendar(
+                    calendarController: _calendarController,
+                    locale: 'es',
+                    initialSelectedDay: DateTime.now(),
+                    calendarStyle: CalendarStyle(
+                      canEventMarkersOverflow: false,
+                      markersAlignment: Alignment.bottomCenter,
+                      markersColor: hue.carmesi,
+                      markersMaxAmount: 5,
+                      outsideDaysVisible: true,
+                      todayColor: hue.ocean,
+                      weekdayStyle: values.calendarDayTextStyle,
+                      weekendStyle: values.calendarWeekendDayTextStyle,
+                    ),
+                    headerStyle: HeaderStyle(
                         centerHeaderTitle: true,
                         formatButtonShowsNext: false,
                         titleTextStyle: values.contentTextStyle,
                         formatButtonVisible: false
-                      ),
-                      onDaySelected: (day, events){
-                        print(day);
-                        print(events);
-                      },
-                      events: _calendarEvents,
                     ),
+                    onDaySelected: (day, events){
+                      print(day);
+                      print(events);
+                    },
+                    events: _calendarEvents,
                   )
                 ],
               )
