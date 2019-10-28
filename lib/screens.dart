@@ -74,14 +74,13 @@ class _HomeScreen extends State<HomeScreen>{
 
     double _screenWidth = MediaQuery.of(context).size.width; //lee el ancho de dispositivo
     double _screenHeight = MediaQuery.of(context).size.height; //lee el largo del dispositivo
-    double _symmetricPadding = values.defaultSymmetricPadding; //padding lateral de la pantalla
 
     double _responsiveheight = _screenHeight / values.defaultDivisionForResponsiveHeight; //Función para altura responsiva de cada card en la lista
 
 
     return WillPopScope( //Este widget nos permite describir el proceso de stack de las pantallas, principalmente el que pueda o no salir del stack de la aplicación
         child: DefaultTabController(
-          length: 3,
+          length: 2,
           child: Scaffold(
               appBar: AppBar(
                 backgroundColor: hue.carmesi,
@@ -89,7 +88,6 @@ class _HomeScreen extends State<HomeScreen>{
                 bottom: TabBar(
                   tabs: <Widget>[
                     Tab(text: 'ENMFM',),
-                    Tab(text: 'Eventos',),
                     Tab(text: 'Calendario',)
                   ],
                 ),
@@ -152,88 +150,6 @@ class _HomeScreen extends State<HomeScreen>{
                         )
                       ],
                     ),
-                  ),
-                  StreamBuilder(
-                      stream: values.firestoreReference.collection('events').where('date', isGreaterThanOrEqualTo: date).snapshots(),
-                      builder: (context, snapshot){
-                        if(!snapshot.hasData)
-                          return Image.asset(
-                              values.retrievingListAnimation
-                          );
-                        return new ListView.builder(
-                            controller: _scrollController,
-                            shrinkWrap: false,
-                            itemCount: snapshot.data.documents.length,
-                            itemBuilder: (context, index){
-
-                              DocumentSnapshot ds = snapshot.data.documents[index];
-
-                              return new InkWell( //El widget Inkwell genera un layout que permite leer las acciones del usuario sobre lo que esté dentro de aquí
-                                child: Container(
-                                    child: Stack(
-                                      children: <Widget>[
-                                        Container(
-                                            padding: EdgeInsets.all(_symmetricPadding * 1),
-                                            child: new ClipRRect(
-                                                borderRadius: new BorderRadius.vertical(top: Radius.circular(values.standardBorderRadius)),
-                                                child: Parallax.inside(
-                                                    child:   ds['image'] == null
-                                                        ?
-                                                    Image.asset(values.retrievingListAnimation,
-                                                      fit: BoxFit.fill,
-                                                      width: double.maxFinite,
-                                                      height: _responsiveheight,
-                                                    )
-                                                        :
-                                                    CachedNetworkImage(
-                                                      imageUrl: ds['image'],
-                                                      placeholder: (context, url) => Image.asset(values.loadingAnimation, fit: BoxFit.fill, width: double.maxFinite, height: _responsiveheight,),
-                                                      errorWidget: (context,url,error) => new Icon(Icons.error),
-                                                      width: double.maxFinite,
-                                                      height: _responsiveheight,
-                                                      fit: BoxFit.fill,
-                                                    ),
-                                                    mainAxisExtent: _responsiveheight / 1.1
-                                                )
-                                            )
-                                        ),
-                                        Positioned(
-                                            left: _symmetricPadding * 1,
-                                            bottom: _symmetricPadding * 1,
-                                            right: _symmetricPadding * 1,
-                                            child: Container(
-                                              decoration: BoxDecoration(
-                                                  color: Color.fromRGBO(0, 0, 0, 0.5)
-                                              ),
-                                              child: Row(
-                                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                                children: <Widget>[
-                                                  Column(
-                                                    children: <Widget>[
-                                                      new Text(ds["title"], style: new TextStyle(fontSize: 28, color: Colors.white)),
-                                                      new Text(ds['place'], style: new TextStyle(fontSize: 20, color: Colors.white))
-                                                    ],
-                                                  ),
-                                                ],
-                                              ),
-                                            )
-                                        )
-                                      ],
-                                    )
-                                ),
-                                onTap: (){
-                                  Event _event = new Event(ds.documentID, ds['title'], ds['image'], ds['place'], ds['date'], ds['time'], ds['description'], ds['host'], ds['type']);
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => EventScreen(event: _event, adminView: false),
-                                      )
-                                  );
-                                },
-                              );
-                            }
-                        );
-                      }
                   ),
                   Column(
                     mainAxisSize: MainAxisSize.min,
@@ -323,7 +239,7 @@ class _HomeScreen extends State<HomeScreen>{
 }
 
 class EventScreen extends StatefulWidget {
-  EventScreen({Key key, this.event, this.adminView}) : super(key: key);
+  EventScreen({Key key, this.event, this.adminView, this.newEventDateTime}) : super(key: key);
 
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
@@ -336,6 +252,7 @@ class EventScreen extends StatefulWidget {
 
   final Event event;
   final bool adminView;
+  final DateTime newEventDateTime;
 
   @override
   _EventScreen createState() => _EventScreen();
@@ -368,7 +285,7 @@ class _EventScreen extends State<EventScreen>{
       widget.event.time = "00:00";
       DateFormat df = new DateFormat('yyyy-MM-dd');
       widget.event.date = df.format(DateTime.now());
-      spanishFormattedText = BuildEventDayText(df.format(DateTime.now()));
+      spanishFormattedText = BuildEventDayText(df.format(widget.newEventDateTime));
     }
   }
 
@@ -867,7 +784,7 @@ class _EventScreen extends State<EventScreen>{
                                   dateNewEvent = format;
                                 });
                               },
-                              currentTime: DateTime.now(),
+                              currentTime: widget.newEventDateTime,
                               locale: LocaleType.es
                           );
                         },
@@ -1407,7 +1324,7 @@ class _AdminScreen extends State<AdminScreen> with SingleTickerProviderStateMixi
   int _tabIndex = 0;
 
    List<Widget> _tabs, _tabViews;
-   Widget _eventListTab;
+   Widget _eventListTab; //inicialización con columna vacía
 
   TabController _tabController;
 
@@ -1417,6 +1334,10 @@ class _AdminScreen extends State<AdminScreen> with SingleTickerProviderStateMixi
   Widget _mailUpdateEntry;
   TextEditingController _mailUpdateController = new TextEditingController();
   bool _editingMailState = false;
+
+  CalendarController _calendarController;
+  Map<DateTime, List<Event>> _calendarEvents = Map();
+  ListView _eventListView = ListView(shrinkWrap: true,);
 
   @override
   void initState() {
@@ -1439,7 +1360,7 @@ class _AdminScreen extends State<AdminScreen> with SingleTickerProviderStateMixi
               Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => EventScreen(event: _event, adminView: true),
+                    builder: (context) => EventScreen(event: _event, adminView: true, newEventDateTime: _calendarController.selectedDay,),
                   )
               );
               break;
@@ -1456,102 +1377,109 @@ class _AdminScreen extends State<AdminScreen> with SingleTickerProviderStateMixi
       style: values.contentTextStyle,
     );
 
+    _calendarController = CalendarController();
 
   }
 
   @override
-  void didChangeDependencies() {
+  void didChangeDependencies() async{
     super.didChangeDependencies();
 
     double _screenWidth = MediaQuery.of(context).size.width; //lee el ancho de dispositivo
     double _screenHeight = MediaQuery.of(context).size.height; //lee el largo del dispositivo
-    double _symmetricPadding = 30.0; //padding lateral de la pantalla
-
-    _symmetricPadding =  (_screenWidth * values.widthPaddingUnit) / 10; //Función que nos permite hacer un padding responsivo a cualquier resolución en ancho
-    double _responsiveheight = _screenHeight / 2.2; //Función para altura responsiva de cada card en la lista
 
     _position = Offset(_screenWidth / 1.2, _screenHeight / 1.1);
-    _eventListTab = StreamBuilder(
-        stream: values.firestoreReference.collection('events').snapshots(),
-        builder: (context, snapshot){
-          if(!snapshot.hasData)
-            return Image.asset(
-                values.retrievingListAnimation
-            );
-          return new ListView.builder(
-              controller: _scrollController,
-              shrinkWrap: false,
-              itemCount: snapshot.data.documents.length,
-              itemBuilder: (context, index){
 
-                DocumentSnapshot ds = snapshot.data.documents[index];
+    Event dummyEvent = new Event('', '', '', '', '', '', '', '', '');
+    await dummyEvent.RetrieveEvents(context).then((map){
+      setState(() {
+        _calendarEvents = map;
+      });
+    });
 
-                return new InkWell( //El widget Inkwell genera un layout que permite leer las acciones del usuario sobre lo que esté dentro de aquí
-                  child: Container(
-                      child: Stack(
-                        children: <Widget>[
-                          Container(
-                              padding: EdgeInsets.all(_symmetricPadding * 1.5),
-                              child: new ClipRRect(
-                                  borderRadius: new BorderRadius.vertical(top: Radius.circular(values.standardBorderRadius)),
-                                  child: Parallax.inside(
-                                      child:   ds['image'] == null
-                                          ?
-                                      Image.asset(values.loadingAnimation,
-                                        fit: BoxFit.fill,
-                                        width: double.maxFinite,
-                                        height: _responsiveheight,
-                                      )
-                                          :
-                                      CachedNetworkImage(
-                                        imageUrl: ds['image'],
-                                        placeholder: (context, url) => Image.asset(values.loadingAnimation, fit: BoxFit.fill, width: double.maxFinite, height: _responsiveheight,),
-                                        errorWidget: (context,url,error) => new Icon(Icons.error),
-                                        width: double.maxFinite,
-                                        height: _responsiveheight,
-                                        fit: BoxFit.fill,
-                                      ),
-                                      mainAxisExtent: _responsiveheight / 1.1
-                                  )
-                              )
+  }
+
+  @override
+  Widget build(BuildContext context) {
+
+    _eventListTab = Column(
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        TableCalendar(
+          calendarController: _calendarController,
+          locale: 'es',
+          initialSelectedDay: DateTime.now(),
+          calendarStyle: CalendarStyle(
+            canEventMarkersOverflow: false,
+            markersAlignment: Alignment.bottomCenter,
+            markersColor: hue.carmesi,
+            markersMaxAmount: 5,
+            outsideDaysVisible: true,
+            todayColor: hue.ocean,
+            weekdayStyle: values.calendarDayTextStyle,
+            weekendStyle: values.calendarWeekendDayTextStyle,
+          ),
+          headerStyle: HeaderStyle(
+              centerHeaderTitle: true,
+              formatButtonShowsNext: false,
+              titleTextStyle: values.contentTextStyle,
+              formatButtonVisible: false
+          ),
+          onDaySelected: (day, events){
+            setState(() {
+              _eventListView = ListView.builder(
+                  scrollDirection: Axis.vertical,
+                  controller: _scrollController,
+                  shrinkWrap: true,
+                  itemCount: events.length,
+                  itemBuilder: (context, index){
+                    Event ds = events[index];
+
+                    return new Container(
+                      color: hue.outlines,
+                      padding: EdgeInsets.fromLTRB(0.0, 3.0, 0.0, 0.0),
+                      child: Container(
+                        color: hue.background,
+                        child: ListTile(
+                          title: Container(
+                            alignment: Alignment.centerLeft,
+                            child: Text(ds.title),
                           ),
-                          Positioned(
-                              left: _symmetricPadding * 1.5,
-                              bottom: _symmetricPadding * 1.5,
-                              right: _symmetricPadding * 1.5,
-                              child: Container(
-                                decoration: BoxDecoration(
-                                    color: Color.fromRGBO(0, 0, 0, 0.5)
-                                ),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                  children: <Widget>[
-                                    Column(
-                                      children: <Widget>[
-                                        new Text(ds["title"], style: new TextStyle(fontSize: 28, color: Colors.white)),
-                                        new Text(ds['place'], style: new TextStyle(fontSize: 20, color: Colors.white))
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              )
-                          )
-                        ],
-                      )
-                  ),
-                  onTap: (){
-                    Event _event = new Event(ds.documentID, ds['title'], ds['image'], ds['place'], ds['date'], ds['time'], ds['description'], ds['host'], ds['type']);
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => EventScreen(event: _event, adminView: _adminView),
-                        )
+                          subtitle: Container(
+                            alignment: Alignment.centerLeft,
+                            child: Text(ds.type + ' - ' + ds.time + 'hrs.'),
+                          ),
+                          onTap: (){
+                            if(ds.type == values.eventType['ceremony']){
+                              if(widget.user.admin == true && widget.user.masterAdmin == false){
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => EventScreen(event: ds, adminView: true,)
+                                    )
+                                );
+                              }else{
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => EventScreen(event: ds, adminView: false,)
+                                    )
+                                );
+                              }
+                            }
+                          },
+                        ),
+                      ),
                     );
-                  },
-                );
-              }
-          );
-        }
+                  }
+              );
+            });
+          },
+          events: _calendarEvents,
+        ),
+        SizedBox(height: values.mediumSizedBoxStandardHeight,),
+        Expanded(child: _eventListView,)
+      ],
     );
 
     if(widget.user.masterAdmin == true){
@@ -1616,8 +1544,8 @@ class _AdminScreen extends State<AdminScreen> with SingleTickerProviderStateMixi
                                       Admin admin = new Admin(ds['idAuth'], ds.documentID, ds['nickname'], ds['email'], ds['admin'], ds['masterAdmin']);
 
                                       showDialog(
-                                        context: context,
-                                        builder: (BuildContext context) => CustomLoadDialog()
+                                          context: context,
+                                          builder: (BuildContext context) => CustomLoadDialog()
                                       );
 
                                       admin.DestroyAdmin(context).then((result){
@@ -1648,6 +1576,7 @@ class _AdminScreen extends State<AdminScreen> with SingleTickerProviderStateMixi
         )
       ];
     }
+
     if(widget.user.admin == true){
       _tabs = [
         Tab(text: 'Eventos'),
@@ -1657,10 +1586,6 @@ class _AdminScreen extends State<AdminScreen> with SingleTickerProviderStateMixi
         _eventListTab,
       ];
     }
-  }
-
-  @override
-  Widget build(BuildContext context) {
 
     return new WillPopScope(
         child: Scaffold(
@@ -1942,6 +1867,7 @@ class _AdminScreen extends State<AdminScreen> with SingleTickerProviderStateMixi
   @override
   void dispose() {
     _tabController.dispose();
+    _calendarController.dispose();
     super.dispose();
   }
 
