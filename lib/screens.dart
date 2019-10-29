@@ -47,7 +47,7 @@ class _HomeScreen extends State<HomeScreen>{
   StorageReference ref = values.storageReference;
 
   CalendarController _calendarController;
-  Map<DateTime, List<Event>> _calendarEvents = Map();
+  Map<DateTime, List<Event>> _calendarEvents = new Map();
   ListView _eventListView = ListView(shrinkWrap: true,);
 
   @override
@@ -184,6 +184,39 @@ class _HomeScreen extends State<HomeScreen>{
                                 itemBuilder: (context, index){
                                   Event ds = events[index];
 
+                                  Icon _eventIcon;
+
+                                  switch(ds.type){
+                                    case 'ceremonia':
+                                      _eventIcon = new Icon(
+                                        Icons.event,
+                                        size: values.toolbarIconSize,
+                                        color: hue.outlines
+                                      );
+                                      break;
+                                    case 'exámen':
+                                      _eventIcon = new Icon(
+                                          Icons.description,
+                                          size: values.toolbarIconSize,
+                                          color: hue.outlines
+                                      );
+                                      break;
+                                    case 'entrega':
+                                      _eventIcon = new Icon(
+                                          Icons.assignment_turned_in,
+                                          size: values.toolbarIconSize,
+                                          color: hue.outlines
+                                      );
+                                      break;
+                                    default:
+                                      _eventIcon = new Icon(
+                                          Icons.event,
+                                          size: values.toolbarIconSize,
+                                          color: hue.outlines
+                                      );
+                                      break;
+                                  }
+
                                   return new Container(
                                     color: hue.outlines,
                                     padding: EdgeInsets.fromLTRB(0.0, 3.0, 0.0, 0.0),
@@ -198,6 +231,7 @@ class _HomeScreen extends State<HomeScreen>{
                                           alignment: Alignment.centerLeft,
                                           child: Text(ds.type + ' - ' + ds.time + 'hrs.'),
                                         ),
+                                        trailing: _eventIcon,
                                         onTap: (){
                                           if(ds.type == values.eventType['ceremony']){
                                             Navigator.push(
@@ -1403,82 +1437,122 @@ class _AdminScreen extends State<AdminScreen> with SingleTickerProviderStateMixi
   Widget build(BuildContext context) {
 
     _eventListTab = Column(
-      mainAxisSize: MainAxisSize.min,
       children: <Widget>[
-        TableCalendar(
-          calendarController: _calendarController,
-          locale: 'es',
-          initialSelectedDay: DateTime.now(),
-          calendarStyle: CalendarStyle(
-            canEventMarkersOverflow: false,
-            markersAlignment: Alignment.bottomCenter,
-            markersColor: hue.carmesi,
-            markersMaxAmount: 5,
-            outsideDaysVisible: true,
-            todayColor: hue.ocean,
-            weekdayStyle: values.calendarDayTextStyle,
-            weekendStyle: values.calendarWeekendDayTextStyle,
-          ),
-          headerStyle: HeaderStyle(
-              centerHeaderTitle: true,
-              formatButtonShowsNext: false,
-              titleTextStyle: values.contentTextStyle,
-              formatButtonVisible: false
-          ),
-          onDaySelected: (day, events){
-            setState(() {
-              _eventListView = ListView.builder(
-                  scrollDirection: Axis.vertical,
-                  controller: _scrollController,
-                  shrinkWrap: true,
-                  itemCount: events.length,
-                  itemBuilder: (context, index){
-                    Event ds = events[index];
+        Expanded(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              TableCalendar(
+                calendarController: _calendarController,
+                locale: 'es',
+                initialSelectedDay: DateTime.now(),
+                calendarStyle: CalendarStyle(
+                  canEventMarkersOverflow: false,
+                  markersAlignment: Alignment.bottomCenter,
+                  markersColor: hue.carmesi,
+                  markersMaxAmount: 5,
+                  outsideDaysVisible: true,
+                  todayColor: hue.ocean,
+                  weekdayStyle: values.calendarDayTextStyle,
+                  weekendStyle: values.calendarWeekendDayTextStyle,
+                ),
+                headerStyle: HeaderStyle(
+                    centerHeaderTitle: true,
+                    formatButtonShowsNext: false,
+                    titleTextStyle: values.contentTextStyle,
+                    formatButtonVisible: false
+                ),
+                onDaySelected: (day, events){
+                  setState(() {
+                    _eventListView = ListView.builder(
+                        scrollDirection: Axis.vertical,
+                        controller: _scrollController,
+                        shrinkWrap: true,
+                        itemCount: events.length,
+                        itemBuilder: (context, index){
+                          Event ds = events[index];
 
-                    return new Container(
-                      color: hue.outlines,
-                      padding: EdgeInsets.fromLTRB(0.0, 3.0, 0.0, 0.0),
-                      child: Container(
-                        color: hue.background,
-                        child: ListTile(
-                          title: Container(
-                            alignment: Alignment.centerLeft,
-                            child: Text(ds.title),
-                          ),
-                          subtitle: Container(
-                            alignment: Alignment.centerLeft,
-                            child: Text(ds.type + ' - ' + ds.time + 'hrs.'),
-                          ),
-                          onTap: (){
-                            if(ds.type == values.eventType['ceremony']){
-                              if(widget.user.admin == true && widget.user.masterAdmin == false){
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => EventScreen(event: ds, adminView: true,)
-                                    )
-                                );
-                              }else{
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => EventScreen(event: ds, adminView: false,)
-                                    )
-                                );
-                              }
-                            }
-                          },
-                        ),
-                      ),
+                          Icon _eventIcon;
+
+                          switch(ds.type){
+                            case 'ceremonia':
+                              _eventIcon = new Icon(
+                                  Icons.event,
+                                  size: values.toolbarIconSize,
+                                  color: hue.outlines
+                              );
+                              break;
+                            case 'exámen':
+                              _eventIcon = new Icon(
+                                  Icons.description,
+                                  size: values.toolbarIconSize,
+                                  color: hue.outlines
+                              );
+                              break;
+                            case 'entrega':
+                              _eventIcon = new Icon(
+                                  Icons.assignment_turned_in,
+                                  size: values.toolbarIconSize,
+                                  color: hue.outlines
+                              );
+                              break;
+                            default:
+                              _eventIcon = new Icon(
+                                  Icons.event,
+                                  size: values.toolbarIconSize,
+                                  color: hue.outlines
+                              );
+                              break;
+                          }
+
+                          return new Container(
+                            color: hue.outlines,
+                            padding: EdgeInsets.fromLTRB(0.0, 3.0, 0.0, 0.0),
+                            child: Container(
+                              color: hue.background,
+                              child: ListTile(
+                                title: Container(
+                                  alignment: Alignment.centerLeft,
+                                  child: Text(ds.title),
+                                ),
+                                subtitle: Container(
+                                  alignment: Alignment.centerLeft,
+                                  child: Text(ds.type + ' - ' + ds.time + 'hrs.'),
+                                ),
+                                trailing: _eventIcon,
+                                onTap: (){
+                                  if(ds.type == values.eventType['ceremony']){
+                                    if(widget.user.admin == true && widget.user.masterAdmin == false){
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) => EventScreen(event: ds, adminView: true,)
+                                          )
+                                      );
+                                    }else{
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) => EventScreen(event: ds, adminView: false,)
+                                          )
+                                      );
+                                    }
+                                  }
+                                },
+                              ),
+                            ),
+                          );
+                        }
                     );
-                  }
-              );
-            });
-          },
-          events: _calendarEvents,
-        ),
-        SizedBox(height: values.mediumSizedBoxStandardHeight,),
-        Expanded(child: _eventListView,)
+                  });
+                },
+                events: _calendarEvents,
+              ),
+              SizedBox(height: values.mediumSizedBoxStandardHeight,),
+              Expanded(child: _eventListView,),
+            ],
+          ),
+        )
       ],
     );
 

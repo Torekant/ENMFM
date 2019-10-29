@@ -3,6 +3,7 @@ import 'values.dart';
 import 'dart:async';
 import 'screens.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 void main() => runApp(MyApp());
 
@@ -63,10 +64,14 @@ class _SplashScreen extends State<SplashScreen> {
   static Values values = new Values();
   static Hues hue = new Hues();
 
+  final FirebaseMessaging _messaging = FirebaseMessaging();
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    _messaging.getToken().then((token){
+      print(token);
+    });
   }
 
   @override

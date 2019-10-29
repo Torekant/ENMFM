@@ -758,8 +758,8 @@ class Event{
 
   Future<Map> RetrieveEvents(BuildContext context) async{
     Values values = new Values();
-   QuerySnapshot _snapshots;
-   List<DocumentSnapshot> _documents;
+    QuerySnapshot _snapshots;
+    List<DocumentSnapshot> _documents;
     Map<DateTime, List<Event>> events = new Map();
     List<Event> _listEvent = new List();
     DateTime _lastDateTimeIteration;
