@@ -65,6 +65,86 @@ class _HomeScreen extends State<HomeScreen>{
     await dummyEvent.RetrieveEvents(context).then((map){
      setState(() {
        _calendarEvents = map;
+
+       DateFormat df = new DateFormat('yyyy-MM-dd');
+       String _todaysDate = df.format(DateTime.now());
+       if(_calendarEvents.containsKey(DateTime.parse(_todaysDate))){
+         _calendarEvents.forEach((dateTime, eventList){
+           if(dateTime == DateTime.parse(_todaysDate)){
+             _eventListView = ListView.builder(
+                 scrollDirection: Axis.vertical,
+                 controller: _scrollController,
+                 shrinkWrap: true,
+                 itemCount: eventList.length,
+                 itemBuilder: (context, index){
+                   Event ds = eventList[index];
+
+                   Icon _eventIcon;
+
+                   switch(ds.type){
+                     case 'ceremonia':
+                       _eventIcon = new Icon(
+                           Icons.event,
+                           size: values.toolbarIconSize,
+                           color: hue.outlines
+                       );
+                       break;
+                     case 'exámen':
+                       _eventIcon = new Icon(
+                           Icons.description,
+                           size: values.toolbarIconSize,
+                           color: hue.outlines
+                       );
+                       break;
+                     case 'entrega':
+                       _eventIcon = new Icon(
+                           Icons.assignment_turned_in,
+                           size: values.toolbarIconSize,
+                           color: hue.outlines
+                       );
+                       break;
+                     default:
+                       _eventIcon = new Icon(
+                           Icons.event,
+                           size: values.toolbarIconSize,
+                           color: hue.outlines
+                       );
+                       break;
+                   }
+
+                   return new Container(
+                     color: hue.outlines,
+                     padding: EdgeInsets.fromLTRB(0.0, 3.0, 0.0, 0.0),
+                     child: Container(
+                       color: hue.background,
+                       child: ListTile(
+                         title: Container(
+                           alignment: Alignment.centerLeft,
+                           child: Text(ds.title),
+                         ),
+                         subtitle: Container(
+                           alignment: Alignment.centerLeft,
+                           child: Text(ds.type + ' - ' + ds.time + 'hrs.'),
+                         ),
+                         trailing: _eventIcon,
+                         onTap: (){
+                           if(ds.type == values.eventType['ceremony']){
+                             Navigator.push(
+                                 context,
+                                 MaterialPageRoute(
+                                     builder: (context) => EventScreen(event: ds, adminView: false,)
+                                 )
+                             );
+                           }
+                         },
+                       ),
+                     ),
+                   );
+                 }
+             );
+           }
+         });
+       }
      });
     });
   }
@@ -1354,7 +1434,6 @@ class _AdminScreen extends State<AdminScreen> with SingleTickerProviderStateMixi
 
   ScrollController _scrollController = new ScrollController();
 
-  bool _adminView = false;
   int _tabIndex = 0;
 
    List<Widget> _tabs, _tabViews;
@@ -1377,12 +1456,10 @@ class _AdminScreen extends State<AdminScreen> with SingleTickerProviderStateMixi
   void initState() {
     super.initState();
     if(widget.user.masterAdmin == true){
-      _adminView = false;
       _tabController = TabController(vsync: this, length: values.numberOfAdminTabs + 1);
       _floatingActionButton = null;
     }
     if(widget.user.admin == true){
-      _adminView = true;
       _tabController = TabController(vsync: this, length: values.numberOfAdminTabs);
       _floatingActionButton = FloatingActionButton(
         backgroundColor: hue.ocean,
