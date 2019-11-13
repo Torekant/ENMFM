@@ -69,6 +69,7 @@ class Values{
 
   //responsive
   double defaultDivisionForResponsiveHeight = 2.2;
+  double defaultDivisionForResponsiveWidth = 2.2;
 
   //icons defaults
   double toolbarIconSize = 35.0;

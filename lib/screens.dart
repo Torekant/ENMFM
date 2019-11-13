@@ -7,7 +7,6 @@ import 'dart:async';
 import 'classes.dart';
 import 'package:flutter_parallax/flutter_parallax.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'functions.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:image_picker/image_picker.dart';
@@ -38,23 +37,22 @@ class _HomeScreen extends State<HomeScreen>{
   static Values values = new Values();
   static Hues hue = new Hues();
 
-  List<Event> cardList = new List();
-  ScrollController _scrollController = new ScrollController();
-
-  List<Widget> cards = new List<Widget>();
-  String date = DateTime.now().toString();
-
-  StorageReference ref = values.storageReference;
+  ScrollController _scrollController;
 
   CalendarController _calendarController;
-  Map<DateTime, List<Event>> _calendarEvents = new Map();
-  ListView _eventListView = ListView(shrinkWrap: true,);
+  Map<DateTime, List<Event>> _calendarEvents;
+  ListView _eventListView;
+
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     _calendarController = CalendarController();
+    _scrollController = new ScrollController();
+    _calendarEvents = new Map();
+    _eventListView = ListView(shrinkWrap: true,);
+
   }
 
   @override
@@ -155,70 +153,75 @@ class _HomeScreen extends State<HomeScreen>{
     double _screenWidth = MediaQuery.of(context).size.width; //lee el ancho de dispositivo
     double _screenHeight = MediaQuery.of(context).size.height; //lee el largo del dispositivo
 
-    double _responsiveheight = _screenHeight / values.defaultDivisionForResponsiveHeight; //Función para altura responsiva de cada card en la lista
+    double _responsiveHeight = _screenHeight / values.defaultDivisionForResponsiveHeight; //Función para altura responsiva de cada card en la lista
 
 
     return WillPopScope( //Este widget nos permite describir el proceso de stack de las pantallas, principalmente el que pueda o no salir del stack de la aplicación
         child: DefaultTabController(
           length: 2,
-          child: Scaffold(
-              appBar: AppBar(
-                backgroundColor: hue.carmesi,
-                title: Text("Inicio"),
-                bottom: TabBar(
-                  tabs: <Widget>[
-                    Tab(text: 'ENMFM',),
-                    Tab(text: 'Calendario',)
-                  ],
-                ),
-                actions: <Widget>[
-                  IconButton(
-                    icon: Icon(
-                      Icons.assignment_ind,
-                      size: values.toolbarIconSize,
+          child: OrientationBuilder(
+            builder: (context, orientation){
+              return orientation == Orientation.portrait
+                  ?
+              Scaffold(
+                  appBar: AppBar(
+                    backgroundColor: hue.carmesi,
+                    title: Text("Inicio"),
+                    bottom: TabBar(
+                      tabs: <Widget>[
+                        Tab(text: 'ENMFM',),
+                        Tab(text: 'Calendario',)
+                      ],
                     ),
-                    tooltip: 'Administrar',
-                    onPressed: (){
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => LoginScreen(),
-                          )
-                      );
-                    },
-                  ),
-                  Container(
-                    width: values.containerWidth,
-                  )
-                ],
-              ),
-              body: TabBarView(
-                children: <Widget>[
-                  SingleChildScrollView(
-                    controller: _scrollController,
-                    scrollDirection: Axis.vertical,
-                    child: Column(
-                      children: <Widget>[
-                         Image.asset(
-                            values.enmfmBuilding,
-                            fit: BoxFit.cover,
-                            height: _responsiveheight / 1.3,
-                          ),
-                        SizedBox(height: values.smallSizedBoxStandardHeight,),
-                        Container(
-                          width: _screenWidth / 1.2,
-                          child: Text(
-                            values.welcomeText,
-                            style: values.plainTextStyle,
-                            textAlign: TextAlign.center,
-                          ),
+                    actions: <Widget>[
+                      IconButton(
+                        icon: Icon(
+                          Icons.assignment_ind,
+                          size: values.toolbarIconSize,
                         ),
-                        SizedBox(height: values.smallSizedBoxStandardHeight,),
-                        MaterialButton(
+                        tooltip: 'Administrar',
+                        onPressed: (){
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => LoginScreen(),
+                              )
+                          );
+                        },
+                      ),
+                      Container(
+                        width: values.containerWidth,
+                      )
+                    ],
+                  ),
+                  body: TabBarView(
+                    children: <Widget>[
+                      SingleChildScrollView(
+                        controller: _scrollController,
+                        scrollDirection: Axis.vertical,
+                        child: Column(
+                          children: <Widget>[
+                            Image.asset(
+                              values.enmfmBuilding,
+                              fit: BoxFit.cover,
+                              height: _responsiveHeight / 1.3,
+                            ),
+                            SizedBox(height: values.smallSizedBoxStandardHeight,),
+                            Container(
+                              width: _screenWidth / 1.2,
+                              child: Text(
+                                values.welcomeText,
+                                style: values.plainTextStyle,
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                            SizedBox(height: values.smallSizedBoxStandardHeight,),
+                            /*MaterialButton(
                           elevation: values.buttonElevation,
                           minWidth: _screenWidth / 1.5,
                           padding: EdgeInsets.fromLTRB(values.standardPaddingLeft, values.standardPaddingTop, values.standardPaddingRight, values.standardPaddingBottom),
-                          color: hue.carmesi,
+                          color: Colors.transparent,
+                          textColor: hue.carmesi,
                           child: Text(
                             "Ir a página web",
                             textAlign: TextAlign.center,
@@ -227,116 +230,339 @@ class _HomeScreen extends State<HomeScreen>{
                           onPressed: (){
                             LaunchURL(values.urlWebPage);
                           },
-                        )
-                      ],
-                    ),
-                  ),
-                  Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      TableCalendar(
-                        calendarController: _calendarController,
-                        locale: 'es',
-                        initialSelectedDay: DateTime.now(),
-                        calendarStyle: CalendarStyle(
-                          canEventMarkersOverflow: false,
-                          markersAlignment: Alignment.bottomCenter,
-                          markersColor: hue.carmesi,
-                          markersMaxAmount: 5,
-                          outsideDaysVisible: true,
-                          todayColor: hue.ocean,
-                          weekdayStyle: values.calendarDayTextStyle,
-                          weekendStyle: values.calendarWeekendDayTextStyle,
+                        )*/
+                            FlatButton(
+                              textColor: hue.carmesi,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: <Widget>[
+                                  Text("Ir a página web"),
+                                  Icon(
+                                    Icons.launch,
+                                    color: hue.carmesi,
+                                  )
+                                ],
+                              ),
+                              onPressed: (){
+                                LaunchURL(values.urlWebPage);
+                              },
+                            )
+                          ],
                         ),
-                        headerStyle: HeaderStyle(
-                            centerHeaderTitle: true,
-                            formatButtonShowsNext: false,
-                            titleTextStyle: values.contentTextStyle,
-                            formatButtonVisible: false
-                        ),
-                        onDaySelected: (day, events){
-                          setState(() {
-                            _eventListView = ListView.builder(
-                                scrollDirection: Axis.vertical,
-                                controller: _scrollController,
-                                shrinkWrap: true,
-                                itemCount: events.length,
-                                itemBuilder: (context, index){
-                                  Event ds = events[index];
-
-                                  Icon _eventIcon;
-
-                                  switch(ds.type){
-                                    case 'ceremonia':
-                                      _eventIcon = new Icon(
-                                        Icons.event,
-                                        size: values.toolbarIconSize,
-                                        color: hue.outlines
-                                      );
-                                      break;
-                                    case 'exámen':
-                                      _eventIcon = new Icon(
-                                          Icons.description,
-                                          size: values.toolbarIconSize,
-                                          color: hue.outlines
-                                      );
-                                      break;
-                                    case 'entrega':
-                                      _eventIcon = new Icon(
-                                          Icons.assignment_turned_in,
-                                          size: values.toolbarIconSize,
-                                          color: hue.outlines
-                                      );
-                                      break;
-                                    default:
-                                      _eventIcon = new Icon(
-                                          Icons.event,
-                                          size: values.toolbarIconSize,
-                                          color: hue.outlines
-                                      );
-                                      break;
-                                  }
-
-                                  return new Container(
-                                    color: hue.outlines,
-                                    padding: EdgeInsets.fromLTRB(0.0, 3.0, 0.0, 0.0),
-                                    child: Container(
-                                      color: hue.background,
-                                      child: ListTile(
-                                        title: Container(
-                                          alignment: Alignment.centerLeft,
-                                          child: Text(ds.title),
-                                        ),
-                                        subtitle: Container(
-                                          alignment: Alignment.centerLeft,
-                                          child: Text(ds.type + ' - ' + ds.time + 'hrs.'),
-                                        ),
-                                        trailing: _eventIcon,
-                                        onTap: (){
-                                          if(ds.type == values.eventType['ceremony']){
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (context) => EventScreen(event: ds, adminView: false,)
-                                              )
-                                            );
-                                          }
-                                        },
-                                      ),
-                                    ),
-                                  );
-                                }
-                            );
-                          });
-                        },
-                        events: _calendarEvents,
                       ),
-                      SizedBox(height: values.mediumSizedBoxStandardHeight,),
-                     Expanded(child: _eventListView,)
+                      Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          TableCalendar(
+                            startingDayOfWeek: StartingDayOfWeek.monday,
+                            formatAnimation: FormatAnimation.scale,
+                            calendarController: _calendarController,
+                            locale: 'es',
+                            initialSelectedDay: DateTime.now(),
+                            calendarStyle: CalendarStyle(
+                              canEventMarkersOverflow: false,
+                              markersAlignment: Alignment.bottomCenter,
+                              markersColor: hue.carmesi,
+                              markersMaxAmount: 5,
+                              outsideDaysVisible: true,
+                              todayColor: hue.ocean,
+                              weekdayStyle: values.calendarDayTextStyle,
+                              weekendStyle: values.calendarWeekendDayTextStyle,
+                            ),
+                            headerStyle: HeaderStyle(
+                                centerHeaderTitle: true,
+                                formatButtonShowsNext: false,
+                                titleTextStyle: values.contentTextStyle,
+                                formatButtonVisible: false
+                            ),
+                            onDaySelected: (day, events){
+                              setState(() {
+                                _eventListView = ListView.builder(
+                                    scrollDirection: Axis.vertical,
+                                    controller: _scrollController,
+                                    shrinkWrap: true,
+                                    itemCount: events.length,
+                                    itemBuilder: (context, index){
+                                      Event ds = events[index];
+
+                                      Icon _eventIcon;
+
+                                      switch(ds.type){
+                                        case 'ceremonia':
+                                          _eventIcon = new Icon(
+                                              Icons.event,
+                                              size: values.toolbarIconSize,
+                                              color: hue.outlines
+                                          );
+                                          break;
+                                        case 'exámen':
+                                          _eventIcon = new Icon(
+                                              Icons.description,
+                                              size: values.toolbarIconSize,
+                                              color: hue.outlines
+                                          );
+                                          break;
+                                        case 'entrega':
+                                          _eventIcon = new Icon(
+                                              Icons.assignment_turned_in,
+                                              size: values.toolbarIconSize,
+                                              color: hue.outlines
+                                          );
+                                          break;
+                                        default:
+                                          _eventIcon = new Icon(
+                                              Icons.event,
+                                              size: values.toolbarIconSize,
+                                              color: hue.outlines
+                                          );
+                                          break;
+                                      }
+
+                                      return new Container(
+                                        color: hue.outlines,
+                                        padding: EdgeInsets.fromLTRB(0.0, 3.0, 0.0, 0.0),
+                                        child: Container(
+                                          color: hue.background,
+                                          child: ListTile(
+                                            title: Container(
+                                              alignment: Alignment.centerLeft,
+                                              child: Text(ds.title),
+                                            ),
+                                            subtitle: Container(
+                                              alignment: Alignment.centerLeft,
+                                              child: Text(ds.type + ' - ' + ds.time + 'hrs.'),
+                                            ),
+                                            trailing: _eventIcon,
+                                            onTap: (){
+                                              if(ds.type == values.eventType['ceremony']){
+                                                Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                        builder: (context) => EventScreen(event: ds, adminView: false,)
+                                                    )
+                                                );
+                                              }
+                                            },
+                                          ),
+                                        ),
+                                      );
+                                    }
+                                );
+                              });
+                            },
+                            events: _calendarEvents,
+                          ),
+                          SizedBox(height: values.mediumSizedBoxStandardHeight,),
+                          Expanded(child: _eventListView,)
+                        ],
+                      )
                     ],
                   )
-                ],
               )
+                  :
+              Scaffold(
+                  appBar: AppBar(
+                    backgroundColor: hue.carmesi,
+                    title: Text("Inicio"),
+                    bottom: TabBar(
+                      tabs: <Widget>[
+                        Tab(text: 'ENMFM',),
+                        Tab(text: 'Calendario',)
+                      ],
+                    ),
+                    actions: <Widget>[
+                      IconButton(
+                        icon: Icon(
+                          Icons.assignment_ind,
+                          size: values.toolbarIconSize,
+                        ),
+                        tooltip: 'Administrar',
+                        onPressed: (){
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => LoginScreen(),
+                              )
+                          );
+                        },
+                      ),
+                      Container(
+                        width: values.containerWidth,
+                      )
+                    ],
+                  ),
+                  body: TabBarView(
+                    children: <Widget>[
+                      SingleChildScrollView(
+                        controller: _scrollController,
+                        scrollDirection: Axis.vertical,
+                        child: Column(
+                          children: <Widget>[
+                            Parallax.inside(
+                              child: Image.asset(
+                                values.enmfmBuilding,
+                                fit: BoxFit.cover,
+                                height: _responsiveHeight / 1.1,
+                                width: _screenWidth,
+                              ),
+                              mainAxisExtent: _responsiveHeight / 1.3),
+                            SizedBox(height: values.smallSizedBoxStandardHeight,),
+                            Container(
+                              width: _screenWidth / 1.2,
+                              child: Text(
+                                values.welcomeText,
+                                style: values.plainTextStyle,
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                            SizedBox(height: values.smallSizedBoxStandardHeight,),
+                            /*MaterialButton(
+                          elevation: values.buttonElevation,
+                          minWidth: _screenWidth / 1.5,
+                          padding: EdgeInsets.fromLTRB(values.standardPaddingLeft, values.standardPaddingTop, values.standardPaddingRight, values.standardPaddingBottom),
+                          color: Colors.transparent,
+                          textColor: hue.carmesi,
+                          child: Text(
+                            "Ir a página web",
+                            textAlign: TextAlign.center,
+                            style: values.materialButtonBoldTextStyle,
+                          ),
+                          onPressed: (){
+                            LaunchURL(values.urlWebPage);
+                          },
+                        )*/
+                            FlatButton(
+                              textColor: hue.carmesi,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: <Widget>[
+                                  Text("Ir a página web"),
+                                  Icon(
+                                    Icons.launch,
+                                    color: hue.carmesi,
+                                  )
+                                ],
+                              ),
+                              onPressed: (){
+                                LaunchURL(values.urlWebPage);
+                              },
+                            )
+                          ],
+                        ),
+                      ),
+                      SingleChildScrollView(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: <Widget>[
+                            TableCalendar(
+                              startingDayOfWeek: StartingDayOfWeek.monday,
+                              initialCalendarFormat: CalendarFormat.week,
+                              formatAnimation: FormatAnimation.scale,
+                              calendarController: _calendarController,
+                              locale: 'es',
+                              initialSelectedDay: DateTime.now(),
+                              calendarStyle: CalendarStyle(
+                                canEventMarkersOverflow: false,
+                                markersAlignment: Alignment.bottomCenter,
+                                markersColor: hue.carmesi,
+                                markersMaxAmount: 5,
+                                outsideDaysVisible: true,
+                                todayColor: hue.ocean,
+                                weekdayStyle: values.calendarDayTextStyle,
+                                weekendStyle: values.calendarWeekendDayTextStyle,
+                              ),
+                              headerStyle: HeaderStyle(
+                                  centerHeaderTitle: true,
+                                  formatButtonShowsNext: false,
+                                  titleTextStyle: values.contentTextStyle,
+                                  formatButtonVisible: false
+                              ),
+                              onDaySelected: (day, events){
+                                setState(() {
+                                  _eventListView = ListView.builder(
+                                      scrollDirection: Axis.vertical,
+                                      controller: _scrollController,
+                                      shrinkWrap: true,
+                                      itemCount: events.length,
+                                      itemBuilder: (context, index){
+                                        Event ds = events[index];
+
+                                        Icon _eventIcon;
+
+                                        switch(ds.type){
+                                          case 'ceremonia':
+                                            _eventIcon = new Icon(
+                                                Icons.event,
+                                                size: values.toolbarIconSize,
+                                                color: hue.outlines
+                                            );
+                                            break;
+                                          case 'exámen':
+                                            _eventIcon = new Icon(
+                                                Icons.description,
+                                                size: values.toolbarIconSize,
+                                                color: hue.outlines
+                                            );
+                                            break;
+                                          case 'entrega':
+                                            _eventIcon = new Icon(
+                                                Icons.assignment_turned_in,
+                                                size: values.toolbarIconSize,
+                                                color: hue.outlines
+                                            );
+                                            break;
+                                          default:
+                                            _eventIcon = new Icon(
+                                                Icons.event,
+                                                size: values.toolbarIconSize,
+                                                color: hue.outlines
+                                            );
+                                            break;
+                                        }
+
+                                        return new Container(
+                                          color: hue.outlines,
+                                          padding: EdgeInsets.fromLTRB(0.0, 3.0, 0.0, 0.0),
+                                          child: Container(
+                                            color: hue.background,
+                                            child: ListTile(
+                                              title: Container(
+                                                alignment: Alignment.centerLeft,
+                                                child: Text(ds.title),
+                                              ),
+                                              subtitle: Container(
+                                                alignment: Alignment.centerLeft,
+                                                child: Text(ds.type + ' - ' + ds.time + 'hrs.'),
+                                              ),
+                                              trailing: _eventIcon,
+                                              onTap: (){
+                                                if(ds.type == values.eventType['ceremony']){
+                                                  Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                          builder: (context) => EventScreen(event: ds, adminView: false,)
+                                                      )
+                                                  );
+                                                }
+                                              },
+                                            ),
+                                          ),
+                                        );
+                                      }
+                                  );
+                                });
+                              },
+                              events: _calendarEvents,
+                            ),
+                            SizedBox(height: values.mediumSizedBoxStandardHeight,),
+                            _eventListView
+                          ],
+                        ),
+                      )
+                    ],
+                  )
+              );
+            },
           ),
         ),
         onWillPop: () => Future.value(false) //Esta línea es la que previene que una pantalla pueda regresar a la anterior
@@ -1505,6 +1731,86 @@ class _AdminScreen extends State<AdminScreen> with SingleTickerProviderStateMixi
     await dummyEvent.RetrieveEvents(context).then((map){
       setState(() {
         _calendarEvents = map;
+
+        DateFormat df = new DateFormat('yyyy-MM-dd');
+        String _todaysDate = df.format(DateTime.now());
+        if(_calendarEvents.containsKey(DateTime.parse(_todaysDate))){
+          _calendarEvents.forEach((dateTime, eventList){
+            if(dateTime == DateTime.parse(_todaysDate)){
+              _eventListView = ListView.builder(
+                  scrollDirection: Axis.vertical,
+                  controller: _scrollController,
+                  shrinkWrap: true,
+                  itemCount: eventList.length,
+                  itemBuilder: (context, index){
+                    Event ds = eventList[index];
+
+                    Icon _eventIcon;
+
+                    switch(ds.type){
+                      case 'ceremonia':
+                        _eventIcon = new Icon(
+                            Icons.event,
+                            size: values.toolbarIconSize,
+                            color: hue.outlines
+                        );
+                        break;
+                      case 'exámen':
+                        _eventIcon = new Icon(
+                            Icons.description,
+                            size: values.toolbarIconSize,
+                            color: hue.outlines
+                        );
+                        break;
+                      case 'entrega':
+                        _eventIcon = new Icon(
+                            Icons.assignment_turned_in,
+                            size: values.toolbarIconSize,
+                            color: hue.outlines
+                        );
+                        break;
+                      default:
+                        _eventIcon = new Icon(
+                            Icons.event,
+                            size: values.toolbarIconSize,
+                            color: hue.outlines
+                        );
+                        break;
+                    }
+
+                    return new Container(
+                      color: hue.outlines,
+                      padding: EdgeInsets.fromLTRB(0.0, 3.0, 0.0, 0.0),
+                      child: Container(
+                        color: hue.background,
+                        child: ListTile(
+                          title: Container(
+                            alignment: Alignment.centerLeft,
+                            child: Text(ds.title),
+                          ),
+                          subtitle: Container(
+                            alignment: Alignment.centerLeft,
+                            child: Text(ds.type + ' - ' + ds.time + 'hrs.'),
+                          ),
+                          trailing: _eventIcon,
+                          onTap: (){
+                            if(ds.type == values.eventType['ceremony']){
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => EventScreen(event: ds, adminView: false,)
+                                  )
+                              );
+                            }
+                          },
+                        ),
+                      ),
+                    );
+                  }
+              );
+            }
+          });
+        }
       });
     });
 
@@ -1924,7 +2230,7 @@ class _AdminScreen extends State<AdminScreen> with SingleTickerProviderStateMixi
                 ),
                 ListTile(
                   leading: Text(
-                    "Salir",
+                    "Cerrar menú",
                     style: values.contentTextStyle,
                   ),
                   trailing: Icon(

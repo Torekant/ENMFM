@@ -104,29 +104,60 @@ class _SplashScreen extends State<SplashScreen> {
 
     _symmetricPadding =  _screenWidth * values.widthPaddingUnit; //Función que nos permite hacer un padding responsivo a cualquier resolución en ancho
 
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: hue.carmesi,
-      ),
-      backgroundColor: hue.background,
-      body: new Container(
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: _symmetricPadding / 1.5),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              SizedBox(
-                height: values.bigSizedBoxStandardHeight,
-                child: Image.asset(
-                  values.logoColored,
-                  fit: BoxFit.contain,
-                ),
+    return OrientationBuilder(
+      builder: (context, orientation){
+        return orientation == Orientation.portrait
+            ?
+        Scaffold(
+            appBar: AppBar(
+              backgroundColor: hue.carmesi,
+            ),
+            backgroundColor: hue.background,
+            body: new Container(
+              child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: _symmetricPadding / 1.5),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      SizedBox(
+                        height: values.bigSizedBoxStandardHeight,
+                        child: Image.asset(
+                          values.logoColored,
+                          fit: BoxFit.contain,
+                        ),
+                      ),
+                    ],
+                  )
               ),
-            ],
-          )
-        ),
-      )
+            )
+        )
+            :
+        Scaffold(
+            appBar: AppBar(
+              backgroundColor: hue.carmesi,
+            ),
+            backgroundColor: hue.background,
+            body: new Container(
+              child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: _symmetricPadding),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      SizedBox(
+                        height: values.bigSizedBoxStandardHeight,
+                        child: Image.asset(
+                          values.logoColored,
+                          fit: BoxFit.contain,
+                        ),
+                      ),
+                    ],
+                  )
+              ),
+            )
+        );
+      },
     );
   }
 }
