@@ -32,10 +32,8 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreen extends State<HomeScreen>{
 
-  bool readConnectivityFlag = false;
-
-  static Values values = new Values();
-  static Hues hue = new Hues();
+  static Values _values;
+  static Hues _hue;
 
   ScrollController _scrollController;
 
@@ -48,6 +46,8 @@ class _HomeScreen extends State<HomeScreen>{
   void initState() {
     // TODO: implement initState
     super.initState();
+    _values  = new Values();
+    _hue = new Hues();
     _calendarController = CalendarController();
     _scrollController = new ScrollController();
     _calendarEvents = new Map();
@@ -83,38 +83,38 @@ class _HomeScreen extends State<HomeScreen>{
                      case 'ceremonia':
                        _eventIcon = new Icon(
                            Icons.event,
-                           size: values.toolbarIconSize,
-                           color: hue.outlines
+                           size: _values.toolbarIconSize,
+                           color: _hue.outlines
                        );
                        break;
                      case 'exámen':
                        _eventIcon = new Icon(
                            Icons.description,
-                           size: values.toolbarIconSize,
-                           color: hue.outlines
+                           size: _values.toolbarIconSize,
+                           color: _hue.outlines
                        );
                        break;
                      case 'entrega':
                        _eventIcon = new Icon(
                            Icons.assignment_turned_in,
-                           size: values.toolbarIconSize,
-                           color: hue.outlines
+                           size: _values.toolbarIconSize,
+                           color: _hue.outlines
                        );
                        break;
                      default:
                        _eventIcon = new Icon(
                            Icons.event,
-                           size: values.toolbarIconSize,
-                           color: hue.outlines
+                           size: _values.toolbarIconSize,
+                           color: _hue.outlines
                        );
                        break;
                    }
 
                    return new Container(
-                     color: hue.outlines,
+                     color: _hue.outlines,
                      padding: EdgeInsets.fromLTRB(0.0, 3.0, 0.0, 0.0),
                      child: Container(
-                       color: hue.background,
+                       color: _hue.background,
                        child: ListTile(
                          title: Container(
                            alignment: Alignment.centerLeft,
@@ -126,7 +126,7 @@ class _HomeScreen extends State<HomeScreen>{
                          ),
                          trailing: _eventIcon,
                          onTap: (){
-                           if(ds.type == values.eventType['ceremony']){
+                           if(ds.type == _values.eventType['ceremony']){
                              Navigator.push(
                                  context,
                                  MaterialPageRoute(
@@ -153,7 +153,7 @@ class _HomeScreen extends State<HomeScreen>{
     double _screenWidth = MediaQuery.of(context).size.width; //lee el ancho de dispositivo
     double _screenHeight = MediaQuery.of(context).size.height; //lee el largo del dispositivo
 
-    double _responsiveHeight = _screenHeight / values.defaultDivisionForResponsiveHeight; //Función para altura responsiva de cada card en la lista
+    double _responsiveHeight = _screenHeight / _values.defaultDivisionForResponsiveHeight; //Función para altura responsiva de cada card en la lista
 
 
     return WillPopScope( //Este widget nos permite describir el proceso de stack de las pantallas, principalmente el que pueda o no salir del stack de la aplicación
@@ -165,7 +165,7 @@ class _HomeScreen extends State<HomeScreen>{
                   ?
               Scaffold(
                   appBar: AppBar(
-                    backgroundColor: hue.carmesi,
+                    backgroundColor: _hue.carmesi,
                     title: Text("Inicio"),
                     bottom: TabBar(
                       tabs: <Widget>[
@@ -177,7 +177,7 @@ class _HomeScreen extends State<HomeScreen>{
                       IconButton(
                         icon: Icon(
                           Icons.assignment_ind,
-                          size: values.toolbarIconSize,
+                          size: _values.toolbarIconSize,
                         ),
                         tooltip: 'Administrar',
                         onPressed: (){
@@ -190,7 +190,7 @@ class _HomeScreen extends State<HomeScreen>{
                         },
                       ),
                       Container(
-                        width: values.containerWidth,
+                        width: _values.containerWidth,
                       )
                     ],
                   ),
@@ -202,20 +202,20 @@ class _HomeScreen extends State<HomeScreen>{
                         child: Column(
                           children: <Widget>[
                             Image.asset(
-                              values.enmfmBuilding,
+                              _values.enmfmBuilding,
                               fit: BoxFit.cover,
                               height: _responsiveHeight / 1.3,
                             ),
-                            SizedBox(height: values.smallSizedBoxStandardHeight,),
+                            SizedBox(height: _values.smallSizedBoxStandardHeight,),
                             Container(
                               width: _screenWidth / 1.2,
                               child: Text(
-                                values.welcomeText,
-                                style: values.plainTextStyle,
+                                _values.welcomeText,
+                                style: _values.plainTextStyle,
                                 textAlign: TextAlign.center,
                               ),
                             ),
-                            SizedBox(height: values.smallSizedBoxStandardHeight,),
+                            SizedBox(height: _values.smallSizedBoxStandardHeight,),
                             /*MaterialButton(
                           elevation: values.buttonElevation,
                           minWidth: _screenWidth / 1.5,
@@ -232,19 +232,19 @@ class _HomeScreen extends State<HomeScreen>{
                           },
                         )*/
                             FlatButton(
-                              textColor: hue.carmesi,
+                              textColor: _hue.carmesi,
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: <Widget>[
                                   Text("Ir a página web"),
                                   Icon(
                                     Icons.launch,
-                                    color: hue.carmesi,
+                                    color: _hue.carmesi,
                                   )
                                 ],
                               ),
                               onPressed: (){
-                                LaunchURL(values.urlWebPage);
+                                LaunchURL(_values.urlWebPage);
                               },
                             )
                           ],
@@ -262,17 +262,17 @@ class _HomeScreen extends State<HomeScreen>{
                             calendarStyle: CalendarStyle(
                               canEventMarkersOverflow: false,
                               markersAlignment: Alignment.bottomCenter,
-                              markersColor: hue.carmesi,
+                              markersColor: _hue.carmesi,
                               markersMaxAmount: 5,
                               outsideDaysVisible: true,
-                              todayColor: hue.ocean,
-                              weekdayStyle: values.calendarDayTextStyle,
-                              weekendStyle: values.calendarWeekendDayTextStyle,
+                              todayColor: _hue.ocean,
+                              weekdayStyle: _values.calendarDayTextStyle,
+                              weekendStyle: _values.calendarWeekendDayTextStyle,
                             ),
                             headerStyle: HeaderStyle(
                                 centerHeaderTitle: true,
                                 formatButtonShowsNext: false,
-                                titleTextStyle: values.contentTextStyle,
+                                titleTextStyle: _values.contentTextStyle,
                                 formatButtonVisible: false
                             ),
                             onDaySelected: (day, events){
@@ -291,38 +291,38 @@ class _HomeScreen extends State<HomeScreen>{
                                         case 'ceremonia':
                                           _eventIcon = new Icon(
                                               Icons.event,
-                                              size: values.toolbarIconSize,
-                                              color: hue.outlines
+                                              size: _values.toolbarIconSize,
+                                              color: _hue.outlines
                                           );
                                           break;
                                         case 'exámen':
                                           _eventIcon = new Icon(
                                               Icons.description,
-                                              size: values.toolbarIconSize,
-                                              color: hue.outlines
+                                              size: _values.toolbarIconSize,
+                                              color: _hue.outlines
                                           );
                                           break;
                                         case 'entrega':
                                           _eventIcon = new Icon(
                                               Icons.assignment_turned_in,
-                                              size: values.toolbarIconSize,
-                                              color: hue.outlines
+                                              size: _values.toolbarIconSize,
+                                              color: _hue.outlines
                                           );
                                           break;
                                         default:
                                           _eventIcon = new Icon(
                                               Icons.event,
-                                              size: values.toolbarIconSize,
-                                              color: hue.outlines
+                                              size: _values.toolbarIconSize,
+                                              color: _hue.outlines
                                           );
                                           break;
                                       }
 
                                       return new Container(
-                                        color: hue.outlines,
+                                        color: _hue.outlines,
                                         padding: EdgeInsets.fromLTRB(0.0, 3.0, 0.0, 0.0),
                                         child: Container(
-                                          color: hue.background,
+                                          color: _hue.background,
                                           child: ListTile(
                                             title: Container(
                                               alignment: Alignment.centerLeft,
@@ -334,7 +334,7 @@ class _HomeScreen extends State<HomeScreen>{
                                             ),
                                             trailing: _eventIcon,
                                             onTap: (){
-                                              if(ds.type == values.eventType['ceremony']){
+                                              if(ds.type == _values.eventType['ceremony']){
                                                 Navigator.push(
                                                     context,
                                                     MaterialPageRoute(
@@ -352,7 +352,7 @@ class _HomeScreen extends State<HomeScreen>{
                             },
                             events: _calendarEvents,
                           ),
-                          SizedBox(height: values.mediumSizedBoxStandardHeight,),
+                          SizedBox(height: _values.mediumSizedBoxStandardHeight,),
                           Expanded(child: _eventListView,)
                         ],
                       )
@@ -362,7 +362,7 @@ class _HomeScreen extends State<HomeScreen>{
                   :
               Scaffold(
                   appBar: AppBar(
-                    backgroundColor: hue.carmesi,
+                    backgroundColor: _hue.carmesi,
                     title: Text("Inicio"),
                     bottom: TabBar(
                       tabs: <Widget>[
@@ -374,7 +374,7 @@ class _HomeScreen extends State<HomeScreen>{
                       IconButton(
                         icon: Icon(
                           Icons.assignment_ind,
-                          size: values.toolbarIconSize,
+                          size: _values.toolbarIconSize,
                         ),
                         tooltip: 'Administrar',
                         onPressed: (){
@@ -387,7 +387,7 @@ class _HomeScreen extends State<HomeScreen>{
                         },
                       ),
                       Container(
-                        width: values.containerWidth,
+                        width: _values.containerWidth,
                       )
                     ],
                   ),
@@ -400,22 +400,22 @@ class _HomeScreen extends State<HomeScreen>{
                           children: <Widget>[
                             Parallax.inside(
                               child: Image.asset(
-                                values.enmfmBuilding,
+                                _values.enmfmBuilding,
                                 fit: BoxFit.cover,
                                 height: _responsiveHeight / 1.1,
                                 width: _screenWidth,
                               ),
                               mainAxisExtent: _responsiveHeight / 1.3),
-                            SizedBox(height: values.smallSizedBoxStandardHeight,),
+                            SizedBox(height: _values.smallSizedBoxStandardHeight,),
                             Container(
                               width: _screenWidth / 1.2,
                               child: Text(
-                                values.welcomeText,
-                                style: values.plainTextStyle,
+                                _values.welcomeText,
+                                style: _values.plainTextStyle,
                                 textAlign: TextAlign.center,
                               ),
                             ),
-                            SizedBox(height: values.smallSizedBoxStandardHeight,),
+                            SizedBox(height: _values.smallSizedBoxStandardHeight,),
                             /*MaterialButton(
                           elevation: values.buttonElevation,
                           minWidth: _screenWidth / 1.5,
@@ -432,19 +432,19 @@ class _HomeScreen extends State<HomeScreen>{
                           },
                         )*/
                             FlatButton(
-                              textColor: hue.carmesi,
+                              textColor: _hue.carmesi,
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: <Widget>[
                                   Text("Ir a página web"),
                                   Icon(
                                     Icons.launch,
-                                    color: hue.carmesi,
+                                    color: _hue.carmesi,
                                   )
                                 ],
                               ),
                               onPressed: (){
-                                LaunchURL(values.urlWebPage);
+                                LaunchURL(_values.urlWebPage);
                               },
                             )
                           ],
@@ -464,17 +464,17 @@ class _HomeScreen extends State<HomeScreen>{
                               calendarStyle: CalendarStyle(
                                 canEventMarkersOverflow: false,
                                 markersAlignment: Alignment.bottomCenter,
-                                markersColor: hue.carmesi,
+                                markersColor: _hue.carmesi,
                                 markersMaxAmount: 5,
                                 outsideDaysVisible: true,
-                                todayColor: hue.ocean,
-                                weekdayStyle: values.calendarDayTextStyle,
-                                weekendStyle: values.calendarWeekendDayTextStyle,
+                                todayColor: _hue.ocean,
+                                weekdayStyle: _values.calendarDayTextStyle,
+                                weekendStyle: _values.calendarWeekendDayTextStyle,
                               ),
                               headerStyle: HeaderStyle(
                                   centerHeaderTitle: true,
                                   formatButtonShowsNext: false,
-                                  titleTextStyle: values.contentTextStyle,
+                                  titleTextStyle: _values.contentTextStyle,
                                   formatButtonVisible: false
                               ),
                               onDaySelected: (day, events){
@@ -493,38 +493,38 @@ class _HomeScreen extends State<HomeScreen>{
                                           case 'ceremonia':
                                             _eventIcon = new Icon(
                                                 Icons.event,
-                                                size: values.toolbarIconSize,
-                                                color: hue.outlines
+                                                size: _values.toolbarIconSize,
+                                                color: _hue.outlines
                                             );
                                             break;
                                           case 'exámen':
                                             _eventIcon = new Icon(
                                                 Icons.description,
-                                                size: values.toolbarIconSize,
-                                                color: hue.outlines
+                                                size: _values.toolbarIconSize,
+                                                color: _hue.outlines
                                             );
                                             break;
                                           case 'entrega':
                                             _eventIcon = new Icon(
                                                 Icons.assignment_turned_in,
-                                                size: values.toolbarIconSize,
-                                                color: hue.outlines
+                                                size: _values.toolbarIconSize,
+                                                color: _hue.outlines
                                             );
                                             break;
                                           default:
                                             _eventIcon = new Icon(
                                                 Icons.event,
-                                                size: values.toolbarIconSize,
-                                                color: hue.outlines
+                                                size: _values.toolbarIconSize,
+                                                color: _hue.outlines
                                             );
                                             break;
                                         }
 
                                         return new Container(
-                                          color: hue.outlines,
+                                          color: _hue.outlines,
                                           padding: EdgeInsets.fromLTRB(0.0, 3.0, 0.0, 0.0),
                                           child: Container(
-                                            color: hue.background,
+                                            color: _hue.background,
                                             child: ListTile(
                                               title: Container(
                                                 alignment: Alignment.centerLeft,
@@ -536,7 +536,7 @@ class _HomeScreen extends State<HomeScreen>{
                                               ),
                                               trailing: _eventIcon,
                                               onTap: (){
-                                                if(ds.type == values.eventType['ceremony']){
+                                                if(ds.type == _values.eventType['ceremony']){
                                                   Navigator.push(
                                                       context,
                                                       MaterialPageRoute(
@@ -554,7 +554,7 @@ class _HomeScreen extends State<HomeScreen>{
                               },
                               events: _calendarEvents,
                             ),
-                            SizedBox(height: values.mediumSizedBoxStandardHeight,),
+                            SizedBox(height: _values.mediumSizedBoxStandardHeight,),
                             _eventListView
                           ],
                         ),
@@ -600,23 +600,28 @@ class EventScreen extends StatefulWidget {
 
 class _EventScreen extends State<EventScreen>{
 
-  static Values values = new Values();
-  static Hues hue = new Hues();
+  static Values _values;
+  static Hues _hue;
 
-  ScrollController _scrollController = new ScrollController();
-
-  String spanishFormattedText = " ", dateNewEvent, timeNewEvent;
-
-  Widget floatingButton, imageWidget;
-  Offset _position = Offset(20.0, 20.0);
-
-  var imageNewEvent, passedDependencies = false;
-
-  final _formKey = GlobalKey<FormState>();
+  ScrollController _scrollController;
+  String _spanishFormattedText;
+  Widget _floatingButton, _imageWidget;
+  Offset _position;
+  var _imageNewEvent, _passedDependencies;
+  var _formKey;
+  Widget _widgetPortraitColumn, _widgetLandscapeColumn;
 
   @override
   void initState() {
     super.initState();
+    _values = new Values();
+    _hue = new Hues();
+    _scrollController = new ScrollController();
+    _spanishFormattedText = " ";
+    _position = Offset(20.0, 20.0);
+    _passedDependencies = false;
+    _formKey = GlobalKey<FormState>();
+
     if(widget.event.id == null){
       widget.event.title = "";
       widget.event.place = "";
@@ -625,7 +630,7 @@ class _EventScreen extends State<EventScreen>{
       widget.event.time = "00:00";
       DateFormat df = new DateFormat('yyyy-MM-dd');
       widget.event.date = df.format(DateTime.now());
-      spanishFormattedText = BuildEventDayText(df.format(widget.newEventDateTime));
+      _spanishFormattedText = BuildEventDayText(df.format(widget.newEventDateTime));
     }
   }
 
@@ -636,18 +641,18 @@ class _EventScreen extends State<EventScreen>{
     double _screenWidth = MediaQuery.of(context).size.width; //lee el ancho de dispositivo
     double _screenHeight = MediaQuery.of(context).size.height; //lee el largo del dispositivo
 
-    _position = Offset(_screenWidth / 1.2, _screenHeight / 1.1);
+    _position = Offset(_screenWidth / 1.2, _screenHeight / 1.2);
 
     if(widget.event.image == null){
 
-      if(passedDependencies == false){
+      if(_passedDependencies == false){
         await getImageFileFromAssets("place.jpg").then((file){
           setState(() {
-            imageNewEvent = file;
+            _imageNewEvent = file;
           });
         });
 
-        passedDependencies = true;
+        _passedDependencies = true;
       }
     }
   }
@@ -660,18 +665,14 @@ class _EventScreen extends State<EventScreen>{
     //double _symmetricPadding; //padding lateral de la pantalla
 
     //_symmetricPadding =  (_screenWidth * values.widthPaddingUnit) / 10; //Función que nos permite hacer un padding responsivo a cualquier resolución en ancho
-    double _responsiveheight = _screenHeight / 2.2; //Función para altura responsiva de cada card en la lista
+    double _responsiveHeight = _screenHeight / _values.defaultDivisionForResponsiveHeight; //Función para altura responsiva de cada card en la lista
 
     // TODO: implement build
-    double _symmetricPadding = 30.0; //padding lateral de la pantalla
-
-    _symmetricPadding =  (_screenWidth * values.widthPaddingUnit) / 10; //Función que nos permite hacer un padding responsivo a cualquier resolución en ancho
+    double _symmetricPadding = (_screenWidth * _values.widthPaddingUnit) / 10; //Función que nos permite hacer un padding responsivo a cualquier resolución en ancho
 
     if(widget.event.id != null){
-      spanishFormattedText = BuildEventDayText(widget.event.date);
+      _spanishFormattedText = BuildEventDayText(widget.event.date);
     }
-
-    Widget widgetColumn;
 
     if(widget.adminView == true){
       if(widget.event.id != null){
@@ -681,32 +682,32 @@ class _EventScreen extends State<EventScreen>{
         TextEditingController _descriptionTextController = new TextEditingController(text: widget.event.description);
 
 
-        widgetColumn = Column(
+        _widgetPortraitColumn = Column(
           children: <Widget>[
             Container(
-                alignment: values.centerAlignment,
+                alignment: _values.centerAlignment,
                 child: Stack(
                   children: <Widget>[
                     Parallax.inside(
                         child: CachedNetworkImage(
                           imageUrl: widget.event.image,
-                          placeholder: (context, url) => Image.asset(values.loadingAnimation, fit: BoxFit.fill, width: double.maxFinite, height: _responsiveheight,),
+                          placeholder: (context, url) => Image.asset(_values.loadingAnimation, fit: BoxFit.fill, width: double.maxFinite, height: _responsiveHeight,),
                           errorWidget: (context,url,error) => new Icon(Icons.error),
                           width: double.maxFinite,
-                          height: _responsiveheight * 1.1,
+                          height: _responsiveHeight * 1.1,
                           fit: BoxFit.cover,
                         ),
-                        mainAxisExtent: _responsiveheight / 1.1
+                        mainAxisExtent: _responsiveHeight / 1.1
                     ),
                     Container(
-                      color: hue.background,
+                      color: _hue.background,
                       child: IconButton(
                           icon: Icon(
                             Icons.cached,
-                            color: hue.outlines,
+                            color: _hue.outlines,
                           ),
-                          iconSize: 30.0,
-                          tooltip: values.tooltipChangeEventImage,
+                          iconSize: _responsiveHeight / 11,
+                          tooltip: _values.tooltipChangeEventImage,
                           onPressed: (){
                             Future<String> finalURL = PickImage(widget.event, context);
                             finalURL.then((val){
@@ -720,23 +721,23 @@ class _EventScreen extends State<EventScreen>{
                   ],
                 )
             ),
-            SizedBox(height: values.smallSizedBoxStandardHeight,),
+            SizedBox(height: _responsiveHeight / 22,),
             Container(
               child: TextField(
                 controller: _titleTextController,
                 decoration: new InputDecoration(
                     labelText: "Título",
-                    labelStyle: values.textFieldTextStyle,
+                    labelStyle: _values.textFieldTextStyle,
                     fillColor: Colors.white,
                     filled: true,
                     border: new OutlineInputBorder(
-                      borderRadius: new BorderRadius.circular(values.standardBorderRadius),
+                      borderRadius: new BorderRadius.circular(_values.standardBorderRadius),
                       borderSide: new BorderSide(
                       ),
                     ),
                     focusedBorder: new OutlineInputBorder(
-                        borderRadius: new BorderRadius.circular(values.standardBorderRadius),
-                        borderSide: values.textFieldFocusBorderSide
+                        borderRadius: new BorderRadius.circular(_values.standardBorderRadius),
+                        borderSide: _values.textFieldFocusBorderSide
                     )
                   //fillColor: Colors.green
                 ),
@@ -748,31 +749,31 @@ class _EventScreen extends State<EventScreen>{
                   });
                   FocusScope.of(context).requestFocus(FocusNode());
                 },
-                style: values.textFieldTextStyle,
+                style: _values.textFieldTextStyle,
               ),
             ),
-            SizedBox(height: values.smallSizedBoxStandardHeight,),
+            SizedBox(height: _responsiveHeight / 22,),
             Container(
               alignment: Alignment.centerLeft,
               child: TextField(
                 controller: _placeTextController,
                 decoration: new InputDecoration(
                     labelText: "Lugar",
-                    labelStyle: values.textFieldTextStyle,
+                    labelStyle: _values.textFieldTextStyle,
                     fillColor: Colors.white,
                     filled: true,
                     border: new OutlineInputBorder(
-                      borderRadius: new BorderRadius.circular(values.standardBorderRadius),
+                      borderRadius: new BorderRadius.circular(_values.standardBorderRadius),
                       borderSide: new BorderSide(
                       ),
                     ),
                     focusedBorder: new OutlineInputBorder(
-                        borderRadius: new BorderRadius.circular(values.standardBorderRadius),
-                        borderSide: values.textFieldFocusBorderSide
+                        borderRadius: new BorderRadius.circular(_values.standardBorderRadius),
+                        borderSide: _values.textFieldFocusBorderSide
                     )
                   //fillColor: Colors.green
                 ),
-                style: values.textFieldTextStyle,
+                style: _values.textFieldTextStyle,
                 onEditingComplete: (){
                   widget.event.UpdateEvent(_placeTextController.text, 'place').then((updatedPlace){
                     setState(() {
@@ -783,22 +784,22 @@ class _EventScreen extends State<EventScreen>{
                 },
               ),
             ),
-            SizedBox(height: values.smallSizedBoxStandardHeight,),
+            SizedBox(height: _responsiveHeight / 22,),
             Container(
                 alignment: Alignment.centerLeft,
                 child: new Row(
                   children: <Widget>[
                     Text(
-                      "Día: " + spanishFormattedText,
-                      style: values.subtitleTextStyle,
+                      "Día: " + _spanishFormattedText,
+                      style: _values.subtitleTextStyle,
                     ),
                     IconButton(
                       tooltip: "Cambiar fecha",
                       icon: Icon(
                         Icons.calendar_today,
-                        color: hue.outlines,
+                        color: _hue.outlines,
                       ),
-                      color: hue.outlines,
+                      color: _hue.outlines,
                       onPressed: (){
                         DatePicker.showDatePicker(context,
                             showTitleActions: true,
@@ -823,19 +824,19 @@ class _EventScreen extends State<EventScreen>{
                   ],
                 )
             ),
-            SizedBox(height: values.smallSizedBoxStandardHeight,),
+            SizedBox(height: _responsiveHeight / 22,),
             Container(
               alignment: Alignment.centerLeft,
               child: Row(
                 children: <Widget>[
                   Text(
                     "Hora: " + widget.event.time,
-                    style: values.subtitleTextStyle,
+                    style: _values.subtitleTextStyle,
                   ),
                   IconButton(
                     tooltip: "Cambiar hora",
                     icon: Icon(Icons.access_time),
-                    color: hue.outlines,
+                    color: _hue.outlines,
                     onPressed: (){
                       DateTime now = DateTime.now();
 
@@ -860,28 +861,28 @@ class _EventScreen extends State<EventScreen>{
                 ],
               ),
             ),
-            SizedBox(height: values.smallSizedBoxStandardHeight,),
+            SizedBox(height: _responsiveHeight / 22,),
             Container(
-              alignment: values.centerAlignment,
+              alignment: _values.centerAlignment,
               child: TextField(
                 controller: _hostTextController,
                 decoration: new InputDecoration(
                     labelText: "Maestro de ceremonias",
-                    labelStyle: values.textFieldTextStyle,
+                    labelStyle: _values.textFieldTextStyle,
                     fillColor: Colors.white,
                     filled: true,
                     border: new OutlineInputBorder(
-                      borderRadius: new BorderRadius.circular(values.standardBorderRadius),
+                      borderRadius: new BorderRadius.circular(_values.standardBorderRadius),
                       borderSide: new BorderSide(
                       ),
                     ),
                     focusedBorder: new OutlineInputBorder(
-                        borderRadius: new BorderRadius.circular(values.standardBorderRadius),
-                        borderSide: values.textFieldFocusBorderSide
+                        borderRadius: new BorderRadius.circular(_values.standardBorderRadius),
+                        borderSide: _values.textFieldFocusBorderSide
                     )
                   //fillColor: Colors.green
                 ),
-                style: values.textFieldTextStyle,
+                style: _values.textFieldTextStyle,
                 onEditingComplete: (){
                   widget.event.UpdateEvent(_hostTextController.text, 'host').then((updatedHost){
                     setState(() {
@@ -892,9 +893,9 @@ class _EventScreen extends State<EventScreen>{
                 },
               ),
             ),
-            SizedBox(height: values.smallSizedBoxStandardHeight,),
+            SizedBox(height: _responsiveHeight / 22,),
             Container(
-              alignment: values.centerAlignment,
+              alignment: _values.centerAlignment,
               child: TextField(
                 controller: _descriptionTextController,
                 maxLines: null,
@@ -902,21 +903,269 @@ class _EventScreen extends State<EventScreen>{
                 textInputAction: TextInputAction.done,
                 decoration: new InputDecoration(
                     labelText: "Descripción",
-                    labelStyle: values.textFieldTextStyle,
+                    labelStyle: _values.textFieldTextStyle,
                     fillColor: Colors.white,
                     filled: true,
                     border: new OutlineInputBorder(
-                      borderRadius: new BorderRadius.circular(values.standardBorderRadius),
+                      borderRadius: new BorderRadius.circular(_values.standardBorderRadius),
                       borderSide: new BorderSide(
                       ),
                     ),
                     focusedBorder: new OutlineInputBorder(
-                        borderRadius: new BorderRadius.circular(values.standardBorderRadius),
-                        borderSide: values.textFieldFocusBorderSide
+                        borderRadius: new BorderRadius.circular(_values.standardBorderRadius),
+                        borderSide: _values.textFieldFocusBorderSide
                     )
                   //fillColor: Colors.green
                 ),
-                style: values.textFieldTextStyle,
+                style: _values.textFieldTextStyle,
+                onEditingComplete: (){
+                  widget.event.UpdateEvent(_descriptionTextController.text, 'description').then((updatedDescription){
+                    setState(() {
+                      widget.event.description = updatedDescription;
+                    });
+                  });
+                  FocusScope.of(context).requestFocus(FocusNode());
+                },
+              ),
+            )
+          ],
+        );
+        _widgetLandscapeColumn = Column(
+          children: <Widget>[
+            Container(
+                alignment: _values.centerAlignment,
+                child: Stack(
+                  children: <Widget>[
+                    Parallax.inside(
+                        child: CachedNetworkImage(
+                          imageUrl: widget.event.image,
+                          placeholder: (context, url) => Image.asset(_values.loadingAnimation, fit: BoxFit.fill, width: double.maxFinite, height: _responsiveHeight,),
+                          errorWidget: (context,url,error) => new Icon(Icons.error),
+                          width: double.maxFinite,
+                          height: _responsiveHeight * 1.1,
+                          fit: BoxFit.cover,
+                        ),
+                        mainAxisExtent: _responsiveHeight / 1.1
+                    ),
+                    Container(
+                      color: _hue.background,
+                      child: IconButton(
+                          icon: Icon(
+                            Icons.cached,
+                            color: _hue.outlines,
+                          ),
+                          iconSize: _responsiveHeight / 5,
+                          tooltip: _values.tooltipChangeEventImage,
+                          onPressed: (){
+                            Future<String> finalURL = PickImage(widget.event, context);
+                            finalURL.then((val){
+                              setState(() {
+                                this.widget.event.image = val;
+                              });
+                            });
+                          }
+                      ),
+                    )
+                  ],
+                )
+            ),
+            SizedBox(height: _responsiveHeight / 11,),
+            Container(
+              child: TextField(
+                controller: _titleTextController,
+                decoration: new InputDecoration(
+                    labelText: "Título",
+                    labelStyle: _values.textFieldTextStyle,
+                    fillColor: Colors.white,
+                    filled: true,
+                    border: new OutlineInputBorder(
+                      borderRadius: new BorderRadius.circular(_values.standardBorderRadius),
+                      borderSide: new BorderSide(
+                      ),
+                    ),
+                    focusedBorder: new OutlineInputBorder(
+                        borderRadius: new BorderRadius.circular(_values.standardBorderRadius),
+                        borderSide: _values.textFieldFocusBorderSide
+                    )
+                  //fillColor: Colors.green
+                ),
+                onEditingComplete: (){
+                  widget.event.UpdateEvent(_titleTextController.text, 'title').then((updatedTitle){
+                    setState(() {
+                      widget.event.title = updatedTitle;
+                    });
+                  });
+                  FocusScope.of(context).requestFocus(FocusNode());
+                },
+                style: _values.textFieldTextStyle,
+              ),
+            ),
+            SizedBox(height: _responsiveHeight / 11,),
+            Container(
+              alignment: Alignment.centerLeft,
+              child: TextField(
+                controller: _placeTextController,
+                decoration: new InputDecoration(
+                    labelText: "Lugar",
+                    labelStyle: _values.textFieldTextStyle,
+                    fillColor: Colors.white,
+                    filled: true,
+                    border: new OutlineInputBorder(
+                      borderRadius: new BorderRadius.circular(_values.standardBorderRadius),
+                      borderSide: new BorderSide(
+                      ),
+                    ),
+                    focusedBorder: new OutlineInputBorder(
+                        borderRadius: new BorderRadius.circular(_values.standardBorderRadius),
+                        borderSide: _values.textFieldFocusBorderSide
+                    )
+                  //fillColor: Colors.green
+                ),
+                style: _values.textFieldTextStyle,
+                onEditingComplete: (){
+                  widget.event.UpdateEvent(_placeTextController.text, 'place').then((updatedPlace){
+                    setState(() {
+                      widget.event.place = updatedPlace;
+                    });
+                  });
+                  FocusScope.of(context).requestFocus(FocusNode());
+                },
+              ),
+            ),
+            SizedBox(height: _responsiveHeight / 11,),
+            Container(
+                alignment: Alignment.centerLeft,
+                child: new Row(
+                  children: <Widget>[
+                    Text(
+                      "Día: " + _spanishFormattedText,
+                      style: _values.subtitleTextStyle,
+                    ),
+                    IconButton(
+                      tooltip: "Cambiar fecha",
+                      icon: Icon(
+                        Icons.calendar_today,
+                        color: _hue.outlines,
+                      ),
+                      color: _hue.outlines,
+                      onPressed: (){
+                        DatePicker.showDatePicker(context,
+                            showTitleActions: true,
+                            minTime: DateTime.now(),
+                            maxTime: DateTime.now().add(Duration(days: 500)),
+                            onChanged: (date) {
+
+                            },
+                            onConfirm: (date) {
+                              String format = date.toString().substring(0, 10);
+                              widget.event.UpdateEvent(format, 'date').then((updatedDate){
+                                setState(() {
+                                  widget.event.date = updatedDate;
+                                });
+                              });
+                            },
+                            currentTime: DateTime.now(),
+                            locale: LocaleType.es
+                        );
+                      },
+                    )
+                  ],
+                )
+            ),
+            SizedBox(height: _responsiveHeight / 11,),
+            Container(
+              alignment: Alignment.centerLeft,
+              child: Row(
+                children: <Widget>[
+                  Text(
+                    "Hora: " + widget.event.time,
+                    style: _values.subtitleTextStyle,
+                  ),
+                  IconButton(
+                    tooltip: "Cambiar hora",
+                    icon: Icon(Icons.access_time),
+                    color: _hue.outlines,
+                    onPressed: (){
+                      DateTime now = DateTime.now();
+
+                      DatePicker.showTimePicker(context,
+                        showTitleActions: true,
+                        currentTime: DateTime(now.hour, now.minute),
+                        onChanged: (time){
+
+                        },
+                        onConfirm: (time){
+                          String newTime = BuildEventTimeText(time.toString());
+                          widget.event.UpdateEvent(newTime, 'time').then((updatedTime){
+                            setState(() {
+                              widget.event.time = updatedTime;
+                            });
+                          });
+                        },
+                        locale: LocaleType.es,
+                      );
+                    },
+                  )
+                ],
+              ),
+            ),
+            SizedBox(height: _responsiveHeight / 11,),
+            Container(
+              alignment: _values.centerAlignment,
+              child: TextField(
+                controller: _hostTextController,
+                decoration: new InputDecoration(
+                    labelText: "Maestro de ceremonias",
+                    labelStyle: _values.textFieldTextStyle,
+                    fillColor: Colors.white,
+                    filled: true,
+                    border: new OutlineInputBorder(
+                      borderRadius: new BorderRadius.circular(_values.standardBorderRadius),
+                      borderSide: new BorderSide(
+                      ),
+                    ),
+                    focusedBorder: new OutlineInputBorder(
+                        borderRadius: new BorderRadius.circular(_values.standardBorderRadius),
+                        borderSide: _values.textFieldFocusBorderSide
+                    )
+                  //fillColor: Colors.green
+                ),
+                style: _values.textFieldTextStyle,
+                onEditingComplete: (){
+                  widget.event.UpdateEvent(_hostTextController.text, 'host').then((updatedHost){
+                    setState(() {
+                      widget.event.host = updatedHost;
+                    });
+                  });
+                  FocusScope.of(context).requestFocus(FocusNode());
+                },
+              ),
+            ),
+            SizedBox(height: _responsiveHeight / 11,),
+            Container(
+              alignment: _values.centerAlignment,
+              child: TextField(
+                controller: _descriptionTextController,
+                maxLines: null,
+                keyboardType: TextInputType.text,
+                textInputAction: TextInputAction.done,
+                decoration: new InputDecoration(
+                    labelText: "Descripción",
+                    labelStyle: _values.textFieldTextStyle,
+                    fillColor: Colors.white,
+                    filled: true,
+                    border: new OutlineInputBorder(
+                      borderRadius: new BorderRadius.circular(_values.standardBorderRadius),
+                      borderSide: new BorderSide(
+                      ),
+                    ),
+                    focusedBorder: new OutlineInputBorder(
+                        borderRadius: new BorderRadius.circular(_values.standardBorderRadius),
+                        borderSide: _values.textFieldFocusBorderSide
+                    )
+                  //fillColor: Colors.green
+                ),
+                style: _values.textFieldTextStyle,
                 onEditingComplete: (){
                   widget.event.UpdateEvent(_descriptionTextController.text, 'description').then((updatedDescription){
                     setState(() {
@@ -930,9 +1179,9 @@ class _EventScreen extends State<EventScreen>{
           ],
         );
 
-        floatingButton = new FloatingActionButton(
+        _floatingButton = new FloatingActionButton(
           tooltip: "Eliminar evento",
-          backgroundColor: hue.carmesi,
+          backgroundColor: _hue.carmesi,
           child: Icon(Icons.delete),
           onPressed: (){
             showDialog(
@@ -965,47 +1214,47 @@ class _EventScreen extends State<EventScreen>{
         TextEditingController _hostTextController = new TextEditingController(text: widget.event.host);
         TextEditingController _descriptionTextController = new TextEditingController(text: widget.event.description);
 
-        if(imageNewEvent == null){
-          imageWidget = new Image.asset(
-            values.defaultPlace,
+        if(_imageNewEvent == null){
+          _imageWidget = new Image.asset(
+            _values.defaultPlace,
             fit: BoxFit.cover,
             width: double.maxFinite,
-            height: _responsiveheight * 1.1,
+            height: _responsiveHeight * 1.1,
           );
         }else{
-          imageWidget = new Image.file(
-            imageNewEvent,
+          _imageWidget = new Image.file(
+            _imageNewEvent,
             fit: BoxFit.cover,
             width: double.maxFinite,
-            height: _responsiveheight * 1.1,
+            height: _responsiveHeight * 1.1,
           );
         }
 
-        widgetColumn = Form(
+        _widgetPortraitColumn = Form(
           key: _formKey,
           child: Column(
             children: <Widget>[
               Container(
-                  alignment: values.centerAlignment,
+                  alignment: _values.centerAlignment,
                   child: Stack(
                     children: <Widget>[
                       Parallax.inside(
-                          child: imageWidget,
-                          mainAxisExtent: _responsiveheight / 1.1
+                          child: _imageWidget,
+                          mainAxisExtent: _responsiveHeight / 1.1
                       ),
                       Container(
-                        color: hue.background,
+                        color: _hue.background,
                         child: IconButton(
                             icon: Icon(
                               Icons.cached,
-                              color: hue.outlines,
+                              color: _hue.outlines,
                             ),
-                            iconSize: 30.0,
-                            tooltip: values.tooltipChangeEventImage,
+                            iconSize: _responsiveHeight / 11,
+                            tooltip: _values.tooltipChangeEventImage,
                             onPressed: ()async{
                               var image = await ImagePicker.pickImage(source: ImageSource.gallery);
                               setState((){
-                                imageNewEvent = image;
+                                _imageNewEvent = image;
                               });
                             }
                         ),
@@ -1013,23 +1262,23 @@ class _EventScreen extends State<EventScreen>{
                     ],
                   )
               ),
-              SizedBox(height: values.smallSizedBoxStandardHeight,),
+              SizedBox(height: _responsiveHeight / 22,),
               Container(
                 child: TextFormField(
                   controller: _titleTextController,
                   decoration: new InputDecoration(
                       labelText: "Título",
-                      labelStyle: values.textFieldTextStyle,
+                      labelStyle: _values.textFieldTextStyle,
                       fillColor: Colors.white,
                       filled: true,
                       border: new OutlineInputBorder(
-                        borderRadius: new BorderRadius.circular(values.standardBorderRadius),
+                        borderRadius: new BorderRadius.circular(_values.standardBorderRadius),
                         borderSide: new BorderSide(
                         ),
                       ),
                       focusedBorder: new OutlineInputBorder(
-                          borderRadius: new BorderRadius.circular(values.standardBorderRadius),
-                          borderSide: values.textFieldFocusBorderSide
+                          borderRadius: new BorderRadius.circular(_values.standardBorderRadius),
+                          borderSide: _values.textFieldFocusBorderSide
                       )
                   ),
                   validator: (val) {
@@ -1049,27 +1298,27 @@ class _EventScreen extends State<EventScreen>{
                     _titleTextController.selection = TextSelection.collapsed(offset: _titleTextController.text.length);
                     widget.event.title = _titleTextController.text;
                   },
-                  style: values.textFieldTextStyle,
+                  style: _values.textFieldTextStyle,
                 ),
               ),
-              SizedBox(height: values.smallSizedBoxStandardHeight,),
+              SizedBox(height: _responsiveHeight / 22,),
               Container(
                 alignment: Alignment.centerLeft,
                 child: TextFormField(
                   controller: _placeTextController,
                   decoration: new InputDecoration(
                       labelText: "Lugar",
-                      labelStyle: values.textFieldTextStyle,
+                      labelStyle: _values.textFieldTextStyle,
                       fillColor: Colors.white,
                       filled: true,
                       border: new OutlineInputBorder(
-                        borderRadius: new BorderRadius.circular(values.standardBorderRadius),
+                        borderRadius: new BorderRadius.circular(_values.standardBorderRadius),
                         borderSide: new BorderSide(
                         ),
                       ),
                       focusedBorder: new OutlineInputBorder(
-                          borderRadius: new BorderRadius.circular(values.standardBorderRadius),
-                          borderSide: values.textFieldFocusBorderSide
+                          borderRadius: new BorderRadius.circular(_values.standardBorderRadius),
+                          borderSide: _values.textFieldFocusBorderSide
                       )
                   ),
                   validator: (val) {
@@ -1089,25 +1338,25 @@ class _EventScreen extends State<EventScreen>{
                     _placeTextController.selection = TextSelection.collapsed(offset: _placeTextController.text.length);
                     widget.event.place = _placeTextController.text;
                   },
-                  style: values.textFieldTextStyle,
+                  style: _values.textFieldTextStyle,
                 ),
               ),
-              SizedBox(height: values.smallSizedBoxStandardHeight,),
+              SizedBox(height: _responsiveHeight / 22,),
               Container(
                   alignment: Alignment.centerLeft,
                   child: new Row(
                     children: <Widget>[
                       Text(
-                        "Día: " + spanishFormattedText,
-                        style: values.subtitleTextStyle,
+                        "Día: " + _spanishFormattedText,
+                        style: _values.subtitleTextStyle,
                       ),
                       IconButton(
                         tooltip: "Cambiar fecha",
                         icon: Icon(
                           Icons.calendar_today,
-                          color: hue.outlines,
+                          color: _hue.outlines,
                         ),
-                        color: hue.outlines,
+                        color: _hue.outlines,
                         onPressed: (){
                           DatePicker.showDatePicker(context,
                               showTitleActions: true,
@@ -1120,8 +1369,7 @@ class _EventScreen extends State<EventScreen>{
                                 String format = date.toString().substring(0, 10);
                                 setState(() {
                                   widget.event.date = format;
-                                  spanishFormattedText = BuildEventDayText(widget.event.date);
-                                  dateNewEvent = format;
+                                  _spanishFormattedText = BuildEventDayText(widget.event.date);
                                 });
                               },
                               currentTime: widget.newEventDateTime,
@@ -1132,19 +1380,19 @@ class _EventScreen extends State<EventScreen>{
                     ],
                   )
               ),
-              SizedBox(height: values.smallSizedBoxStandardHeight,),
+              SizedBox(height: _responsiveHeight / 22,),
               Container(
                 alignment: Alignment.centerLeft,
                 child: Row(
                   children: <Widget>[
                     Text(
                       "Hora: " + widget.event.time,
-                      style: values.subtitleTextStyle,
+                      style: _values.subtitleTextStyle,
                     ),
                     IconButton(
                       tooltip: "Cambiar hora",
                       icon: Icon(Icons.access_time),
-                      color: hue.outlines,
+                      color: _hue.outlines,
                       onPressed: (){
                         DateTime now = DateTime.now();
 
@@ -1158,7 +1406,6 @@ class _EventScreen extends State<EventScreen>{
                             String newTime = BuildEventTimeText(time.toString());
                             setState(() {
                               widget.event.time = newTime;
-                              timeNewEvent = newTime;
                             });
                           },
                           locale: LocaleType.es,
@@ -1168,24 +1415,24 @@ class _EventScreen extends State<EventScreen>{
                   ],
                 ),
               ),
-              SizedBox(height: values.smallSizedBoxStandardHeight,),
+              SizedBox(height: _responsiveHeight / 22,),
               Container(
-                alignment: values.centerAlignment,
+                alignment: _values.centerAlignment,
                 child: TextFormField(
                   controller: _hostTextController,
                   decoration: new InputDecoration(
                       labelText: "Maestro de ceremonias",
-                      labelStyle: values.textFieldTextStyle,
+                      labelStyle: _values.textFieldTextStyle,
                       fillColor: Colors.white,
                       filled: true,
                       border: new OutlineInputBorder(
-                        borderRadius: new BorderRadius.circular(values.standardBorderRadius),
+                        borderRadius: new BorderRadius.circular(_values.standardBorderRadius),
                         borderSide: new BorderSide(
                         ),
                       ),
                       focusedBorder: new OutlineInputBorder(
-                          borderRadius: new BorderRadius.circular(values.standardBorderRadius),
-                          borderSide: values.textFieldFocusBorderSide
+                          borderRadius: new BorderRadius.circular(_values.standardBorderRadius),
+                          borderSide: _values.textFieldFocusBorderSide
                       )
                   ),
                   validator: (val) {
@@ -1205,12 +1452,12 @@ class _EventScreen extends State<EventScreen>{
                     _hostTextController.selection = TextSelection.collapsed(offset: _hostTextController.text.length);
                     widget.event.host = _hostTextController.text;
                   },
-                  style: values.textFieldTextStyle,
+                  style: _values.textFieldTextStyle,
                 ),
               ),
-              SizedBox(height: values.smallSizedBoxStandardHeight,),
+              SizedBox(height: _responsiveHeight / 22,),
               Container(
-                alignment: values.centerAlignment,
+                alignment: _values.centerAlignment,
                 child: TextFormField(
                   controller: _descriptionTextController,
                   maxLines: null,
@@ -1218,17 +1465,17 @@ class _EventScreen extends State<EventScreen>{
                   textInputAction: TextInputAction.done,
                   decoration: new InputDecoration(
                       labelText: "Descripción",
-                      labelStyle: values.textFieldTextStyle,
+                      labelStyle: _values.textFieldTextStyle,
                       fillColor: Colors.white,
                       filled: true,
                       border: new OutlineInputBorder(
-                        borderRadius: new BorderRadius.circular(values.standardBorderRadius),
+                        borderRadius: new BorderRadius.circular(_values.standardBorderRadius),
                         borderSide: new BorderSide(
                         ),
                       ),
                       focusedBorder: new OutlineInputBorder(
-                          borderRadius: new BorderRadius.circular(values.standardBorderRadius),
-                          borderSide: values.textFieldFocusBorderSide
+                          borderRadius: new BorderRadius.circular(_values.standardBorderRadius),
+                          borderSide: _values.textFieldFocusBorderSide
                       )
                   ),
                   validator: (val) {
@@ -1248,16 +1495,287 @@ class _EventScreen extends State<EventScreen>{
                     _descriptionTextController.selection = TextSelection.collapsed(offset: _descriptionTextController.text.length);
                     widget.event.description = _descriptionTextController.text;
                   },
-                  style: values.textFieldTextStyle,
+                  style: _values.textFieldTextStyle,
                 ),
               )
             ],
           )
         );
+        _widgetLandscapeColumn = Form(
+            key: _formKey,
+            child: Column(
+              children: <Widget>[
+                Container(
+                    alignment: _values.centerAlignment,
+                    child: Stack(
+                      children: <Widget>[
+                        Parallax.inside(
+                            child: _imageWidget,
+                            mainAxisExtent: _responsiveHeight / 1.1
+                        ),
+                        Container(
+                          color: _hue.background,
+                          child: IconButton(
+                              icon: Icon(
+                                Icons.cached,
+                                color: _hue.outlines,
+                              ),
+                              iconSize: _responsiveHeight / 5,
+                              tooltip: _values.tooltipChangeEventImage,
+                              onPressed: ()async{
+                                var image = await ImagePicker.pickImage(source: ImageSource.gallery);
+                                setState((){
+                                  _imageNewEvent = image;
+                                });
+                              }
+                          ),
+                        )
+                      ],
+                    )
+                ),
+                SizedBox(height: _responsiveHeight / 11,),
+                Container(
+                  child: TextFormField(
+                    controller: _titleTextController,
+                    decoration: new InputDecoration(
+                        labelText: "Título",
+                        labelStyle: _values.textFieldTextStyle,
+                        fillColor: Colors.white,
+                        filled: true,
+                        border: new OutlineInputBorder(
+                          borderRadius: new BorderRadius.circular(_values.standardBorderRadius),
+                          borderSide: new BorderSide(
+                          ),
+                        ),
+                        focusedBorder: new OutlineInputBorder(
+                            borderRadius: new BorderRadius.circular(_values.standardBorderRadius),
+                            borderSide: _values.textFieldFocusBorderSide
+                        )
+                    ),
+                    validator: (val) {
+                      if(val.length==0) {
+                        return "Este campo no puede estar vacío.";
+                      }else{
+                        return null;
+                      }
+                    },
+                    onEditingComplete: (){
+                      setState(() {
+                        widget.event.title = _titleTextController.text;
+                      });
+                      FocusScope.of(context).requestFocus(FocusNode());
+                    },
+                    onChanged: (content){
+                      _titleTextController.selection = TextSelection.collapsed(offset: _titleTextController.text.length);
+                      widget.event.title = _titleTextController.text;
+                    },
+                    style: _values.textFieldTextStyle,
+                  ),
+                ),
+                SizedBox(height: _responsiveHeight / 11,),
+                Container(
+                  alignment: Alignment.centerLeft,
+                  child: TextFormField(
+                    controller: _placeTextController,
+                    decoration: new InputDecoration(
+                        labelText: "Lugar",
+                        labelStyle: _values.textFieldTextStyle,
+                        fillColor: Colors.white,
+                        filled: true,
+                        border: new OutlineInputBorder(
+                          borderRadius: new BorderRadius.circular(_values.standardBorderRadius),
+                          borderSide: new BorderSide(
+                          ),
+                        ),
+                        focusedBorder: new OutlineInputBorder(
+                            borderRadius: new BorderRadius.circular(_values.standardBorderRadius),
+                            borderSide: _values.textFieldFocusBorderSide
+                        )
+                    ),
+                    validator: (val) {
+                      if(val.length==0) {
+                        return "Este campo no puede estar vacío.";
+                      }else{
+                        return null;
+                      }
+                    },
+                    onEditingComplete: (){
+                      setState(() {
+                        widget.event.place = _placeTextController.text;
+                      });
+                      FocusScope.of(context).requestFocus(FocusNode());
+                    },
+                    onChanged: (content){
+                      _placeTextController.selection = TextSelection.collapsed(offset: _placeTextController.text.length);
+                      widget.event.place = _placeTextController.text;
+                    },
+                    style: _values.textFieldTextStyle,
+                  ),
+                ),
+                SizedBox(height: _responsiveHeight / 11,),
+                Container(
+                    alignment: Alignment.centerLeft,
+                    child: new Row(
+                      children: <Widget>[
+                        Text(
+                          "Día: " + _spanishFormattedText,
+                          style: _values.subtitleTextStyle,
+                        ),
+                        IconButton(
+                          tooltip: "Cambiar fecha",
+                          icon: Icon(
+                            Icons.calendar_today,
+                            color: _hue.outlines,
+                          ),
+                          color: _hue.outlines,
+                          onPressed: (){
+                            DatePicker.showDatePicker(context,
+                                showTitleActions: true,
+                                minTime: DateTime.now(),
+                                maxTime: DateTime.now().add(Duration(days: 500)),
+                                onChanged: (date) {
 
-        floatingButton = new FloatingActionButton(
+                                },
+                                onConfirm: (date) {
+                                  String format = date.toString().substring(0, 10);
+                                  setState(() {
+                                    widget.event.date = format;
+                                    _spanishFormattedText = BuildEventDayText(widget.event.date);
+                                  });
+                                },
+                                currentTime: widget.newEventDateTime,
+                                locale: LocaleType.es
+                            );
+                          },
+                        )
+                      ],
+                    )
+                ),
+                SizedBox(height: _responsiveHeight / 11,),
+                Container(
+                  alignment: Alignment.centerLeft,
+                  child: Row(
+                    children: <Widget>[
+                      Text(
+                        "Hora: " + widget.event.time,
+                        style: _values.subtitleTextStyle,
+                      ),
+                      IconButton(
+                        tooltip: "Cambiar hora",
+                        icon: Icon(Icons.access_time),
+                        color: _hue.outlines,
+                        onPressed: (){
+                          DateTime now = DateTime.now();
+
+                          DatePicker.showTimePicker(context,
+                            showTitleActions: true,
+                            currentTime: DateTime(now.hour, now.minute),
+                            onChanged: (time){
+
+                            },
+                            onConfirm: (time){
+                              String newTime = BuildEventTimeText(time.toString());
+                              setState(() {
+                                widget.event.time = newTime;
+                              });
+                            },
+                            locale: LocaleType.es,
+                          );
+                        },
+                      )
+                    ],
+                  ),
+                ),
+                SizedBox(height: _responsiveHeight / 11,),
+                Container(
+                  alignment: _values.centerAlignment,
+                  child: TextFormField(
+                    controller: _hostTextController,
+                    decoration: new InputDecoration(
+                        labelText: "Maestro de ceremonias",
+                        labelStyle: _values.textFieldTextStyle,
+                        fillColor: Colors.white,
+                        filled: true,
+                        border: new OutlineInputBorder(
+                          borderRadius: new BorderRadius.circular(_values.standardBorderRadius),
+                          borderSide: new BorderSide(
+                          ),
+                        ),
+                        focusedBorder: new OutlineInputBorder(
+                            borderRadius: new BorderRadius.circular(_values.standardBorderRadius),
+                            borderSide: _values.textFieldFocusBorderSide
+                        )
+                    ),
+                    validator: (val) {
+                      if(val.length==0) {
+                        return "Este campo no puede estar vacío.";
+                      }else{
+                        return null;
+                      }
+                    },
+                    onEditingComplete: (){
+                      setState(() {
+                        widget.event.host = _hostTextController.text;
+                      });
+                      FocusScope.of(context).requestFocus(FocusNode());
+                    },
+                    onChanged: (content){
+                      _hostTextController.selection = TextSelection.collapsed(offset: _hostTextController.text.length);
+                      widget.event.host = _hostTextController.text;
+                    },
+                    style: _values.textFieldTextStyle,
+                  ),
+                ),
+                SizedBox(height: _responsiveHeight / 11,),
+                Container(
+                  alignment: _values.centerAlignment,
+                  child: TextFormField(
+                    controller: _descriptionTextController,
+                    maxLines: null,
+                    keyboardType: TextInputType.text,
+                    textInputAction: TextInputAction.done,
+                    decoration: new InputDecoration(
+                        labelText: "Descripción",
+                        labelStyle: _values.textFieldTextStyle,
+                        fillColor: Colors.white,
+                        filled: true,
+                        border: new OutlineInputBorder(
+                          borderRadius: new BorderRadius.circular(_values.standardBorderRadius),
+                          borderSide: new BorderSide(
+                          ),
+                        ),
+                        focusedBorder: new OutlineInputBorder(
+                            borderRadius: new BorderRadius.circular(_values.standardBorderRadius),
+                            borderSide: _values.textFieldFocusBorderSide
+                        )
+                    ),
+                    validator: (val) {
+                      if(val.length==0) {
+                        return "Este campo no puede estar vacío.";
+                      }else{
+                        return null;
+                      }
+                    },
+                    onEditingComplete: (){
+                      setState(() {
+                        widget.event.description = _descriptionTextController.text;
+                      });
+                      FocusScope.of(context).requestFocus(FocusNode());
+                    },
+                    onChanged: (content){
+                      _descriptionTextController.selection = TextSelection.collapsed(offset: _descriptionTextController.text.length);
+                      widget.event.description = _descriptionTextController.text;
+                    },
+                    style: _values.textFieldTextStyle,
+                  ),
+                )
+              ],
+            )
+        );
+
+        _floatingButton = new FloatingActionButton(
           tooltip: "Guardar evento",
-          backgroundColor: hue.ocean,
+          backgroundColor: _hue.ocean,
           child: Icon(Icons.save),
           onPressed: (){
             if(_formKey.currentState.validate()){
@@ -1267,7 +1785,7 @@ class _EventScreen extends State<EventScreen>{
                 builder: (BuildContext context) => CustomLoadDialog()
               );
 
-              widget.event.CreateEvent(context, imageNewEvent).then((result){
+              widget.event.CreateEvent(context, _imageNewEvent).then((result){
                 Navigator.of(context).pop();
                 Navigator.of(context).pop();
               });
@@ -1277,133 +1795,235 @@ class _EventScreen extends State<EventScreen>{
         );
       }
     }else{
-      widgetColumn = Column(
+      _widgetPortraitColumn = Column(
         children: <Widget>[
           Container(
-              alignment: values.centerAlignment,
+              alignment: _values.centerAlignment,
               child: Stack(
                 children: <Widget>[
                   Parallax.inside(
                       child: CachedNetworkImage(
                         imageUrl: widget.event.image,
-                        placeholder: (context, url) => Image.asset(values.loadingAnimation, fit: BoxFit.fill, width: double.maxFinite, height: _responsiveheight,),
+                        placeholder: (context, url) => Image.asset(_values.loadingAnimation, fit: BoxFit.fill, width: double.maxFinite, height: _responsiveHeight,),
                         errorWidget: (context,url,error) => new Icon(Icons.error),
                         width: double.maxFinite,
-                        height: _responsiveheight * 1.1,
+                        height: _responsiveHeight * 1.1,
                         fit: BoxFit.cover,
                       ),
-                      mainAxisExtent: _responsiveheight / 1.1
+                      mainAxisExtent: _responsiveHeight / 1.1
                   ),
                 ],
               )
           ),
-          SizedBox(height: values.smallSizedBoxStandardHeight,),
+          SizedBox(height: _responsiveHeight / 22,),
           Container(
             child: Text(
               widget.event.title,
-              style: values.titleTextStyle,
+              style: _values.titleTextStyle,
             ),
           ),
-          SizedBox(height: values.smallSizedBoxStandardHeight,),
+          SizedBox(height: _responsiveHeight / 22,),
           Container(
-            color: hue.outlines,
+            color: _hue.outlines,
             padding: EdgeInsets.fromLTRB(_symmetricPadding * 15, 1.0, _symmetricPadding * 15, 1.0),
-            child: SizedBox(height: values.lineSizedBoxHeight,),
+            child: SizedBox(height: _responsiveHeight / 150,),
           ),
-          SizedBox(height: values.smallSizedBoxStandardHeight,),
+          SizedBox(height: _responsiveHeight / 22,),
           Container(
             alignment: Alignment.centerLeft,
             child: Text(
               "Lugar: " + widget.event.place,
-              style: values.subtitleTextStyle,
+              style: _values.subtitleTextStyle,
             ),
           ),
-          SizedBox(height: values.smallSizedBoxStandardHeight,),
+          SizedBox(height: _responsiveHeight / 22,),
           Container(
               alignment: Alignment.centerLeft,
               child: Text(
-                "Día: " + spanishFormattedText,
-                style: values.subtitleTextStyle,
+                "Día: " + _spanishFormattedText,
+                style: _values.subtitleTextStyle,
               )
           ),
-          SizedBox(height: values.smallSizedBoxStandardHeight,),
+          SizedBox(height: _responsiveHeight / 22,),
           Container(
             alignment: Alignment.centerLeft,
             child: Text(
               "Hora: " + widget.event.time,
-              style: values.subtitleTextStyle,
+              style: _values.subtitleTextStyle,
             ),
           ),
-          SizedBox(height: values.smallSizedBoxStandardHeight,),
+          SizedBox(height: _responsiveHeight / 22,),
           Container(
-            alignment: values.centerAlignment,
-            child: Text(
-              "Maestro de ceremonias",
-              style: values.subtitleTextStyle,
-            ),
-          ),
-          SizedBox(height: values.lineSizedBoxHeight,),
-          Container(
-            alignment: values.centerAlignment,
-            child: Text(
-              widget.event.host,
-              style: values.subtitleTextStyle,
-            ),
-          ),
-          SizedBox(height: values.smallSizedBoxStandardHeight,),
-          Container(
-            color: hue.outlines,
+            color: _hue.outlines,
             padding: EdgeInsets.fromLTRB(_symmetricPadding * 15, 1.0, _symmetricPadding * 15, 1.0),
-            child: SizedBox(height: values.lineSizedBoxHeight,),
+            child: SizedBox(height: _responsiveHeight / 150,),
           ),
-          SizedBox(height: values.smallSizedBoxStandardHeight,),
+          SizedBox(height: _responsiveHeight / 22,),
           Container(
-            alignment: values.centerAlignment,
+            alignment: _values.centerAlignment,
             child: Text(
               widget.event.description,
-              style: values.contentTextStyle,
+              style: _values.contentTextStyle,
+            ),
+          )
+        ],
+      );
+      _widgetLandscapeColumn = Column(
+        children: <Widget>[
+          SizedBox(height: _responsiveHeight / 12,),
+          Container(
+              alignment: _values.centerAlignment,
+              child: Stack(
+                children: <Widget>[
+                  Parallax.inside(
+                      child: CachedNetworkImage(
+                        imageUrl: widget.event.image,
+                        placeholder: (context, url) => Image.asset(_values.loadingAnimation, fit: BoxFit.fill, width: double.maxFinite, height: _responsiveHeight,),
+                        errorWidget: (context,url,error) => new Icon(Icons.error),
+                        width: double.maxFinite,
+                        height: _responsiveHeight * 1.1,
+                        fit: BoxFit.cover,
+                      ),
+                      mainAxisExtent: _responsiveHeight / 1.1
+                  ),
+                ],
+              )
+          ),
+          SizedBox(height: _responsiveHeight / 11,),
+          Container(
+            child: Text(
+              widget.event.title,
+              style: _values.titleTextStyle,
+            ),
+          ),
+          SizedBox(height: _responsiveHeight / 11,),
+          Container(
+            color: _hue.outlines,
+            padding: EdgeInsets.fromLTRB(_symmetricPadding * 15, 1.0, _symmetricPadding * 15, 1.0),
+            child: SizedBox(height: _responsiveHeight / 100,),
+          ),
+          SizedBox(height: _responsiveHeight / 11,),
+          Container(
+            alignment: Alignment.centerLeft,
+            child: Text(
+              "Lugar: " + widget.event.place,
+              style: _values.subtitleTextStyle,
+            ),
+          ),
+          SizedBox(height: _responsiveHeight / 11,),
+          Container(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                "Día: " + _spanishFormattedText,
+                style: _values.subtitleTextStyle,
+              )
+          ),
+          SizedBox(height: _responsiveHeight / 11,),
+          Container(
+            alignment: Alignment.centerLeft,
+            child: Text(
+              "Hora: " + widget.event.time,
+              style: _values.subtitleTextStyle,
+            ),
+          ),
+          SizedBox(height: _responsiveHeight / 11,),
+          Container(
+            color: _hue.outlines,
+            padding: EdgeInsets.fromLTRB(_symmetricPadding * 15, 1.0, _symmetricPadding * 15, 1.0),
+            child: SizedBox(height: _responsiveHeight / 100,),
+          ),
+          SizedBox(height: _responsiveHeight / 11,),
+          Container(
+            alignment: _values.centerAlignment,
+            child: Text(
+              widget.event.description,
+              style: _values.contentTextStyle,
             ),
           )
         ],
       );
     }
 
-    return new Scaffold(
-      backgroundColor: hue.background,
-      appBar: AppBar(
-        backgroundColor: hue.carmesi,
-        title: Text("Evento"),
-      ),
-      floatingActionButton: Stack(
-        children: <Widget>[
-          Positioned(
-            left: _position.dx,
-            top:  _position.dy,
-            child: Draggable(
-              feedback: Container(
-                child: floatingButton,
-              ),
-              child: Container(
-                child: floatingButton,
-              ),
-              childWhenDragging: Container(),
-              onDragEnd: (details){
-                setState(() {
-                  _position = details.offset;
-                });
-              },
+    return OrientationBuilder(
+      builder: (context, orientation){
+        return orientation == Orientation.portrait
+            ?
+        Scaffold(
+            backgroundColor: _hue.background,
+            appBar: AppBar(
+              backgroundColor: _hue.carmesi,
+              title: Text("Evento"),
             ),
-          )
-        ],
-      ),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.symmetric(horizontal: _symmetricPadding),
-        controller: _scrollController,
-        child: ConstrainedBox(
-          constraints: BoxConstraints(),
-          child: widgetColumn,
-        ),
-      )
+            floatingActionButton: Stack(
+              children: <Widget>[
+                Positioned(
+                  left: _position.dx,
+                  top:  _position.dy,
+                  child: Draggable(
+                    feedback: Container(
+                      child: _floatingButton,
+                    ),
+                    child: Container(
+                      child: _floatingButton,
+                    ),
+                    childWhenDragging: Container(),
+                    onDragEnd: (details){
+                      setState(() {
+                        _position = details.offset;
+                      });
+                    },
+                  ),
+                )
+              ],
+            ),
+            body: SingleChildScrollView(
+              padding: EdgeInsets.symmetric(horizontal: _symmetricPadding),
+              controller: _scrollController,
+              child: ConstrainedBox(
+                constraints: BoxConstraints(),
+                child: _widgetPortraitColumn,
+              ),
+            )
+        )
+            :
+        Scaffold(
+            backgroundColor: _hue.background,
+            appBar: AppBar(
+              backgroundColor: _hue.carmesi,
+              title: Text("Evento"),
+            ),
+            floatingActionButton: Stack(
+              children: <Widget>[
+                Positioned(
+                  left: _position.dx,
+                  top:  _position.dy,
+                  child: Draggable(
+                    feedback: Container(
+                      child: _floatingButton,
+                    ),
+                    child: Container(
+                      child: _floatingButton,
+                    ),
+                    childWhenDragging: Container(),
+                    onDragEnd: (details){
+                      setState(() {
+                        _position = details.offset;
+                      });
+                    },
+                  ),
+                )
+              ],
+            ),
+            body: SingleChildScrollView(
+              padding: EdgeInsets.symmetric(horizontal: _symmetricPadding),
+              controller: _scrollController,
+              child: ConstrainedBox(
+                constraints: BoxConstraints(),
+                child: _widgetLandscapeColumn,
+              ),
+            )
+        );
+      },
     );
   }
 
@@ -1654,41 +2274,57 @@ class AdminScreen extends StatefulWidget {
 
 class _AdminScreen extends State<AdminScreen> with SingleTickerProviderStateMixin{
 
-  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
-  static Values values = new Values();
-  static Hues hue = new Hues();
+  GlobalKey<ScaffoldState> _scaffoldKey;
+  static Values _values;
+  static Hues _hue;
 
-  ScrollController _scrollController = new ScrollController();
+  ScrollController _scrollController;
 
   int _tabIndex = 0;
 
-   List<Widget> _tabs, _tabViews;
-   Widget _eventListTab; //inicialización con columna vacía
+  List<Widget> _tabs, _tabViews;
+  Widget _eventListTab; //inicialización con columna vacía
 
   TabController _tabController;
 
   FloatingActionButton _floatingActionButton;
-  Offset _position = Offset(20.0, 20.0);
+  Offset _position;
 
   Widget _mailUpdateEntry;
-  TextEditingController _mailUpdateController = new TextEditingController();
-  bool _editingMailState = false;
+  TextEditingController _mailUpdateController;
+  bool _editingMailState;
 
   CalendarController _calendarController;
-  Map<DateTime, List<Event>> _calendarEvents = Map();
-  ListView _eventListView = ListView(shrinkWrap: true,);
+  Map<DateTime, List<Event>> _calendarEvents;
+  ListView _eventListView;
 
   @override
   void initState() {
     super.initState();
+    _values = new Values();
+    _hue = new Hues();
+    _scaffoldKey = new GlobalKey<ScaffoldState>();
+    _scrollController = new ScrollController();
+    _mailUpdateController = new TextEditingController();
+    _editingMailState = false;
+    _calendarEvents = Map();
+    _mailUpdateController.text = widget.user.email;
+    _mailUpdateEntry = Text(
+      _mailUpdateController.text,
+      textAlign: TextAlign.center,
+      style: _values.contentTextStyle,
+    );
+    _eventListView = ListView(shrinkWrap: true,);
+    _calendarController = CalendarController();
+
     if(widget.user.masterAdmin == true){
-      _tabController = TabController(vsync: this, length: values.numberOfAdminTabs + 1);
+      _tabController = TabController(vsync: this, length: _values.numberOfAdminTabs + 1);
       _floatingActionButton = null;
     }
     if(widget.user.admin == true){
-      _tabController = TabController(vsync: this, length: values.numberOfAdminTabs);
+      _tabController = TabController(vsync: this, length: _values.numberOfAdminTabs);
       _floatingActionButton = FloatingActionButton(
-        backgroundColor: hue.ocean,
+        backgroundColor: _hue.ocean,
         child: Icon(Icons.add),
         onPressed: (){
           switch(_tabIndex){
@@ -1707,15 +2343,6 @@ class _AdminScreen extends State<AdminScreen> with SingleTickerProviderStateMixi
     }
 
     _tabController.addListener(_handleTabSelection);
-    _mailUpdateController.text = widget.user.email;
-    _mailUpdateEntry = Text(
-      _mailUpdateController.text,
-      textAlign: TextAlign.center,
-      style: values.contentTextStyle,
-    );
-
-    _calendarController = CalendarController();
-
   }
 
   @override
@@ -1751,38 +2378,38 @@ class _AdminScreen extends State<AdminScreen> with SingleTickerProviderStateMixi
                       case 'ceremonia':
                         _eventIcon = new Icon(
                             Icons.event,
-                            size: values.toolbarIconSize,
-                            color: hue.outlines
+                            size: _values.toolbarIconSize,
+                            color: _hue.outlines
                         );
                         break;
                       case 'exámen':
                         _eventIcon = new Icon(
                             Icons.description,
-                            size: values.toolbarIconSize,
-                            color: hue.outlines
+                            size: _values.toolbarIconSize,
+                            color: _hue.outlines
                         );
                         break;
                       case 'entrega':
                         _eventIcon = new Icon(
                             Icons.assignment_turned_in,
-                            size: values.toolbarIconSize,
-                            color: hue.outlines
+                            size: _values.toolbarIconSize,
+                            color: _hue.outlines
                         );
                         break;
                       default:
                         _eventIcon = new Icon(
                             Icons.event,
-                            size: values.toolbarIconSize,
-                            color: hue.outlines
+                            size: _values.toolbarIconSize,
+                            color: _hue.outlines
                         );
                         break;
                     }
 
                     return new Container(
-                      color: hue.outlines,
+                      color: _hue.outlines,
                       padding: EdgeInsets.fromLTRB(0.0, 3.0, 0.0, 0.0),
                       child: Container(
-                        color: hue.background,
+                        color: _hue.background,
                         child: ListTile(
                           title: Container(
                             alignment: Alignment.centerLeft,
@@ -1794,7 +2421,7 @@ class _AdminScreen extends State<AdminScreen> with SingleTickerProviderStateMixi
                           ),
                           trailing: _eventIcon,
                           onTap: (){
-                            if(ds.type == values.eventType['ceremony']){
+                            if(ds.type == _values.eventType['ceremony']){
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(
@@ -1832,17 +2459,17 @@ class _AdminScreen extends State<AdminScreen> with SingleTickerProviderStateMixi
                 calendarStyle: CalendarStyle(
                   canEventMarkersOverflow: false,
                   markersAlignment: Alignment.bottomCenter,
-                  markersColor: hue.carmesi,
+                  markersColor: _hue.carmesi,
                   markersMaxAmount: 5,
                   outsideDaysVisible: true,
-                  todayColor: hue.ocean,
-                  weekdayStyle: values.calendarDayTextStyle,
-                  weekendStyle: values.calendarWeekendDayTextStyle,
+                  todayColor: _hue.ocean,
+                  weekdayStyle: _values.calendarDayTextStyle,
+                  weekendStyle: _values.calendarWeekendDayTextStyle,
                 ),
                 headerStyle: HeaderStyle(
                     centerHeaderTitle: true,
                     formatButtonShowsNext: false,
-                    titleTextStyle: values.contentTextStyle,
+                    titleTextStyle: _values.contentTextStyle,
                     formatButtonVisible: false
                 ),
                 onDaySelected: (day, events){
@@ -1861,38 +2488,38 @@ class _AdminScreen extends State<AdminScreen> with SingleTickerProviderStateMixi
                             case 'ceremonia':
                               _eventIcon = new Icon(
                                   Icons.event,
-                                  size: values.toolbarIconSize,
-                                  color: hue.outlines
+                                  size: _values.toolbarIconSize,
+                                  color: _hue.outlines
                               );
                               break;
                             case 'exámen':
                               _eventIcon = new Icon(
                                   Icons.description,
-                                  size: values.toolbarIconSize,
-                                  color: hue.outlines
+                                  size: _values.toolbarIconSize,
+                                  color: _hue.outlines
                               );
                               break;
                             case 'entrega':
                               _eventIcon = new Icon(
                                   Icons.assignment_turned_in,
-                                  size: values.toolbarIconSize,
-                                  color: hue.outlines
+                                  size: _values.toolbarIconSize,
+                                  color: _hue.outlines
                               );
                               break;
                             default:
                               _eventIcon = new Icon(
                                   Icons.event,
-                                  size: values.toolbarIconSize,
-                                  color: hue.outlines
+                                  size: _values.toolbarIconSize,
+                                  color: _hue.outlines
                               );
                               break;
                           }
 
                           return new Container(
-                            color: hue.outlines,
+                            color: _hue.outlines,
                             padding: EdgeInsets.fromLTRB(0.0, 3.0, 0.0, 0.0),
                             child: Container(
-                              color: hue.background,
+                              color: _hue.background,
                               child: ListTile(
                                 title: Container(
                                   alignment: Alignment.centerLeft,
@@ -1904,7 +2531,7 @@ class _AdminScreen extends State<AdminScreen> with SingleTickerProviderStateMixi
                                 ),
                                 trailing: _eventIcon,
                                 onTap: (){
-                                  if(ds.type == values.eventType['ceremony']){
+                                  if(ds.type == _values.eventType['ceremony']){
                                     if(widget.user.admin == true && widget.user.masterAdmin == false){
                                       Navigator.push(
                                           context,
@@ -1931,7 +2558,7 @@ class _AdminScreen extends State<AdminScreen> with SingleTickerProviderStateMixi
                 },
                 events: _calendarEvents,
               ),
-              SizedBox(height: values.mediumSizedBoxStandardHeight,),
+              SizedBox(height: _values.mediumSizedBoxStandardHeight,),
               Expanded(child: _eventListView,),
             ],
           ),
@@ -1948,11 +2575,11 @@ class _AdminScreen extends State<AdminScreen> with SingleTickerProviderStateMixi
       _tabViews = [
         _eventListTab,
         StreamBuilder(
-          stream: values.firestoreReference.collection('admins').where('admin', isEqualTo: true).snapshots(),
+          stream: _values.firestoreReference.collection('admins').where('admin', isEqualTo: true).snapshots(),
           builder: (context, snapshot){
             if(!snapshot.hasData){
               return Image.asset(
-                  values.loadingAnimation
+                  _values.loadingAnimation
               );
             }
             return new ListView.builder(
@@ -1963,10 +2590,10 @@ class _AdminScreen extends State<AdminScreen> with SingleTickerProviderStateMixi
                   DocumentSnapshot ds = snapshot.data.documents[index];
 
                   return new Container(
-                    color: hue.outlines,
+                    color: _hue.outlines,
                     padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 3.0),
                     child: Container(
-                      color: hue.background,
+                      color: _hue.background,
                       child: ListTile(
                         title: Container(
                           alignment: Alignment.centerLeft,
@@ -1980,13 +2607,13 @@ class _AdminScreen extends State<AdminScreen> with SingleTickerProviderStateMixi
                           children: <Widget>[
                             Container(
                               decoration: BoxDecoration(
-                                  color: hue.carmesi,
-                                  borderRadius: BorderRadius.circular(values.standardBorderRadius)
+                                  color: _hue.carmesi,
+                                  borderRadius: BorderRadius.circular(_values.standardBorderRadius)
                               ),
                               child: IconButton(
                                 icon: Icon(
                                   Icons.delete,
-                                  color: hue.background,
+                                  color: _hue.background,
                                 ),
                                 onPressed: (){
                                   showDialog(
@@ -2051,15 +2678,15 @@ class _AdminScreen extends State<AdminScreen> with SingleTickerProviderStateMixi
             leading: IconButton(
                 icon: Icon(
                   Icons.list,
-                  color: hue.background,
-                  size: values.toolbarIconSize,
+                  color: _hue.background,
+                  size: _values.toolbarIconSize,
                 ),
                 onPressed: (){
                   _scaffoldKey.currentState.openDrawer();
                 },
               tooltip: 'Opciones'
             ),
-            backgroundColor: hue.carmesi,
+            backgroundColor: _hue.carmesi,
             title: Text('Administrador'),
             bottom: TabBar(
               controller: _tabController,
@@ -2069,7 +2696,7 @@ class _AdminScreen extends State<AdminScreen> with SingleTickerProviderStateMixi
               IconButton(
                 icon: Icon(
                   Icons.close,
-                  size: values.toolbarIconSize,
+                  size: _values.toolbarIconSize,
                 ),
                 tooltip: 'Cerrar sesión',
                 onPressed: (){
@@ -2090,9 +2717,9 @@ class _AdminScreen extends State<AdminScreen> with SingleTickerProviderStateMixi
                       Text(
                         widget.user.nickname,
                         textAlign: TextAlign.center,
-                        style: values.titleTextStyle,
+                        style: _values.titleTextStyle,
                       ),
-                      SizedBox(height: values.smallSizedBoxStandardHeight,),
+                      SizedBox(height: _values.smallSizedBoxStandardHeight,),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
@@ -2100,7 +2727,7 @@ class _AdminScreen extends State<AdminScreen> with SingleTickerProviderStateMixi
                           IconButton(
                             icon: Icon(
                               Icons.edit,
-                              color: hue.outlines,
+                              color: _hue.outlines,
                             ),
                             tooltip: "Editar correo",
                             onPressed: (){
@@ -2110,7 +2737,7 @@ class _AdminScreen extends State<AdminScreen> with SingleTickerProviderStateMixi
                                   _mailUpdateEntry = Text(
                                     _mailUpdateController.text,
                                     textAlign: TextAlign.center,
-                                    style: values.contentTextStyle,
+                                    style: _values.contentTextStyle,
                                   );
                                   _editingMailState = false;
                                 });
@@ -2122,19 +2749,19 @@ class _AdminScreen extends State<AdminScreen> with SingleTickerProviderStateMixi
                                       controller: _mailUpdateController,
                                       decoration: new InputDecoration(
                                           labelText: "Correo",
-                                          labelStyle: TextStyle(color: hue.outlines),
+                                          labelStyle: TextStyle(color: _hue.outlines),
                                           fillColor: Colors.white,
                                           filled: true,
                                           border: new OutlineInputBorder(
-                                            borderRadius: new BorderRadius.circular(values.standardBorderRadius),
+                                            borderRadius: new BorderRadius.circular(_values.standardBorderRadius),
                                             borderSide: new BorderSide(
-                                              color: hue.outlines,
+                                              color: _hue.outlines,
                                             ),
                                           ),
                                           focusedBorder: new OutlineInputBorder(
-                                              borderRadius: new BorderRadius.circular(values.standardBorderRadius),
+                                              borderRadius: new BorderRadius.circular(_values.standardBorderRadius),
                                               borderSide: new BorderSide(
-                                                  color: hue.outlines
+                                                  color: _hue.outlines
                                               )
                                           )
                                       ),
@@ -2156,7 +2783,7 @@ class _AdminScreen extends State<AdminScreen> with SingleTickerProviderStateMixi
                                             description: "Por términos de seguridad, introduzca su contraseña.",
                                             acceptButtonText: "Cambiar",
                                             cancelButtonText: "Cancelar",
-                                            dialogPurpose: values.dialogPurposes['Cambiar correo']
+                                            dialogPurpose: _values.dialogPurposes['Cambiar correo']
                                           )
                                         ).then((pass){
                                           widget.user.UpdateEmail(pass, _mailUpdateController.text).then((result){
@@ -2187,7 +2814,7 @@ class _AdminScreen extends State<AdminScreen> with SingleTickerProviderStateMixi
                                                 _mailUpdateEntry = Text(
                                                   _mailUpdateController.text,
                                                   textAlign: TextAlign.center,
-                                                  style: values.contentTextStyle,
+                                                  style: _values.contentTextStyle,
                                                 );
                                                 _editingMailState = false;
                                               });
@@ -2208,7 +2835,7 @@ class _AdminScreen extends State<AdminScreen> with SingleTickerProviderStateMixi
                   decoration: BoxDecoration(
                     border: Border(
                       bottom: BorderSide(
-                        color: hue.carmesi,
+                        color: _hue.carmesi,
                         width: 3.0,
                       )
                     )
@@ -2217,11 +2844,11 @@ class _AdminScreen extends State<AdminScreen> with SingleTickerProviderStateMixi
                 ListTile(
                   leading: Text(
                     "Cerrar sesión",
-                    style: values.contentTextStyle,
+                    style: _values.contentTextStyle,
                   ),
                   trailing: Icon(
                     Icons.close,
-                    color: hue.outlines,
+                    color: _hue.outlines,
                   ),
                   onTap: (){
                     Navigator.of(context).pop();
@@ -2231,11 +2858,11 @@ class _AdminScreen extends State<AdminScreen> with SingleTickerProviderStateMixi
                 ListTile(
                   leading: Text(
                     "Cerrar menú",
-                    style: values.contentTextStyle,
+                    style: _values.contentTextStyle,
                   ),
                   trailing: Icon(
                     Icons.keyboard_return,
-                    color: hue.outlines,
+                    color: _hue.outlines,
                   ),
                   onTap: (){
                     Navigator.of(context).pop();
@@ -2244,7 +2871,7 @@ class _AdminScreen extends State<AdminScreen> with SingleTickerProviderStateMixi
               ],
             ),
           ),
-          backgroundColor: hue.background,
+          backgroundColor: _hue.background,
           body: TabBarView(
             controller: _tabController,
             children: _tabViews,
@@ -2287,7 +2914,7 @@ class _AdminScreen extends State<AdminScreen> with SingleTickerProviderStateMixi
               break;
             case 1:
               _floatingActionButton = FloatingActionButton(
-                backgroundColor: hue.ocean,
+                backgroundColor: _hue.ocean,
                 child: Icon(Icons.add),
                 onPressed: (){
                   switch(_tabIndex){
@@ -2298,7 +2925,7 @@ class _AdminScreen extends State<AdminScreen> with SingleTickerProviderStateMixi
                             description: "Introduzca los datos del nuevo administrador.",
                             acceptButtonText: "Registrar",
                             cancelButtonText: "Cancelar",
-                            dialogPurpose: values.dialogPurposes["Crear administrador"],
+                            dialogPurpose: _values.dialogPurposes["Crear administrador"],
                           )
                       ).then((result){
                         if(result){

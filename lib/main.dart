@@ -61,14 +61,16 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreen extends State<SplashScreen> {
 
-  static Values values = new Values();
-  static Hues hue = new Hues();
+  static Values values;
+  static Hues hue;
 
-  final FirebaseMessaging _messaging = FirebaseMessaging();
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    values = new Values();
+    hue  = new Hues();
+    final FirebaseMessaging _messaging = FirebaseMessaging();
     _messaging.getToken().then((token){
       print(token);
     });
