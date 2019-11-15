@@ -61,89 +61,91 @@ class _HomeScreen extends State<HomeScreen>{
     super.didChangeDependencies();
     Event dummyEvent = new Event('', '', '', '', '', '', '', '', '');
     await dummyEvent.RetrieveEvents(context).then((map){
-     setState(() {
-       _calendarEvents = map;
+      if(!map.containsKey(null)){
+        setState(() {
+          _calendarEvents = map;
 
-       DateFormat df = new DateFormat('yyyy-MM-dd');
-       String _todaysDate = df.format(DateTime.now());
-       if(_calendarEvents.containsKey(DateTime.parse(_todaysDate))){
-         _calendarEvents.forEach((dateTime, eventList){
-           if(dateTime == DateTime.parse(_todaysDate)){
-             _eventListView = ListView.builder(
-                 scrollDirection: Axis.vertical,
-                 controller: _scrollController,
-                 shrinkWrap: true,
-                 itemCount: eventList.length,
-                 itemBuilder: (context, index){
-                   Event ds = eventList[index];
+          DateFormat df = new DateFormat('yyyy-MM-dd');
+          String _todaysDate = df.format(DateTime.now());
+          if(_calendarEvents.containsKey(DateTime.parse(_todaysDate))){
+            _calendarEvents.forEach((dateTime, eventList){
+              if(dateTime == DateTime.parse(_todaysDate)){
+                _eventListView = ListView.builder(
+                    scrollDirection: Axis.vertical,
+                    controller: _scrollController,
+                    shrinkWrap: true,
+                    itemCount: eventList.length,
+                    itemBuilder: (context, index){
+                      Event ds = eventList[index];
 
-                   Icon _eventIcon;
+                      Icon _eventIcon;
 
-                   switch(ds.type){
-                     case 'ceremonia':
-                       _eventIcon = new Icon(
-                           Icons.event,
-                           size: _values.toolbarIconSize,
-                           color: _hue.outlines
-                       );
-                       break;
-                     case 'exámen':
-                       _eventIcon = new Icon(
-                           Icons.description,
-                           size: _values.toolbarIconSize,
-                           color: _hue.outlines
-                       );
-                       break;
-                     case 'entrega':
-                       _eventIcon = new Icon(
-                           Icons.assignment_turned_in,
-                           size: _values.toolbarIconSize,
-                           color: _hue.outlines
-                       );
-                       break;
-                     default:
-                       _eventIcon = new Icon(
-                           Icons.event,
-                           size: _values.toolbarIconSize,
-                           color: _hue.outlines
-                       );
-                       break;
-                   }
+                      switch(ds.type){
+                        case 'ceremonia':
+                          _eventIcon = new Icon(
+                              Icons.event,
+                              size: _values.toolbarIconSize,
+                              color: _hue.outlines
+                          );
+                          break;
+                        case 'exámen':
+                          _eventIcon = new Icon(
+                              Icons.description,
+                              size: _values.toolbarIconSize,
+                              color: _hue.outlines
+                          );
+                          break;
+                        case 'entrega':
+                          _eventIcon = new Icon(
+                              Icons.assignment_turned_in,
+                              size: _values.toolbarIconSize,
+                              color: _hue.outlines
+                          );
+                          break;
+                        default:
+                          _eventIcon = new Icon(
+                              Icons.event,
+                              size: _values.toolbarIconSize,
+                              color: _hue.outlines
+                          );
+                          break;
+                      }
 
-                   return new Container(
-                     color: _hue.outlines,
-                     padding: EdgeInsets.fromLTRB(0.0, 3.0, 0.0, 0.0),
-                     child: Container(
-                       color: _hue.background,
-                       child: ListTile(
-                         title: Container(
-                           alignment: Alignment.centerLeft,
-                           child: Text(ds.title),
-                         ),
-                         subtitle: Container(
-                           alignment: Alignment.centerLeft,
-                           child: Text(ds.type + ' - ' + ds.time + 'hrs.'),
-                         ),
-                         trailing: _eventIcon,
-                         onTap: (){
-                           if(ds.type == _values.eventType['ceremony']){
-                             Navigator.push(
-                                 context,
-                                 MaterialPageRoute(
-                                     builder: (context) => EventScreen(event: ds, adminView: false,)
-                                 )
-                             );
-                           }
-                         },
-                       ),
-                     ),
-                   );
-                 }
-             );
-           }
-         });
-       }
-     });
+                      return new Container(
+                        color: _hue.outlines,
+                        padding: EdgeInsets.fromLTRB(0.0, 3.0, 0.0, 0.0),
+                        child: Container(
+                          color: _hue.background,
+                          child: ListTile(
+                            title: Container(
+                              alignment: Alignment.centerLeft,
+                              child: Text(ds.title),
+                            ),
+                            subtitle: Container(
+                              alignment: Alignment.centerLeft,
+                              child: Text(ds.type + ' - ' + ds.time + 'hrs.'),
+                            ),
+                            trailing: _eventIcon,
+                            onTap: (){
+                              if(ds.type == _values.eventType['ceremony']){
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => EventScreen(event: ds, adminView: false,)
+                                    )
+                                );
+                              }
+                            },
+                          ),
+                        ),
+                      );
+                    }
+                );
+              }
+            });
+          }
+        });
+      }
     });
   }
 
@@ -2356,89 +2358,91 @@ class _AdminScreen extends State<AdminScreen> with SingleTickerProviderStateMixi
 
     Event dummyEvent = new Event('', '', '', '', '', '', '', '', '');
     await dummyEvent.RetrieveEvents(context).then((map){
-      setState(() {
-        _calendarEvents = map;
+      if(!map.containsKey(null)){
+        setState(() {
+          _calendarEvents = map;
 
-        DateFormat df = new DateFormat('yyyy-MM-dd');
-        String _todaysDate = df.format(DateTime.now());
-        if(_calendarEvents.containsKey(DateTime.parse(_todaysDate))){
-          _calendarEvents.forEach((dateTime, eventList){
-            if(dateTime == DateTime.parse(_todaysDate)){
-              _eventListView = ListView.builder(
-                  scrollDirection: Axis.vertical,
-                  controller: _scrollController,
-                  shrinkWrap: true,
-                  itemCount: eventList.length,
-                  itemBuilder: (context, index){
-                    Event ds = eventList[index];
+          DateFormat df = new DateFormat('yyyy-MM-dd');
+          String _todaysDate = df.format(DateTime.now());
+          if(_calendarEvents.containsKey(DateTime.parse(_todaysDate))){
+            _calendarEvents.forEach((dateTime, eventList){
+              if(dateTime == DateTime.parse(_todaysDate)){
+                _eventListView = ListView.builder(
+                    scrollDirection: Axis.vertical,
+                    controller: _scrollController,
+                    shrinkWrap: true,
+                    itemCount: eventList.length,
+                    itemBuilder: (context, index){
+                      Event ds = eventList[index];
 
-                    Icon _eventIcon;
+                      Icon _eventIcon;
 
-                    switch(ds.type){
-                      case 'ceremonia':
-                        _eventIcon = new Icon(
-                            Icons.event,
-                            size: _values.toolbarIconSize,
-                            color: _hue.outlines
-                        );
-                        break;
-                      case 'exámen':
-                        _eventIcon = new Icon(
-                            Icons.description,
-                            size: _values.toolbarIconSize,
-                            color: _hue.outlines
-                        );
-                        break;
-                      case 'entrega':
-                        _eventIcon = new Icon(
-                            Icons.assignment_turned_in,
-                            size: _values.toolbarIconSize,
-                            color: _hue.outlines
-                        );
-                        break;
-                      default:
-                        _eventIcon = new Icon(
-                            Icons.event,
-                            size: _values.toolbarIconSize,
-                            color: _hue.outlines
-                        );
-                        break;
-                    }
+                      switch(ds.type){
+                        case 'ceremonia':
+                          _eventIcon = new Icon(
+                              Icons.event,
+                              size: _values.toolbarIconSize,
+                              color: _hue.outlines
+                          );
+                          break;
+                        case 'exámen':
+                          _eventIcon = new Icon(
+                              Icons.description,
+                              size: _values.toolbarIconSize,
+                              color: _hue.outlines
+                          );
+                          break;
+                        case 'entrega':
+                          _eventIcon = new Icon(
+                              Icons.assignment_turned_in,
+                              size: _values.toolbarIconSize,
+                              color: _hue.outlines
+                          );
+                          break;
+                        default:
+                          _eventIcon = new Icon(
+                              Icons.event,
+                              size: _values.toolbarIconSize,
+                              color: _hue.outlines
+                          );
+                          break;
+                      }
 
-                    return new Container(
-                      color: _hue.outlines,
-                      padding: EdgeInsets.fromLTRB(0.0, 3.0, 0.0, 0.0),
-                      child: Container(
-                        color: _hue.background,
-                        child: ListTile(
-                          title: Container(
-                            alignment: Alignment.centerLeft,
-                            child: Text(ds.title),
+                      return new Container(
+                        color: _hue.outlines,
+                        padding: EdgeInsets.fromLTRB(0.0, 3.0, 0.0, 0.0),
+                        child: Container(
+                          color: _hue.background,
+                          child: ListTile(
+                            title: Container(
+                              alignment: Alignment.centerLeft,
+                              child: Text(ds.title),
+                            ),
+                            subtitle: Container(
+                              alignment: Alignment.centerLeft,
+                              child: Text(ds.type + ' - ' + ds.time + 'hrs.'),
+                            ),
+                            trailing: _eventIcon,
+                            onTap: (){
+                              if(ds.type == _values.eventType['ceremony']){
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => EventScreen(event: ds, adminView: false,)
+                                    )
+                                );
+                              }
+                            },
                           ),
-                          subtitle: Container(
-                            alignment: Alignment.centerLeft,
-                            child: Text(ds.type + ' - ' + ds.time + 'hrs.'),
-                          ),
-                          trailing: _eventIcon,
-                          onTap: (){
-                            if(ds.type == _values.eventType['ceremony']){
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => EventScreen(event: ds, adminView: false,)
-                                  )
-                              );
-                            }
-                          },
                         ),
-                      ),
-                    );
-                  }
-              );
-            }
-          });
-        }
-      });
+                      );
+                    }
+                );
+              }
+            });
+          }
+        });
+      }
     });
 
   }
