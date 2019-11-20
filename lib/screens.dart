@@ -59,7 +59,7 @@ class _HomeScreen extends State<HomeScreen>{
   void didChangeDependencies() async{
     // TODO: implement didChangeDependencies
     super.didChangeDependencies();
-    Event dummyEvent = new Event('', '', '', '', '', '', '', '', '');
+    Event dummyEvent = new Event('', '', '', '', '', '', '', '');
     await dummyEvent.RetrieveEvents(context).then((map){
       if(!map.containsKey(null)){
         setState(() {
@@ -218,21 +218,6 @@ class _HomeScreen extends State<HomeScreen>{
                               ),
                             ),
                             SizedBox(height: _values.smallSizedBoxStandardHeight,),
-                            /*MaterialButton(
-                          elevation: values.buttonElevation,
-                          minWidth: _screenWidth / 1.5,
-                          padding: EdgeInsets.fromLTRB(values.standardPaddingLeft, values.standardPaddingTop, values.standardPaddingRight, values.standardPaddingBottom),
-                          color: Colors.transparent,
-                          textColor: hue.carmesi,
-                          child: Text(
-                            "Ir a página web",
-                            textAlign: TextAlign.center,
-                            style: values.materialButtonBoldTextStyle,
-                          ),
-                          onPressed: (){
-                            LaunchURL(values.urlWebPage);
-                          },
-                        )*/
                             FlatButton(
                               textColor: _hue.carmesi,
                               child: Row(
@@ -337,6 +322,7 @@ class _HomeScreen extends State<HomeScreen>{
                                             trailing: _eventIcon,
                                             onTap: (){
                                               if(ds.type == _values.eventType['ceremony']){
+                                                print("COSA EN EL HOME NO MAMES!");
                                                 Navigator.push(
                                                     context,
                                                     MaterialPageRoute(
@@ -627,7 +613,6 @@ class _EventScreen extends State<EventScreen>{
     if(widget.event.id == null){
       widget.event.title = "";
       widget.event.place = "";
-      widget.event.host = "";
       widget.event.description = "";
       widget.event.time = "00:00";
       DateFormat df = new DateFormat('yyyy-MM-dd');
@@ -680,7 +665,6 @@ class _EventScreen extends State<EventScreen>{
       if(widget.event.id != null){
         TextEditingController _titleTextController = new TextEditingController(text: widget.event.title);
         TextEditingController _placeTextController = new TextEditingController(text: widget.event.place);
-        TextEditingController _hostTextController = new TextEditingController(text: widget.event.host);
         TextEditingController _descriptionTextController = new TextEditingController(text: widget.event.description);
 
 
@@ -861,38 +845,6 @@ class _EventScreen extends State<EventScreen>{
                     },
                   )
                 ],
-              ),
-            ),
-            SizedBox(height: _responsiveHeight / 22,),
-            Container(
-              alignment: _values.centerAlignment,
-              child: TextField(
-                controller: _hostTextController,
-                decoration: new InputDecoration(
-                    labelText: "Maestro de ceremonias",
-                    labelStyle: _values.textFieldTextStyle,
-                    fillColor: Colors.white,
-                    filled: true,
-                    border: new OutlineInputBorder(
-                      borderRadius: new BorderRadius.circular(_values.standardBorderRadius),
-                      borderSide: new BorderSide(
-                      ),
-                    ),
-                    focusedBorder: new OutlineInputBorder(
-                        borderRadius: new BorderRadius.circular(_values.standardBorderRadius),
-                        borderSide: _values.textFieldFocusBorderSide
-                    )
-                  //fillColor: Colors.green
-                ),
-                style: _values.textFieldTextStyle,
-                onEditingComplete: (){
-                  widget.event.UpdateEvent(_hostTextController.text, 'host').then((updatedHost){
-                    setState(() {
-                      widget.event.host = updatedHost;
-                    });
-                  });
-                  FocusScope.of(context).requestFocus(FocusNode());
-                },
               ),
             ),
             SizedBox(height: _responsiveHeight / 22,),
@@ -1115,38 +1067,6 @@ class _EventScreen extends State<EventScreen>{
             Container(
               alignment: _values.centerAlignment,
               child: TextField(
-                controller: _hostTextController,
-                decoration: new InputDecoration(
-                    labelText: "Maestro de ceremonias",
-                    labelStyle: _values.textFieldTextStyle,
-                    fillColor: Colors.white,
-                    filled: true,
-                    border: new OutlineInputBorder(
-                      borderRadius: new BorderRadius.circular(_values.standardBorderRadius),
-                      borderSide: new BorderSide(
-                      ),
-                    ),
-                    focusedBorder: new OutlineInputBorder(
-                        borderRadius: new BorderRadius.circular(_values.standardBorderRadius),
-                        borderSide: _values.textFieldFocusBorderSide
-                    )
-                  //fillColor: Colors.green
-                ),
-                style: _values.textFieldTextStyle,
-                onEditingComplete: (){
-                  widget.event.UpdateEvent(_hostTextController.text, 'host').then((updatedHost){
-                    setState(() {
-                      widget.event.host = updatedHost;
-                    });
-                  });
-                  FocusScope.of(context).requestFocus(FocusNode());
-                },
-              ),
-            ),
-            SizedBox(height: _responsiveHeight / 11,),
-            Container(
-              alignment: _values.centerAlignment,
-              child: TextField(
                 controller: _descriptionTextController,
                 maxLines: null,
                 keyboardType: TextInputType.text,
@@ -1213,7 +1133,6 @@ class _EventScreen extends State<EventScreen>{
       }else{
         TextEditingController _titleTextController = new TextEditingController(text: widget.event.title);
         TextEditingController _placeTextController = new TextEditingController(text: widget.event.place);
-        TextEditingController _hostTextController = new TextEditingController(text: widget.event.host);
         TextEditingController _descriptionTextController = new TextEditingController(text: widget.event.description);
 
         if(_imageNewEvent == null){
@@ -1415,46 +1334,6 @@ class _EventScreen extends State<EventScreen>{
                       },
                     )
                   ],
-                ),
-              ),
-              SizedBox(height: _responsiveHeight / 22,),
-              Container(
-                alignment: _values.centerAlignment,
-                child: TextFormField(
-                  controller: _hostTextController,
-                  decoration: new InputDecoration(
-                      labelText: "Maestro de ceremonias",
-                      labelStyle: _values.textFieldTextStyle,
-                      fillColor: Colors.white,
-                      filled: true,
-                      border: new OutlineInputBorder(
-                        borderRadius: new BorderRadius.circular(_values.standardBorderRadius),
-                        borderSide: new BorderSide(
-                        ),
-                      ),
-                      focusedBorder: new OutlineInputBorder(
-                          borderRadius: new BorderRadius.circular(_values.standardBorderRadius),
-                          borderSide: _values.textFieldFocusBorderSide
-                      )
-                  ),
-                  validator: (val) {
-                    if(val.length==0) {
-                      return "Este campo no puede estar vacío.";
-                    }else{
-                      return null;
-                    }
-                  },
-                  onEditingComplete: (){
-                    setState(() {
-                      widget.event.host = _hostTextController.text;
-                    });
-                    FocusScope.of(context).requestFocus(FocusNode());
-                  },
-                  onChanged: (content){
-                    _hostTextController.selection = TextSelection.collapsed(offset: _hostTextController.text.length);
-                    widget.event.host = _hostTextController.text;
-                  },
-                  style: _values.textFieldTextStyle,
                 ),
               ),
               SizedBox(height: _responsiveHeight / 22,),
@@ -1686,46 +1565,6 @@ class _EventScreen extends State<EventScreen>{
                         },
                       )
                     ],
-                  ),
-                ),
-                SizedBox(height: _responsiveHeight / 11,),
-                Container(
-                  alignment: _values.centerAlignment,
-                  child: TextFormField(
-                    controller: _hostTextController,
-                    decoration: new InputDecoration(
-                        labelText: "Maestro de ceremonias",
-                        labelStyle: _values.textFieldTextStyle,
-                        fillColor: Colors.white,
-                        filled: true,
-                        border: new OutlineInputBorder(
-                          borderRadius: new BorderRadius.circular(_values.standardBorderRadius),
-                          borderSide: new BorderSide(
-                          ),
-                        ),
-                        focusedBorder: new OutlineInputBorder(
-                            borderRadius: new BorderRadius.circular(_values.standardBorderRadius),
-                            borderSide: _values.textFieldFocusBorderSide
-                        )
-                    ),
-                    validator: (val) {
-                      if(val.length==0) {
-                        return "Este campo no puede estar vacío.";
-                      }else{
-                        return null;
-                      }
-                    },
-                    onEditingComplete: (){
-                      setState(() {
-                        widget.event.host = _hostTextController.text;
-                      });
-                      FocusScope.of(context).requestFocus(FocusNode());
-                    },
-                    onChanged: (content){
-                      _hostTextController.selection = TextSelection.collapsed(offset: _hostTextController.text.length);
-                      widget.event.host = _hostTextController.text;
-                    },
-                    style: _values.textFieldTextStyle,
                   ),
                 ),
                 SizedBox(height: _responsiveHeight / 11,),
@@ -2041,15 +1880,6 @@ class _EventScreen extends State<EventScreen>{
 class LoginScreen extends StatefulWidget {
   LoginScreen({Key key}) : super(key: key);
 
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
   @override
   _LoginScreen createState() => _LoginScreen();
 }
@@ -2059,9 +1889,18 @@ class _LoginScreen extends State<LoginScreen>{
   Hues hue = new Hues();
   static Values values = new Values();
 
-  TextEditingController idTextController = new TextEditingController(); //Los controladores de texto nos permiten controlar los valores en un inputfield
-  TextEditingController passwordTextController = new TextEditingController(); //Los controladores de texto nos permiten controlar los valores en un inputfield
-  final _formKey = GlobalKey<FormState>(); //la llave para identificar el form de login
+  TextEditingController _idTextController; //Los controladores de texto nos permiten controlar los valores en un inputfield
+  TextEditingController _passwordTextController; //Los controladores de texto nos permiten controlar los valores en un inputfield
+  var _formKey; //la llave para identificar el form de login
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _idTextController  = new TextEditingController();
+    _passwordTextController = new TextEditingController();
+    _formKey = GlobalKey<FormState>();
+  }
 
 
   @override
@@ -2073,7 +1912,7 @@ class _LoginScreen extends State<LoginScreen>{
     _symmetricPadding =  (_screenWidth * values.widthPaddingUnit) / 10; //Función que nos permite hacer un padding responsivo a cualquier resolución en ancho
 
     final idField = new TextFormField(
-      controller: idTextController,
+      controller: _idTextController,
       decoration: new InputDecoration(
           labelText: "Usuario",
           labelStyle: values.textFieldTextStyle,
@@ -2108,7 +1947,7 @@ class _LoginScreen extends State<LoginScreen>{
     );
 
     final passwordField = new TextFormField(
-      controller: passwordTextController,
+      controller: _passwordTextController,
       obscureText: true,
       decoration: new InputDecoration(
         labelText: "Contraseña",
@@ -2160,7 +1999,7 @@ class _LoginScreen extends State<LoginScreen>{
                   builder: (BuildContext context) => CustomLoadDialog()
               );
 
-              user.AdminLogin(idTextController.text, passwordTextController.text, context).then((fireUser) async{
+              user.AdminLogin(_idTextController.text, _passwordTextController.text, context).then((fireUser) async{
                 if(fireUser != null){
                   Navigator.of(context).pop();
                   user.idAuth = fireUser.uid;
@@ -2282,10 +2121,10 @@ class _AdminScreen extends State<AdminScreen> with SingleTickerProviderStateMixi
 
   ScrollController _scrollController;
 
-  int _tabIndex = 0;
+  int _tabIndex;
 
-  List<Widget> _tabs, _tabViews;
-  Widget _eventListTab; //inicialización con columna vacía
+  List<Widget> _tabs, _portraitTabViews, _landscapeTabViews;
+  Widget _portraitEventListTab, _landscapeEventListTab; //inicialización con columna vacía
 
   TabController _tabController;
 
@@ -2318,6 +2157,7 @@ class _AdminScreen extends State<AdminScreen> with SingleTickerProviderStateMixi
     );
     _eventListView = ListView(shrinkWrap: true,);
     _calendarController = CalendarController();
+    _tabIndex = 0;
 
     if(widget.user.masterAdmin == true){
       _tabController = TabController(vsync: this, length: _values.numberOfAdminTabs + 1);
@@ -2331,7 +2171,7 @@ class _AdminScreen extends State<AdminScreen> with SingleTickerProviderStateMixi
         onPressed: (){
           switch(_tabIndex){
             case 0:
-              Event _event = new Event(null, null, null, null, null, null, null, null, null);
+              Event _event = new Event(null, null, null, null, null, null, null, null);
               Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -2354,9 +2194,9 @@ class _AdminScreen extends State<AdminScreen> with SingleTickerProviderStateMixi
     double _screenWidth = MediaQuery.of(context).size.width; //lee el ancho de dispositivo
     double _screenHeight = MediaQuery.of(context).size.height; //lee el largo del dispositivo
 
-    _position = Offset(_screenWidth / 1.2, _screenHeight / 1.1);
+    _position = Offset(_screenWidth / 1.2, _screenHeight / 1.2);
 
-    Event dummyEvent = new Event('', '', '', '', '', '', '', '', '');
+    Event dummyEvent = new Event('', '', '', '', '', '', '', '');
     await dummyEvent.RetrieveEvents(context).then((map){
       if(!map.containsKey(null)){
         setState(() {
@@ -2425,12 +2265,21 @@ class _AdminScreen extends State<AdminScreen> with SingleTickerProviderStateMixi
                             trailing: _eventIcon,
                             onTap: (){
                               if(ds.type == _values.eventType['ceremony']){
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => EventScreen(event: ds, adminView: false,)
-                                    )
-                                );
+                                if(widget.user.admin == true || widget.user.masterAdmin == true){
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => EventScreen(event: ds, adminView: true,)
+                                      )
+                                  );
+                                }else{
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => EventScreen(event: ds, adminView: false,)
+                                      )
+                                  );
+                                }
                               }
                             },
                           ),
@@ -2450,124 +2299,245 @@ class _AdminScreen extends State<AdminScreen> with SingleTickerProviderStateMixi
   @override
   Widget build(BuildContext context) {
 
-    _eventListTab = Column(
-      children: <Widget>[
-        Expanded(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              TableCalendar(
-                calendarController: _calendarController,
-                locale: 'es',
-                initialSelectedDay: DateTime.now(),
-                calendarStyle: CalendarStyle(
-                  canEventMarkersOverflow: false,
-                  markersAlignment: Alignment.bottomCenter,
-                  markersColor: _hue.carmesi,
-                  markersMaxAmount: 5,
-                  outsideDaysVisible: true,
-                  todayColor: _hue.ocean,
-                  weekdayStyle: _values.calendarDayTextStyle,
-                  weekendStyle: _values.calendarWeekendDayTextStyle,
-                ),
-                headerStyle: HeaderStyle(
-                    centerHeaderTitle: true,
-                    formatButtonShowsNext: false,
-                    titleTextStyle: _values.contentTextStyle,
-                    formatButtonVisible: false
-                ),
-                onDaySelected: (day, events){
-                  setState(() {
-                    _eventListView = ListView.builder(
-                        scrollDirection: Axis.vertical,
-                        controller: _scrollController,
-                        shrinkWrap: true,
-                        itemCount: events.length,
-                        itemBuilder: (context, index){
-                          Event ds = events[index];
+    _portraitEventListTab =  SingleChildScrollView(
+      controller: _scrollController,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          TableCalendar(
+            startingDayOfWeek: StartingDayOfWeek.monday,
+            initialCalendarFormat: CalendarFormat.month,
+            formatAnimation: FormatAnimation.scale,
+            calendarController: _calendarController,
+            locale: 'es',
+            initialSelectedDay: DateTime.now(),
+            calendarStyle: CalendarStyle(
+              canEventMarkersOverflow: false,
+              markersAlignment: Alignment.bottomCenter,
+              markersColor: _hue.carmesi,
+              markersMaxAmount: 5,
+              outsideDaysVisible: true,
+              todayColor: _hue.ocean,
+              weekdayStyle: _values.calendarDayTextStyle,
+              weekendStyle: _values.calendarWeekendDayTextStyle,
+            ),
+            headerStyle: HeaderStyle(
+                centerHeaderTitle: true,
+                formatButtonShowsNext: false,
+                titleTextStyle: _values.contentTextStyle,
+                formatButtonVisible: false
+            ),
+            onDaySelected: (day, events){
+              setState(() {
+                _eventListView = ListView.builder(
+                    scrollDirection: Axis.vertical,
+                    controller: _scrollController,
+                    shrinkWrap: true,
+                    itemCount: events.length,
+                    itemBuilder: (context, index){
+                      Event ds = events[index];
 
-                          Icon _eventIcon;
+                      Icon _eventIcon;
 
-                          switch(ds.type){
-                            case 'ceremonia':
-                              _eventIcon = new Icon(
-                                  Icons.event,
-                                  size: _values.toolbarIconSize,
-                                  color: _hue.outlines
-                              );
-                              break;
-                            case 'exámen':
-                              _eventIcon = new Icon(
-                                  Icons.description,
-                                  size: _values.toolbarIconSize,
-                                  color: _hue.outlines
-                              );
-                              break;
-                            case 'entrega':
-                              _eventIcon = new Icon(
-                                  Icons.assignment_turned_in,
-                                  size: _values.toolbarIconSize,
-                                  color: _hue.outlines
-                              );
-                              break;
-                            default:
-                              _eventIcon = new Icon(
-                                  Icons.event,
-                                  size: _values.toolbarIconSize,
-                                  color: _hue.outlines
-                              );
-                              break;
-                          }
-
-                          return new Container(
-                            color: _hue.outlines,
-                            padding: EdgeInsets.fromLTRB(0.0, 3.0, 0.0, 0.0),
-                            child: Container(
-                              color: _hue.background,
-                              child: ListTile(
-                                title: Container(
-                                  alignment: Alignment.centerLeft,
-                                  child: Text(ds.title),
-                                ),
-                                subtitle: Container(
-                                  alignment: Alignment.centerLeft,
-                                  child: Text(ds.type + ' - ' + ds.time + 'hrs.'),
-                                ),
-                                trailing: _eventIcon,
-                                onTap: (){
-                                  if(ds.type == _values.eventType['ceremony']){
-                                    if(widget.user.admin == true && widget.user.masterAdmin == false){
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) => EventScreen(event: ds, adminView: true,)
-                                          )
-                                      );
-                                    }else{
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) => EventScreen(event: ds, adminView: false,)
-                                          )
-                                      );
-                                    }
-                                  }
-                                },
-                              ),
-                            ),
+                      switch(ds.type){
+                        case 'ceremonia':
+                          _eventIcon = new Icon(
+                              Icons.event,
+                              size: _values.toolbarIconSize,
+                              color: _hue.outlines
                           );
-                        }
-                    );
-                  });
-                },
-                events: _calendarEvents,
-              ),
-              SizedBox(height: _values.mediumSizedBoxStandardHeight,),
-              Expanded(child: _eventListView,),
-            ],
+                          break;
+                        case 'exámen':
+                          _eventIcon = new Icon(
+                              Icons.description,
+                              size: _values.toolbarIconSize,
+                              color: _hue.outlines
+                          );
+                          break;
+                        case 'entrega':
+                          _eventIcon = new Icon(
+                              Icons.assignment_turned_in,
+                              size: _values.toolbarIconSize,
+                              color: _hue.outlines
+                          );
+                          break;
+                        default:
+                          _eventIcon = new Icon(
+                              Icons.event,
+                              size: _values.toolbarIconSize,
+                              color: _hue.outlines
+                          );
+                          break;
+                      }
+
+                      return new Container(
+                        color: _hue.outlines,
+                        padding: EdgeInsets.fromLTRB(0.0, 3.0, 0.0, 0.0),
+                        child: Container(
+                          color: _hue.background,
+                          child: ListTile(
+                            title: Container(
+                              alignment: Alignment.centerLeft,
+                              child: Text(ds.title),
+                            ),
+                            subtitle: Container(
+                              alignment: Alignment.centerLeft,
+                              child: Text(ds.type + ' - ' + ds.time + 'hrs.'),
+                            ),
+                            trailing: _eventIcon,
+                            onTap: (){
+                              if(ds.type == _values.eventType['ceremony']){
+                                if(widget.user.admin == true || widget.user.masterAdmin == true){
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => EventScreen(event: ds, adminView: true,)
+                                      )
+                                  );
+                                }else{
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => EventScreen(event: ds, adminView: false,)
+                                      )
+                                  );
+                                }
+                              }
+                            },
+                          ),
+                        ),
+                      );
+                    }
+                );
+              });
+            },
+            events: _calendarEvents,
           ),
-        )
-      ],
+          SizedBox(height: _values.mediumSizedBoxStandardHeight,),
+          _eventListView,
+        ],
+      ),
+    );
+
+    _landscapeEventListTab = SingleChildScrollView(
+      controller: _scrollController,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          TableCalendar(
+            startingDayOfWeek: StartingDayOfWeek.monday,
+            initialCalendarFormat: CalendarFormat.week,
+            formatAnimation: FormatAnimation.scale,
+            calendarController: _calendarController,
+            locale: 'es',
+            initialSelectedDay: DateTime.now(),
+            calendarStyle: CalendarStyle(
+              canEventMarkersOverflow: false,
+              markersAlignment: Alignment.bottomCenter,
+              markersColor: _hue.carmesi,
+              markersMaxAmount: 5,
+              outsideDaysVisible: true,
+              todayColor: _hue.ocean,
+              weekdayStyle: _values.calendarDayTextStyle,
+              weekendStyle: _values.calendarWeekendDayTextStyle,
+            ),
+            headerStyle: HeaderStyle(
+                centerHeaderTitle: true,
+                formatButtonShowsNext: false,
+                titleTextStyle: _values.contentTextStyle,
+                formatButtonVisible: false
+            ),
+            onDaySelected: (day, events){
+              setState(() {
+                _eventListView = ListView.builder(
+                    scrollDirection: Axis.vertical,
+                    controller: _scrollController,
+                    shrinkWrap: true,
+                    itemCount: events.length,
+                    itemBuilder: (context, index){
+                      Event ds = events[index];
+
+                      Icon _eventIcon;
+
+                      switch(ds.type){
+                        case 'ceremonia':
+                          _eventIcon = new Icon(
+                              Icons.event,
+                              size: _values.toolbarIconSize,
+                              color: _hue.outlines
+                          );
+                          break;
+                        case 'exámen':
+                          _eventIcon = new Icon(
+                              Icons.description,
+                              size: _values.toolbarIconSize,
+                              color: _hue.outlines
+                          );
+                          break;
+                        case 'entrega':
+                          _eventIcon = new Icon(
+                              Icons.assignment_turned_in,
+                              size: _values.toolbarIconSize,
+                              color: _hue.outlines
+                          );
+                          break;
+                        default:
+                          _eventIcon = new Icon(
+                              Icons.event,
+                              size: _values.toolbarIconSize,
+                              color: _hue.outlines
+                          );
+                          break;
+                      }
+
+                      return new Container(
+                        color: _hue.outlines,
+                        padding: EdgeInsets.fromLTRB(0.0, 3.0, 0.0, 0.0),
+                        child: Container(
+                          color: _hue.background,
+                          child: ListTile(
+                            title: Container(
+                              alignment: Alignment.centerLeft,
+                              child: Text(ds.title),
+                            ),
+                            subtitle: Container(
+                              alignment: Alignment.centerLeft,
+                              child: Text(ds.type + ' - ' + ds.time + 'hrs.'),
+                            ),
+                            trailing: _eventIcon,
+                            onTap: (){
+                              if(ds.type == _values.eventType['ceremony']){
+                                print("ENTRA AL LANDSCAPE");
+                                if(widget.user.admin == true || widget.user.masterAdmin == true){
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => EventScreen(event: ds, adminView: true,)
+                                      )
+                                  );
+                                }else{
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => EventScreen(event: ds, adminView: false,)
+                                      )
+                                  );
+                                }
+                              }
+                            },
+                          ),
+                        ),
+                      );
+                    }
+                );
+              });
+            },
+            events: _calendarEvents,
+          ),
+          SizedBox(height: _values.mediumSizedBoxStandardHeight,),
+          _eventListView,
+        ],
+      ),
     );
 
     if(widget.user.masterAdmin == true){
@@ -2576,8 +2546,96 @@ class _AdminScreen extends State<AdminScreen> with SingleTickerProviderStateMixi
         Tab(text: 'Administradores',)
       ];
 
-      _tabViews = [
-        _eventListTab,
+      _portraitTabViews = [
+        _portraitEventListTab,
+        StreamBuilder(
+          stream: _values.firestoreReference.collection('admins').where('admin', isEqualTo: true).snapshots(),
+          builder: (context, snapshot){
+            if(!snapshot.hasData){
+              return Image.asset(
+                  _values.loadingAnimation
+              );
+            }
+            return new ListView.builder(
+                controller: _scrollController,
+                shrinkWrap: false,
+                itemCount: snapshot.data.documents.length,
+                itemBuilder: (context, index){
+                  DocumentSnapshot ds = snapshot.data.documents[index];
+
+                  return new Container(
+                    color: _hue.outlines,
+                    padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 3.0),
+                    child: Container(
+                      color: _hue.background,
+                      child: ListTile(
+                        title: Container(
+                          alignment: Alignment.centerLeft,
+                          child: Text(ds['nickname']),
+                        ),
+                        subtitle: Container(
+                          alignment: Alignment.centerLeft,
+                          child: Text(ds['email']),
+                        ),
+                        trailing: Column(
+                          children: <Widget>[
+                            Container(
+                              decoration: BoxDecoration(
+                                  color: _hue.carmesi,
+                                  borderRadius: BorderRadius.circular(_values.standardBorderRadius)
+                              ),
+                              child: IconButton(
+                                icon: Icon(
+                                  Icons.delete,
+                                  color: _hue.background,
+                                ),
+                                onPressed: (){
+                                  showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) => CustomAlertDialog(
+                                        description: ds['nickname'] + " se eliminará de forma permanente como administrador ¿Está seguro?",
+                                        acceptButtonText: "Sí",
+                                        cancelButtonText: "No",
+                                      )
+                                  ).then((response){
+                                    if(response){
+                                      Admin admin = new Admin(ds['idAuth'], ds.documentID, ds['nickname'], ds['email'], ds['admin'], ds['masterAdmin']);
+
+                                      showDialog(
+                                          context: context,
+                                          builder: (BuildContext context) => CustomLoadDialog()
+                                      );
+
+                                      admin.DestroyAdmin(context).then((result){
+                                        if(result){
+                                          Navigator.of(context).pop();
+                                          showDialog(
+                                              context: context,
+                                              builder: (BuildContext context) => CustomDialog(
+                                                description: "El administrador se ha eliminado exitosamente.",
+                                                acceptButtonText: "Genial",
+                                              )
+                                          );
+                                        }
+                                      });
+                                    }
+                                  });
+                                },
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                }
+            );
+          },
+        )
+      ];
+
+      _landscapeTabViews = [
+        _landscapeEventListTab,
         StreamBuilder(
           stream: _values.firestoreReference.collection('admins').where('admin', isEqualTo: true).snapshots(),
           builder: (context, snapshot){
@@ -2670,238 +2728,560 @@ class _AdminScreen extends State<AdminScreen> with SingleTickerProviderStateMixi
         Tab(text: 'Eventos'),
       ];
 
-      _tabViews = [
-        _eventListTab,
+      _portraitTabViews = [
+        _portraitEventListTab,
+      ];
+
+      _landscapeTabViews = [
+        _landscapeEventListTab,
+        StreamBuilder(
+          stream: _values.firestoreReference.collection('admins').where('admin', isEqualTo: true).snapshots(),
+          builder: (context, snapshot){
+            if(!snapshot.hasData){
+              return Image.asset(
+                  _values.loadingAnimation
+              );
+            }
+            return new ListView.builder(
+                controller: _scrollController,
+                shrinkWrap: false,
+                itemCount: snapshot.data.documents.length,
+                itemBuilder: (context, index){
+                  DocumentSnapshot ds = snapshot.data.documents[index];
+
+                  return new Container(
+                    color: _hue.outlines,
+                    padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 3.0),
+                    child: Container(
+                      color: _hue.background,
+                      child: ListTile(
+                        title: Container(
+                          alignment: Alignment.centerLeft,
+                          child: Text(ds['nickname']),
+                        ),
+                        subtitle: Container(
+                          alignment: Alignment.centerLeft,
+                          child: Text(ds['email']),
+                        ),
+                        trailing: Column(
+                          children: <Widget>[
+                            Container(
+                              decoration: BoxDecoration(
+                                  color: _hue.carmesi,
+                                  borderRadius: BorderRadius.circular(_values.standardBorderRadius)
+                              ),
+                              child: IconButton(
+                                icon: Icon(
+                                  Icons.delete,
+                                  color: _hue.background,
+                                ),
+                                onPressed: (){
+                                  showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) => CustomAlertDialog(
+                                        description: ds['nickname'] + " se eliminará de forma permanente como administrador ¿Está seguro?",
+                                        acceptButtonText: "Sí",
+                                        cancelButtonText: "No",
+                                      )
+                                  ).then((response){
+                                    if(response){
+                                      Admin admin = new Admin(ds['idAuth'], ds.documentID, ds['nickname'], ds['email'], ds['admin'], ds['masterAdmin']);
+
+                                      showDialog(
+                                          context: context,
+                                          builder: (BuildContext context) => CustomLoadDialog()
+                                      );
+
+                                      admin.DestroyAdmin(context).then((result){
+                                        if(result){
+                                          Navigator.of(context).pop();
+                                          showDialog(
+                                              context: context,
+                                              builder: (BuildContext context) => CustomDialog(
+                                                description: "El administrador se ha eliminado exitosamente.",
+                                                acceptButtonText: "Genial",
+                                              )
+                                          );
+                                        }
+                                      });
+                                    }
+                                  });
+                                },
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                }
+            );
+          },
+        )
       ];
     }
 
     return new WillPopScope(
-        child: Scaffold(
-          key: _scaffoldKey,
-          appBar: AppBar(
-            leading: IconButton(
-                icon: Icon(
-                  Icons.list,
-                  color: _hue.background,
-                  size: _values.toolbarIconSize,
+        child: OrientationBuilder(
+          builder: (context, orientation){
+            return orientation == Orientation.portrait
+                ?
+            Scaffold(
+              key: _scaffoldKey,
+              appBar: AppBar(
+                leading: IconButton(
+                    icon: Icon(
+                      Icons.list,
+                      color: _hue.background,
+                      size: _values.toolbarIconSize,
+                    ),
+                    onPressed: (){
+                      _scaffoldKey.currentState.openDrawer();
+                    },
+                    tooltip: 'Opciones'
                 ),
-                onPressed: (){
-                  _scaffoldKey.currentState.openDrawer();
-                },
-              tooltip: 'Opciones'
-            ),
-            backgroundColor: _hue.carmesi,
-            title: Text('Administrador'),
-            bottom: TabBar(
-              controller: _tabController,
-              tabs: _tabs,
-            ),
-            actions: <Widget>[
-              IconButton(
-                icon: Icon(
-                  Icons.close,
-                  size: _values.toolbarIconSize,
+                backgroundColor: _hue.carmesi,
+                title: Text('Administrador'),
+                bottom: TabBar(
+                  controller: _tabController,
+                  tabs: _tabs,
                 ),
-                tooltip: 'Cerrar sesión',
-                onPressed: (){
-                  Navigator.pop(context);
-                },
+                actions: <Widget>[
+                  IconButton(
+                    icon: Icon(
+                      Icons.close,
+                      size: _values.toolbarIconSize,
+                    ),
+                    tooltip: 'Cerrar sesión',
+                    onPressed: (){
+                      Navigator.pop(context);
+                    },
+                  ),
+                  Container(
+                    width: 15.0,
+                  )
+                ],
               ),
-              Container(
-                width: 15.0,
-              )
-            ],
-          ),
-          drawer: Drawer(
-            child: ListView(
-              children: <Widget>[
-                DrawerHeader(
-                  child: Column(
-                    children: <Widget>[
-                      Text(
-                        widget.user.nickname,
-                        textAlign: TextAlign.center,
-                        style: _values.titleTextStyle,
-                      ),
-                      SizedBox(height: _values.smallSizedBoxStandardHeight,),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
+              drawer: Drawer(
+                child: ListView(
+                  children: <Widget>[
+                    DrawerHeader(
+                      child: Column(
                         children: <Widget>[
-                          _mailUpdateEntry,
-                          IconButton(
-                            icon: Icon(
-                              Icons.edit,
-                              color: _hue.outlines,
-                            ),
-                            tooltip: "Editar correo",
-                            onPressed: (){
-                              if(_editingMailState){
-                                FocusScope.of(context).requestFocus(FocusNode());
-                                setState(() {
-                                  _mailUpdateEntry = Text(
-                                    _mailUpdateController.text,
-                                    textAlign: TextAlign.center,
-                                    style: _values.contentTextStyle,
-                                  );
-                                  _editingMailState = false;
-                                });
-                              }else{
-                                setState(() {
-                                  _mailUpdateEntry = Expanded(
-                                    flex: 1,
-                                    child: TextFormField(
-                                      controller: _mailUpdateController,
-                                      decoration: new InputDecoration(
-                                          labelText: "Correo",
-                                          labelStyle: TextStyle(color: _hue.outlines),
-                                          fillColor: Colors.white,
-                                          filled: true,
-                                          border: new OutlineInputBorder(
-                                            borderRadius: new BorderRadius.circular(_values.standardBorderRadius),
-                                            borderSide: new BorderSide(
-                                              color: _hue.outlines,
-                                            ),
-                                          ),
-                                          focusedBorder: new OutlineInputBorder(
-                                              borderRadius: new BorderRadius.circular(_values.standardBorderRadius),
-                                              borderSide: new BorderSide(
-                                                  color: _hue.outlines
-                                              )
-                                          )
-                                      ),
-                                      validator: (val) {
-                                        if(val.length==0) {
-                                          return "Este campo no puede estar vacío.";
-                                        }else{
-                                          return null;
-                                        }
-                                      },
-                                      keyboardType: TextInputType.emailAddress,
-                                      style: new TextStyle(
-                                        fontFamily: "Poppins",
-                                      ),
-                                      onEditingComplete: (){
-                                        showDialog(
-                                          context: context,
-                                          builder: (BuildContext context) => CustomFormDialog(
-                                            description: "Por términos de seguridad, introduzca su contraseña.",
-                                            acceptButtonText: "Cambiar",
-                                            cancelButtonText: "Cancelar",
-                                            dialogPurpose: _values.dialogPurposes['Cambiar correo']
-                                          )
-                                        ).then((pass){
-                                          widget.user.UpdateEmail(pass, _mailUpdateController.text).then((result){
-                                              if(result){
-                                                showDialog(
-                                                  context: context,
-                                                  builder: (BuildContext context) => CustomDialog(
-                                                    description: "Su correo se a actualizado con éxito.",
-                                                    acceptButtonText: "Genial",
+                          Text(
+                            widget.user.nickname,
+                            textAlign: TextAlign.center,
+                            style: _values.titleTextStyle,
+                          ),
+                          SizedBox(height: _values.smallSizedBoxStandardHeight,),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              _mailUpdateEntry,
+                              IconButton(
+                                icon: Icon(
+                                  Icons.edit,
+                                  color: _hue.outlines,
+                                ),
+                                tooltip: "Editar correo",
+                                onPressed: (){
+                                  if(_editingMailState){
+                                    FocusScope.of(context).requestFocus(FocusNode());
+                                    setState(() {
+                                      _mailUpdateEntry = Text(
+                                        _mailUpdateController.text,
+                                        textAlign: TextAlign.center,
+                                        style: _values.contentTextStyle,
+                                      );
+                                      _editingMailState = false;
+                                    });
+                                  }else{
+                                    setState(() {
+                                      _mailUpdateEntry = Expanded(
+                                        flex: 1,
+                                        child: TextFormField(
+                                          controller: _mailUpdateController,
+                                          decoration: new InputDecoration(
+                                              labelText: "Correo",
+                                              labelStyle: TextStyle(color: _hue.outlines),
+                                              fillColor: Colors.white,
+                                              filled: true,
+                                              border: new OutlineInputBorder(
+                                                borderRadius: new BorderRadius.circular(_values.standardBorderRadius),
+                                                borderSide: new BorderSide(
+                                                  color: _hue.outlines,
+                                                ),
+                                              ),
+                                              focusedBorder: new OutlineInputBorder(
+                                                  borderRadius: new BorderRadius.circular(_values.standardBorderRadius),
+                                                  borderSide: new BorderSide(
+                                                      color: _hue.outlines
                                                   )
-                                                );
+                                              )
+                                          ),
+                                          validator: (val) {
+                                            if(val.length==0) {
+                                              return "Este campo no puede estar vacío.";
+                                            }else{
+                                              return null;
+                                            }
+                                          },
+                                          keyboardType: TextInputType.emailAddress,
+                                          style: new TextStyle(
+                                            fontFamily: "Poppins",
+                                          ),
+                                          onEditingComplete: (){
+                                            showDialog(
+                                                context: context,
+                                                builder: (BuildContext context) => CustomFormDialog(
+                                                    description: "Por términos de seguridad, introduzca su contraseña.",
+                                                    acceptButtonText: "Cambiar",
+                                                    cancelButtonText: "Cancelar",
+                                                    dialogPurpose: _values.dialogPurposes['Cambiar correo']
+                                                )
+                                            ).then((pass){
+                                              widget.user.UpdateEmail(pass, _mailUpdateController.text).then((result){
+                                                if(result){
+                                                  showDialog(
+                                                      context: context,
+                                                      builder: (BuildContext context) => CustomDialog(
+                                                        description: "Su correo se a actualizado con éxito.",
+                                                        acceptButtonText: "Genial",
+                                                      )
+                                                  );
+                                                  setState(() {
+                                                    widget.user.email = _mailUpdateController.text;
+                                                  });
+                                                }else{
+                                                  showDialog(
+                                                      context: context,
+                                                      builder: (BuildContext context) => CustomDialog(
+                                                        description: "Ocurrió un problema con la actualización, intente más tarde",
+                                                        acceptButtonText: "Aceptar",
+                                                      )
+                                                  );
+                                                  setState(() {
+                                                    _mailUpdateController.text = widget.user.email;
+                                                  });
+                                                }
                                                 setState(() {
-                                                  widget.user.email = _mailUpdateController.text;
+                                                  _mailUpdateEntry = Text(
+                                                    _mailUpdateController.text,
+                                                    textAlign: TextAlign.center,
+                                                    style: _values.contentTextStyle,
+                                                  );
+                                                  _editingMailState = false;
                                                 });
-                                              }else{
-                                                showDialog(
-                                                    context: context,
-                                                    builder: (BuildContext context) => CustomDialog(
-                                                      description: "Ocurrió un problema con la actualización, intente más tarde",
-                                                      acceptButtonText: "Aceptar",
-                                                    )
-                                                );
-                                                setState(() {
-                                                  _mailUpdateController.text = widget.user.email;
-                                                });
-                                              }
-                                              setState(() {
-                                                _mailUpdateEntry = Text(
-                                                  _mailUpdateController.text,
-                                                  textAlign: TextAlign.center,
-                                                  style: _values.contentTextStyle,
-                                                );
-                                                _editingMailState = false;
                                               });
-                                          });
-                                        });
-                                      },
-                                    ),
-                                  );
-                                  _editingMailState = true;
-                                });
-                              }
-                            },
+                                            });
+                                          },
+                                        ),
+                                      );
+                                      _editingMailState = true;
+                                    });
+                                  }
+                                },
+                              )
+                            ],
                           )
                         ],
-                      )
-                    ],
-                  ),
-                  decoration: BoxDecoration(
-                    border: Border(
-                      bottom: BorderSide(
-                        color: _hue.carmesi,
-                        width: 3.0,
-                      )
+                      ),
+                      decoration: BoxDecoration(
+                          border: Border(
+                              bottom: BorderSide(
+                                color: _hue.carmesi,
+                                width: 3.0,
+                              )
+                          )
+                      ),
+                    ),
+                    ListTile(
+                      leading: Text(
+                        "Cerrar sesión",
+                        style: _values.contentTextStyle,
+                      ),
+                      trailing: Icon(
+                        Icons.close,
+                        color: _hue.outlines,
+                      ),
+                      onTap: (){
+                        Navigator.of(context).pop();
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                    ListTile(
+                      leading: Text(
+                        "Cerrar menú",
+                        style: _values.contentTextStyle,
+                      ),
+                      trailing: Icon(
+                        Icons.keyboard_return,
+                        color: _hue.outlines,
+                      ),
+                      onTap: (){
+                        Navigator.of(context).pop();
+                      },
                     )
-                  ),
+                  ],
                 ),
-                ListTile(
-                  leading: Text(
-                    "Cerrar sesión",
-                    style: _values.contentTextStyle,
-                  ),
-                  trailing: Icon(
-                    Icons.close,
-                    color: _hue.outlines,
-                  ),
-                  onTap: (){
-                    Navigator.of(context).pop();
-                    Navigator.of(context).pop();
-                  },
+              ),
+              backgroundColor: _hue.background,
+              body: TabBarView(
+                controller: _tabController,
+                children: _portraitTabViews,
+              ),
+              floatingActionButton: Stack(
+                children: <Widget>[
+                  Positioned(
+                    left: _position.dx,
+                    top:  _position.dy,
+                    child: Draggable(
+                      feedback: Container(
+                        child: _floatingActionButton,
+                      ),
+                      child: Container(
+                        child: _floatingActionButton,
+                      ),
+                      childWhenDragging: Container(),
+                      onDragEnd: (details){
+                        setState(() {
+                          _position = details.offset;
+                        });
+                      },
+                    ),
+                  )
+                ],
+              ),
+            )
+                :
+            Scaffold(
+              key: _scaffoldKey,
+              appBar: AppBar(
+                leading: IconButton(
+                    icon: Icon(
+                      Icons.list,
+                      color: _hue.background,
+                      size: _values.toolbarIconSize,
+                    ),
+                    onPressed: (){
+                      _scaffoldKey.currentState.openDrawer();
+                    },
+                    tooltip: 'Opciones'
                 ),
-                ListTile(
-                  leading: Text(
-                    "Cerrar menú",
-                    style: _values.contentTextStyle,
-                  ),
-                  trailing: Icon(
-                    Icons.keyboard_return,
-                    color: _hue.outlines,
-                  ),
-                  onTap: (){
-                    Navigator.of(context).pop();
-                  },
-                )
-              ],
-            ),
-          ),
-          backgroundColor: _hue.background,
-          body: TabBarView(
-            controller: _tabController,
-            children: _tabViews,
-          ),
-          floatingActionButton: Stack(
-            children: <Widget>[
-              Positioned(
-                left: _position.dx,
-                top:  _position.dy,
-                child: Draggable(
-                  feedback: Container(
-                    child: _floatingActionButton,
-                  ),
-                  child: Container(
-                    child: _floatingActionButton,
-                  ),
-                  childWhenDragging: Container(),
-                  onDragEnd: (details){
-                    setState(() {
-                      _position = details.offset;
-                    });
-                  },
+                backgroundColor: _hue.carmesi,
+                title: Text('Administrador'),
+                bottom: TabBar(
+                  controller: _tabController,
+                  tabs: _tabs,
                 ),
-              )
-            ],
-          ),
+                actions: <Widget>[
+                  IconButton(
+                    icon: Icon(
+                      Icons.close,
+                      size: _values.toolbarIconSize,
+                    ),
+                    tooltip: 'Cerrar sesión',
+                    onPressed: (){
+                      Navigator.pop(context);
+                    },
+                  ),
+                  Container(
+                    width: 15.0,
+                  )
+                ],
+              ),
+              drawer: Drawer(
+                child: ListView(
+                  children: <Widget>[
+                    DrawerHeader(
+                      child: Column(
+                        children: <Widget>[
+                          Text(
+                            widget.user.nickname,
+                            textAlign: TextAlign.center,
+                            style: _values.titleTextStyle,
+                          ),
+                          SizedBox(height: _values.smallSizedBoxStandardHeight,),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              _mailUpdateEntry,
+                              IconButton(
+                                icon: Icon(
+                                  Icons.edit,
+                                  color: _hue.outlines,
+                                ),
+                                tooltip: "Editar correo",
+                                onPressed: (){
+                                  if(_editingMailState){
+                                    FocusScope.of(context).requestFocus(FocusNode());
+                                    setState(() {
+                                      _mailUpdateEntry = Text(
+                                        _mailUpdateController.text,
+                                        textAlign: TextAlign.center,
+                                        style: _values.contentTextStyle,
+                                      );
+                                      _editingMailState = false;
+                                    });
+                                  }else{
+                                    setState(() {
+                                      _mailUpdateEntry = Expanded(
+                                        flex: 1,
+                                        child: TextFormField(
+                                          controller: _mailUpdateController,
+                                          decoration: new InputDecoration(
+                                              labelText: "Correo",
+                                              labelStyle: TextStyle(color: _hue.outlines),
+                                              fillColor: Colors.white,
+                                              filled: true,
+                                              border: new OutlineInputBorder(
+                                                borderRadius: new BorderRadius.circular(_values.standardBorderRadius),
+                                                borderSide: new BorderSide(
+                                                  color: _hue.outlines,
+                                                ),
+                                              ),
+                                              focusedBorder: new OutlineInputBorder(
+                                                  borderRadius: new BorderRadius.circular(_values.standardBorderRadius),
+                                                  borderSide: new BorderSide(
+                                                      color: _hue.outlines
+                                                  )
+                                              )
+                                          ),
+                                          validator: (val) {
+                                            if(val.length==0) {
+                                              return "Este campo no puede estar vacío.";
+                                            }else{
+                                              return null;
+                                            }
+                                          },
+                                          keyboardType: TextInputType.emailAddress,
+                                          style: new TextStyle(
+                                            fontFamily: "Poppins",
+                                          ),
+                                          onEditingComplete: (){
+                                            showDialog(
+                                                context: context,
+                                                builder: (BuildContext context) => CustomFormDialog(
+                                                    description: "Por términos de seguridad, introduzca su contraseña.",
+                                                    acceptButtonText: "Cambiar",
+                                                    cancelButtonText: "Cancelar",
+                                                    dialogPurpose: _values.dialogPurposes['Cambiar correo']
+                                                )
+                                            ).then((pass){
+                                              widget.user.UpdateEmail(pass, _mailUpdateController.text).then((result){
+                                                if(result){
+                                                  showDialog(
+                                                      context: context,
+                                                      builder: (BuildContext context) => CustomDialog(
+                                                        description: "Su correo se a actualizado con éxito.",
+                                                        acceptButtonText: "Genial",
+                                                      )
+                                                  );
+                                                  setState(() {
+                                                    widget.user.email = _mailUpdateController.text;
+                                                  });
+                                                }else{
+                                                  showDialog(
+                                                      context: context,
+                                                      builder: (BuildContext context) => CustomDialog(
+                                                        description: "Ocurrió un problema con la actualización, intente más tarde",
+                                                        acceptButtonText: "Aceptar",
+                                                      )
+                                                  );
+                                                  setState(() {
+                                                    _mailUpdateController.text = widget.user.email;
+                                                  });
+                                                }
+                                                setState(() {
+                                                  _mailUpdateEntry = Text(
+                                                    _mailUpdateController.text,
+                                                    textAlign: TextAlign.center,
+                                                    style: _values.contentTextStyle,
+                                                  );
+                                                  _editingMailState = false;
+                                                });
+                                              });
+                                            });
+                                          },
+                                        ),
+                                      );
+                                      _editingMailState = true;
+                                    });
+                                  }
+                                },
+                              )
+                            ],
+                          )
+                        ],
+                      ),
+                      decoration: BoxDecoration(
+                          border: Border(
+                              bottom: BorderSide(
+                                color: _hue.carmesi,
+                                width: 3.0,
+                              )
+                          )
+                      ),
+                    ),
+                    ListTile(
+                      leading: Text(
+                        "Cerrar sesión",
+                        style: _values.contentTextStyle,
+                      ),
+                      trailing: Icon(
+                        Icons.close,
+                        color: _hue.outlines,
+                      ),
+                      onTap: (){
+                        Navigator.of(context).pop();
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                    ListTile(
+                      leading: Text(
+                        "Cerrar menú",
+                        style: _values.contentTextStyle,
+                      ),
+                      trailing: Icon(
+                        Icons.keyboard_return,
+                        color: _hue.outlines,
+                      ),
+                      onTap: (){
+                        Navigator.of(context).pop();
+                      },
+                    )
+                  ],
+                ),
+              ),
+              backgroundColor: _hue.background,
+              body: TabBarView(
+                controller: _tabController,
+                children: _landscapeTabViews,
+              ),
+              floatingActionButton: Stack(
+                children: <Widget>[
+                  Positioned(
+                    left: _position.dx,
+                    top:  _position.dy,
+                    child: Draggable(
+                      feedback: Container(
+                        child: _floatingActionButton,
+                      ),
+                      child: Container(
+                        child: _floatingActionButton,
+                      ),
+                      childWhenDragging: Container(),
+                      onDragEnd: (details){
+                        setState(() {
+                          _position = details.offset;
+                        });
+                      },
+                    ),
+                  )
+                ],
+              ),
+            );
+          },
         ),
         onWillPop: () => Future.value(false)
     );

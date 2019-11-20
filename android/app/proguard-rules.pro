@@ -8,3 +8,5 @@
 -dontwarn io.flutter.embedding.**
 -dontwarn com.google.firebase.appindexing.internal.**
 -keep class com.google.firebase.appindexing.internal.** { *; }
+-renamesourcefileattribute SourceFile
+-keepattributes SourceFile,LineNumberTable
