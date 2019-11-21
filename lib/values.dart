@@ -65,7 +65,7 @@ class Values{
   String enmfmBuilding = assetsPath + "enmfm.jpg";
   String loadingAnimation = assetsPath + "loading.gif";
   String retrievingListAnimation = assetsPath + "retrieving.gif";
-  String defaultPlace = assetsPath + "place.jpg";
+  String defaultPlace = assetsPath + "logo_gray.jpg";
 
   //responsive
   double defaultDivisionForResponsiveHeight = 2.2;

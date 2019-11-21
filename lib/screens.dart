@@ -616,7 +616,7 @@ class _EventScreen extends State<EventScreen>{
       widget.event.description = "";
       widget.event.time = "00:00";
       DateFormat df = new DateFormat('yyyy-MM-dd');
-      widget.event.date = df.format(DateTime.now());
+      widget.event.date = df.format(widget.newEventDateTime);
       _spanishFormattedText = BuildEventDayText(df.format(widget.newEventDateTime));
     }
   }
@@ -633,7 +633,7 @@ class _EventScreen extends State<EventScreen>{
     if(widget.event.image == null){
 
       if(_passedDependencies == false){
-        await getImageFileFromAssets("place.jpg").then((file){
+        await getImageFileFromAssets("logo_gray.jpg").then((file){
           setState(() {
             _imageNewEvent = file;
           });
@@ -2158,30 +2158,29 @@ class _AdminScreen extends State<AdminScreen> with SingleTickerProviderStateMixi
     _eventListView = ListView(shrinkWrap: true,);
     _calendarController = CalendarController();
     _tabIndex = 0;
+    _floatingActionButton = FloatingActionButton(
+      backgroundColor: _hue.ocean,
+      child: Icon(Icons.add),
+      onPressed: (){
+        switch(_tabIndex){
+          case 0:
+            Event _event = new Event(null, null, null, null, null, null, null, null);
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => EventScreen(event: _event, adminView: true, newEventDateTime: _calendarController.selectedDay,),
+                )
+            );
+            break;
+        }
+      },
+    );
 
     if(widget.user.masterAdmin == true){
       _tabController = TabController(vsync: this, length: _values.numberOfAdminTabs + 1);
-      _floatingActionButton = null;
     }
     if(widget.user.admin == true){
       _tabController = TabController(vsync: this, length: _values.numberOfAdminTabs);
-      _floatingActionButton = FloatingActionButton(
-        backgroundColor: _hue.ocean,
-        child: Icon(Icons.add),
-        onPressed: (){
-          switch(_tabIndex){
-            case 0:
-              Event _event = new Event(null, null, null, null, null, null, null, null);
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => EventScreen(event: _event, adminView: true, newEventDateTime: _calendarController.selectedDay,),
-                  )
-              );
-              break;
-          }
-        },
-      );
     }
 
     _tabController.addListener(_handleTabSelection);
@@ -3289,19 +3288,22 @@ class _AdminScreen extends State<AdminScreen> with SingleTickerProviderStateMixi
 
   _handleTabSelection() {
       setState(() {
-        _tabIndex = _tabController.index;
+        _tabIndex = _tabController.index; //pasamos el index del tab en el que se encuentra el usuario en ese momento, así le presentamos información específica de cada tab
 
-        if(widget.user.masterAdmin == true){
-          switch(_tabIndex){
-            case 0:
-              _floatingActionButton = null;
-              break;
-            case 1:
-              _floatingActionButton = FloatingActionButton(
+        _floatingActionButton = FloatingActionButton(
                 backgroundColor: _hue.ocean,
                 child: Icon(Icons.add),
                 onPressed: (){
                   switch(_tabIndex){
+                    case 0:
+                      Event _event = new Event(null, null, null, null, null, null, null, null);
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => EventScreen(event: _event, adminView: true, newEventDateTime: _calendarController.selectedDay,),
+                          )
+                      );
+                      break;
                     case 1:
                       showDialog(
                           context: context,
@@ -3326,9 +3328,7 @@ class _AdminScreen extends State<AdminScreen> with SingleTickerProviderStateMixi
                   }
                 },
               );
-              break;
-          }
-        }
+
       });
   }
 
