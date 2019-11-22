@@ -55,7 +55,7 @@ class Values{
   Map<String, String> eventType = {'ceremony': 'ceremonia', 'exam': 'exámen', 'delivery': 'entrega'};
 
   //timer
-  int defaultTimer = 5;
+  int defaultTimer = 3;
 
   //padding
   double defaultSymmetricPadding = 30.0;

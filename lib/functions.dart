@@ -6,6 +6,9 @@ import 'package:random_string/random_string.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
+import 'values.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 LaunchURL(String url) async {
   if (await canLaunch(url)) {
@@ -15,7 +18,137 @@ LaunchURL(String url) async {
   }
 }
 
-SendEmail() {
+Future<Map> RetrieveEvents(BuildContext context) async{
+  Values values = new Values();
+  QuerySnapshot _snapshots;
+  List<DocumentSnapshot> _documents;
+  Map<DateTime, List<Event>> events = new Map();
+  List<Event> _listEvent = new List();
+  DateTime _lastDateTimeIteration;
+
+  _snapshots = await values.firestoreReference.collection('events').getDocuments();
+  _documents = _snapshots.documents;
+
+  _documents.sort((a, b) => DateTime.parse(a['date']).compareTo(DateTime.parse(b['date'])));
+
+  _documents.forEach((event){
+
+    if(_lastDateTimeIteration == DateTime.parse(event['date'])){
+      Event dummyEvent = new Event(event.documentID, event['title'], event['image'], event['place'], event['date'], event['time'], event['description'], event['type']);
+      _listEvent.add(dummyEvent);
+    }else{
+      if(_listEvent.isEmpty){
+        Event dummyEvent = new Event(event.documentID, event['title'], event['image'], event['place'], event['date'], event['time'], event['description'],  event['type']);
+        _listEvent.add(dummyEvent);
+        _lastDateTimeIteration = DateTime.parse(event['date']);
+      }else{
+        events[_lastDateTimeIteration] = _listEvent;
+        _listEvent = [];
+        Event dummyEvent = new Event(event.documentID, event['title'], event['image'], event['place'], event['date'], event['time'], event['description'], event['type']);
+        _listEvent.add(dummyEvent);
+        _lastDateTimeIteration = DateTime.parse(event['date']);
+      }
+    }
+
+  });
+
+  events[_lastDateTimeIteration] = _listEvent;
+
+  return events;
+}
+
+Future<FirebaseUser> AdminLogin(String mail, String password, BuildContext context) async{
+
+  FirebaseUser user;
+
+  try{
+    AuthResult result = await FirebaseAuth.instance.signInWithEmailAndPassword(email: mail, password: password);
+    user = result.user;
+  }catch(e){
+    Navigator.of(context).pop();
+    if(Platform.isAndroid){
+      switch(e.code){
+        case 'ERROR_WRONG_PASSWORD':
+          showDialog(
+              context: context,
+              builder: (BuildContext context) => CustomDialog(
+                description: "Los datos son incorrectos.",
+                acceptButtonText: "Aceptar",
+              )
+          );
+          break;
+        case 'ERROR_USER_NOT_FOUND':
+          showDialog(
+              context: context,
+              builder: (BuildContext context) => CustomDialog(
+                description: "Los datos son incorrectos.",
+                acceptButtonText: "Aceptar",
+              )
+          );
+          break;
+        case 'FirebaseException':
+          showDialog(
+              context: context,
+              builder: (BuildContext context) => CustomDialog(
+                description: "Hubo un problema con la conexión, inténtelo más tarde.",
+                acceptButtonText: "Aceptar",
+              )
+          );
+          break;
+        default:
+          showDialog(
+              context: context,
+              builder: (BuildContext context) => CustomDialog(
+                description: "Hubo un problema con la conexión, inténtelo más tarde.",
+                acceptButtonText: "Aceptar",
+              )
+          );
+          break;
+      }
+    }
+    if(Platform.isIOS){
+      switch(e.code){
+        case 'Error 17011':
+          showDialog(
+              context: context,
+              builder: (BuildContext context) => CustomDialog(
+                description: "Los datos son incorrectos.",
+                acceptButtonText: "Aceptar",
+              )
+          );
+          break;
+        case 'Error 17009':
+          showDialog(
+              context: context,
+              builder: (BuildContext context) => CustomDialog(
+                description: "Los datos son incorrectos.",
+                acceptButtonText: "Aceptar",
+              )
+          );
+          break;
+        case 'Error 17020':
+          showDialog(
+              context: context,
+              builder: (BuildContext context) => CustomDialog(
+                description: "Hubo un problema con la conexión, inténtelo más tarde.",
+                acceptButtonText: "Aceptar",
+              )
+          );
+          break;
+        default:
+          showDialog(
+              context: context,
+              builder: (BuildContext context) => CustomDialog(
+                description: "Hubo un problema con la conexión, inténtelo más tarde.",
+                acceptButtonText: "Aceptar",
+              )
+          );
+          break;
+      }
+    }
+  }
+
+  return user;
 
 }
 

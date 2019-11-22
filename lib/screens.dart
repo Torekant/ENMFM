@@ -59,8 +59,7 @@ class _HomeScreen extends State<HomeScreen>{
   void didChangeDependencies() async{
     // TODO: implement didChangeDependencies
     super.didChangeDependencies();
-    Event dummyEvent = new Event('', '', '', '', '', '', '', '');
-    await dummyEvent.RetrieveEvents(context).then((map){
+    await RetrieveEvents(context).then((map){
       if(!map.containsKey(null)){
         setState(() {
           _calendarEvents = map;
@@ -70,6 +69,9 @@ class _HomeScreen extends State<HomeScreen>{
           if(_calendarEvents.containsKey(DateTime.parse(_todaysDate))){
             _calendarEvents.forEach((dateTime, eventList){
               if(dateTime == DateTime.parse(_todaysDate)){
+
+                eventList.sort((a, b) => a.time.compareTo(b.time)); //Ordenamos la lista de eventos por tiempo
+
                 _eventListView = ListView.builder(
                     scrollDirection: Axis.vertical,
                     controller: _scrollController,
@@ -263,6 +265,7 @@ class _HomeScreen extends State<HomeScreen>{
                                 formatButtonVisible: false
                             ),
                             onDaySelected: (day, events){
+                              events.sort((a, b) => a.time.compareTo(b.time));
                               setState(() {
                                 _eventListView = ListView.builder(
                                     scrollDirection: Axis.vertical,
@@ -466,6 +469,7 @@ class _HomeScreen extends State<HomeScreen>{
                                   formatButtonVisible: false
                               ),
                               onDaySelected: (day, events){
+                                events.sort((a, b) => a.time.compareTo(b.time));
                                 setState(() {
                                   _eventListView = ListView.builder(
                                       scrollDirection: Axis.vertical,
@@ -605,7 +609,6 @@ class _EventScreen extends State<EventScreen>{
     _values = new Values();
     _hue = new Hues();
     _scrollController = new ScrollController();
-    _spanishFormattedText = " ";
     _position = Offset(20.0, 20.0);
     _passedDependencies = false;
     _formKey = GlobalKey<FormState>();
@@ -618,6 +621,8 @@ class _EventScreen extends State<EventScreen>{
       DateFormat df = new DateFormat('yyyy-MM-dd');
       widget.event.date = df.format(widget.newEventDateTime);
       _spanishFormattedText = BuildEventDayText(df.format(widget.newEventDateTime));
+    }else{
+      _spanishFormattedText = BuildEventDayText(widget.event.date);
     }
   }
 
@@ -656,10 +661,6 @@ class _EventScreen extends State<EventScreen>{
 
     // TODO: implement build
     double _symmetricPadding = (_screenWidth * _values.widthPaddingUnit) / 10; //Función que nos permite hacer un padding responsivo a cualquier resolución en ancho
-
-    if(widget.event.id != null){
-      _spanishFormattedText = BuildEventDayText(widget.event.date);
-    }
 
     if(widget.adminView == true){
       if(widget.event.id != null){
@@ -1216,7 +1217,6 @@ class _EventScreen extends State<EventScreen>{
                     FocusScope.of(context).requestFocus(FocusNode());
                   },
                   onChanged: (content){
-                    _titleTextController.selection = TextSelection.collapsed(offset: _titleTextController.text.length);
                     widget.event.title = _titleTextController.text;
                   },
                   style: _values.textFieldTextStyle,
@@ -1256,7 +1256,6 @@ class _EventScreen extends State<EventScreen>{
                     FocusScope.of(context).requestFocus(FocusNode());
                   },
                   onChanged: (content){
-                    _placeTextController.selection = TextSelection.collapsed(offset: _placeTextController.text.length);
                     widget.event.place = _placeTextController.text;
                   },
                   style: _values.textFieldTextStyle,
@@ -1373,7 +1372,6 @@ class _EventScreen extends State<EventScreen>{
                     FocusScope.of(context).requestFocus(FocusNode());
                   },
                   onChanged: (content){
-                    _descriptionTextController.selection = TextSelection.collapsed(offset: _descriptionTextController.text.length);
                     widget.event.description = _descriptionTextController.text;
                   },
                   style: _values.textFieldTextStyle,
@@ -1447,7 +1445,6 @@ class _EventScreen extends State<EventScreen>{
                       FocusScope.of(context).requestFocus(FocusNode());
                     },
                     onChanged: (content){
-                      _titleTextController.selection = TextSelection.collapsed(offset: _titleTextController.text.length);
                       widget.event.title = _titleTextController.text;
                     },
                     style: _values.textFieldTextStyle,
@@ -1487,7 +1484,6 @@ class _EventScreen extends State<EventScreen>{
                       FocusScope.of(context).requestFocus(FocusNode());
                     },
                     onChanged: (content){
-                      _placeTextController.selection = TextSelection.collapsed(offset: _placeTextController.text.length);
                       widget.event.place = _placeTextController.text;
                     },
                     style: _values.textFieldTextStyle,
@@ -1604,7 +1600,6 @@ class _EventScreen extends State<EventScreen>{
                       FocusScope.of(context).requestFocus(FocusNode());
                     },
                     onChanged: (content){
-                      _descriptionTextController.selection = TextSelection.collapsed(offset: _descriptionTextController.text.length);
                       widget.event.description = _descriptionTextController.text;
                     },
                     style: _values.textFieldTextStyle,
@@ -1992,40 +1987,25 @@ class _LoginScreen extends State<LoginScreen>{
           ),
           onPressed: () {
             if (_formKey.currentState.validate()) {
-              Admin user = new Admin('', '', '', '', false, false);
 
               showDialog(
                   context: context,
                   builder: (BuildContext context) => CustomLoadDialog()
               );
 
-              user.AdminLogin(_idTextController.text, _passwordTextController.text, context).then((fireUser) async{
+              AdminLogin(_idTextController.text, _passwordTextController.text, context).then((fireUser) async{
                 if(fireUser != null){
                   Navigator.of(context).pop();
-                  user.idAuth = fireUser.uid;
                   values.firestoreReference.collection('admins').where('email', isEqualTo: fireUser.email).snapshots().listen((data){
-                    user.idDB = data.documents[0].documentID;
-                    user.nickname = data.documents[0]['nickname'];
-                    user.email = data.documents[0]['email'];
-                    if(data.documents[0]['masterAdmin'] == true){
-                      user.masterAdmin = true;
-                      user.admin = false;
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => AdminScreen(user: user,),
-                          )
-                      );
-                    }else{
-                      user.masterAdmin = false;
-                      user.admin = true;
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => AdminScreen(user: user,),
-                          )
-                      );
-                    }
+
+                    Admin user = new Admin(fireUser.uid, data.documents[0].documentID, data.documents[0]['nickname'], data.documents[0]['email'], data.documents[0]['admin'], data.documents[0]['masterAdmin']);
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => AdminScreen(user: user,),
+                        )
+                    );
+
                   });
                 }
               });
@@ -2195,8 +2175,7 @@ class _AdminScreen extends State<AdminScreen> with SingleTickerProviderStateMixi
 
     _position = Offset(_screenWidth / 1.2, _screenHeight / 1.2);
 
-    Event dummyEvent = new Event('', '', '', '', '', '', '', '');
-    await dummyEvent.RetrieveEvents(context).then((map){
+    await RetrieveEvents(context).then((map){
       if(!map.containsKey(null)){
         setState(() {
           _calendarEvents = map;
@@ -2206,6 +2185,9 @@ class _AdminScreen extends State<AdminScreen> with SingleTickerProviderStateMixi
           if(_calendarEvents.containsKey(DateTime.parse(_todaysDate))){
             _calendarEvents.forEach((dateTime, eventList){
               if(dateTime == DateTime.parse(_todaysDate)){
+
+                eventList.sort((a, b) => a.time.compareTo(b.time));
+
                 _eventListView = ListView.builder(
                     scrollDirection: Axis.vertical,
                     controller: _scrollController,
@@ -2327,6 +2309,7 @@ class _AdminScreen extends State<AdminScreen> with SingleTickerProviderStateMixi
                 formatButtonVisible: false
             ),
             onDaySelected: (day, events){
+              events.sort((a, b) => a.time.compareTo(b.time));
               setState(() {
                 _eventListView = ListView.builder(
                     scrollDirection: Axis.vertical,
@@ -2447,6 +2430,7 @@ class _AdminScreen extends State<AdminScreen> with SingleTickerProviderStateMixi
                 formatButtonVisible: false
             ),
             onDaySelected: (day, events){
+              events.sort((a, b) => a.time.compareTo(b.time));
               setState(() {
                 _eventListView = ListView.builder(
                     scrollDirection: Axis.vertical,
