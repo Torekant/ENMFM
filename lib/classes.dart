@@ -297,7 +297,7 @@ class _CustomFormDialog extends State<CustomFormDialog>{
         _acceptButton = FlatButton(
           onPressed: () async{
             if (_formKey.currentState.validate()) {
-              Admin adminDummy = new Admin('', '', '', '', false, false);
+              User adminDummy = new User('', '', '', '', false, false);
 
               showDialog(
                 context: context,
@@ -367,7 +367,7 @@ class _CustomFormDialog extends State<CustomFormDialog>{
         _acceptButton = FlatButton(
           onPressed: () async{
             if (_formKey.currentState.validate()) {
-              Admin adminDummy = new Admin('', '', '', '', false, false);
+              User adminDummy = new User('', '', '', '', false, false);
               await adminDummy.ResetPassword(_mailTextController.text);
               Navigator.of(context).pop(true);
             }
@@ -753,7 +753,7 @@ class Event{
   }
 }
 
-class Admin{
+class User{
 
   String idAuth;
   String idDB;
@@ -762,7 +762,7 @@ class Admin{
   bool admin;
   bool masterAdmin;
 
-  Admin(String idAuth, String idDB, String nickname, String email, bool admin, bool masterAdmin){
+  User(String idAuth, String idDB, String nickname, String email, bool admin, bool masterAdmin){
     this.idAuth = idAuth;
     this.idDB = idDB;
     this.nickname = nickname;

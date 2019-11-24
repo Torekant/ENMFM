@@ -9,6 +9,7 @@ import 'package:path_provider/path_provider.dart';
 import 'values.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:intl/intl.dart';
 
 LaunchURL(String url) async {
   if (await canLaunch(url)) {
@@ -18,7 +19,7 @@ LaunchURL(String url) async {
   }
 }
 
-Future<Map> RetrieveEvents(BuildContext context) async{
+Future<Map> RetrieveCalendarEvents(BuildContext context) async{
   Values values = new Values();
   QuerySnapshot _snapshots;
   List<DocumentSnapshot> _documents;
@@ -55,6 +56,29 @@ Future<Map> RetrieveEvents(BuildContext context) async{
   events[_lastDateTimeIteration] = _listEvent;
 
   return events;
+}
+
+Future<List> RetrieveListEvents(BuildContext context) async{
+  Values values = new Values();
+  QuerySnapshot _snapshots;
+  List<DocumentSnapshot> _documents;
+  List<Event> _list = new List();
+
+  DateFormat df = new DateFormat('yyyy-MM-dd');
+  String _todaysDate = df.format(DateTime.now());
+  String _aWeekFromTodayDate = df.format(DateTime.now().add(Duration(days: 7)));
+
+  _snapshots = await values.firestoreReference.collection('events').where('date', isGreaterThanOrEqualTo: _todaysDate).where('date', isLessThanOrEqualTo: _aWeekFromTodayDate).getDocuments();
+  _documents = _snapshots.documents;
+
+  _documents.sort((a, b) => DateTime.parse(a['date']).compareTo(DateTime.parse(b['date'])));
+
+  for(int i=0; i < _documents.length; i++){
+    Event _event = new Event(_documents[i].documentID, _documents[i]['title'], _documents[i]['image'], _documents[i]['place'], _documents[i]['date'], _documents[i]['time'], _documents[i]['description'], _documents[i]['type']);
+    _list.add(_event);
+  }
+
+  return _list;
 }
 
 Future<FirebaseUser> AdminLogin(String mail, String password, BuildContext context) async{

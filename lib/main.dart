@@ -74,6 +74,7 @@ class _SplashScreen extends State<SplashScreen> {
     _messaging.getToken().then((token){
       print(token);
     });
+
   }
 
   @override

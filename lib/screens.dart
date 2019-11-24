@@ -37,9 +37,153 @@ class _HomeScreen extends State<HomeScreen>{
 
   ScrollController _scrollController;
 
-  CalendarController _calendarController;
-  Map<DateTime, List<Event>> _calendarEvents;
-  ListView _eventListView;
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _values  = new Values();
+    _hue = new Hues();
+    _scrollController = ScrollController();
+
+  }
+
+  @override
+  Widget build(BuildContext context) {
+
+    double _screenWidth = MediaQuery.of(context).size.width; //lee el ancho de dispositivo
+    double _screenHeight = MediaQuery.of(context).size.height; //lee el largo del dispositivo
+
+    double _responsiveHeight = _screenHeight / _values.defaultDivisionForResponsiveHeight; //Función para altura responsiva de cada card en la lista
+    double _responsiveWidth = _screenWidth / _values.defaultDivisionForResponsiveWidth; //Función para altura responsiva de cada card en la lista
+
+
+    return Scaffold(
+        appBar: AppBar(
+          backgroundColor: _hue.carmesi,
+          title: Text("Inicio"),
+          actions: <Widget>[
+            IconButton(
+              icon: Icon(
+                Icons.assignment_ind,
+                size: _values.toolbarIconSize,
+              ),
+              tooltip: 'Administrar',
+              onPressed: (){
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => LoginScreen(),
+                    )
+                );
+              },
+            ),
+            Container(
+              width: _values.containerWidth,
+            )
+          ],
+        ),
+        body: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            Expanded(
+              child: Column(
+                children: <Widget>[
+                  ListView.builder(
+                      controller: _scrollController,
+                      shrinkWrap: true,
+                      itemCount: _values.menuOptions.length,
+                      itemBuilder: (BuildContext context, int index){
+                        return GestureDetector(
+                          child: Card(
+                            elevation: _values.cardElevation,
+                            child: Container(
+                              height: _responsiveHeight / 5,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: <Widget>[
+                                  Text(
+                                    _values.menuOptions[index],
+                                    style: _values.titleTextStyle,
+                                  ),
+                                  Icon(Icons.arrow_forward_ios)
+                                ],
+                              ),
+                            ),
+                          ),
+                          onTap: (){
+                            switch(index){
+                              case 5:
+                                Navigator.push(
+                                  context,
+                                    MaterialPageRoute(
+                                        builder: (context) => EventsScreen()
+                                    )
+                                );
+                                break;
+                            }
+                          },
+                        );
+                      }
+                  ),
+                  SizedBox(height: _responsiveHeight / 10,),
+                  FlatButton(
+                    textColor: _hue.carmesi,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Text("Ir a página web"),
+                        Icon(
+                          Icons.launch,
+                          color: _hue.carmesi,
+                        )
+                      ],
+                    ),
+                    onPressed: (){
+                      LaunchURL(_values.urlWebPage);
+                    },
+                  )
+                ],
+              ),
+            )
+          ],
+        )
+    );
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+}
+
+class EventsScreen extends StatefulWidget {
+  EventsScreen({Key key}) : super(key: key);
+
+  // This widget is the home page of your application. It is stateful, meaning
+  // that it has a State object (defined below) that contains fields that affect
+  // how it looks.
+
+  // This class is the configuration for the state. It holds the values (in this
+  // case the title) provided by the parent (in this case the App widget) and
+  // used by the build method of the State. Fields in a Widget subclass are
+  // always marked "final".
+
+
+  @override
+  _EventsScreen createState() => _EventsScreen();
+}
+
+class _EventsScreen extends State<EventsScreen>{
+
+  static Values _values;
+  static Hues _hue;
+
+  ScrollController _scrollController;
+  Image _image;
+  Widget _screenContent;
 
 
   @override
@@ -48,104 +192,31 @@ class _HomeScreen extends State<HomeScreen>{
     super.initState();
     _values  = new Values();
     _hue = new Hues();
-    _calendarController = CalendarController();
     _scrollController = new ScrollController();
-    _calendarEvents = new Map();
-    _eventListView = ListView(shrinkWrap: true,);
+    _image = Image.asset(
+      _values.loadingAnimation
+    );
+    _screenContent = _image;
 
-  }
-
-  @override
-  void didChangeDependencies() async{
-    // TODO: implement didChangeDependencies
-    super.didChangeDependencies();
-    await RetrieveEvents(context).then((map){
-      if(!map.containsKey(null)){
+    RetrieveListEvents(context).then((list){
+      if(list.isNotEmpty){
         setState(() {
-          _calendarEvents = map;
-
-          DateFormat df = new DateFormat('yyyy-MM-dd');
-          String _todaysDate = df.format(DateTime.now());
-          if(_calendarEvents.containsKey(DateTime.parse(_todaysDate))){
-            _calendarEvents.forEach((dateTime, eventList){
-              if(dateTime == DateTime.parse(_todaysDate)){
-
-                eventList.sort((a, b) => a.time.compareTo(b.time)); //Ordenamos la lista de eventos por tiempo
-
-                _eventListView = ListView.builder(
-                    scrollDirection: Axis.vertical,
-                    controller: _scrollController,
-                    shrinkWrap: true,
-                    itemCount: eventList.length,
-                    itemBuilder: (context, index){
-                      Event ds = eventList[index];
-
-                      Icon _eventIcon;
-
-                      switch(ds.type){
-                        case 'ceremonia':
-                          _eventIcon = new Icon(
-                              Icons.event,
-                              size: _values.toolbarIconSize,
-                              color: _hue.outlines
-                          );
-                          break;
-                        case 'exámen':
-                          _eventIcon = new Icon(
-                              Icons.description,
-                              size: _values.toolbarIconSize,
-                              color: _hue.outlines
-                          );
-                          break;
-                        case 'entrega':
-                          _eventIcon = new Icon(
-                              Icons.assignment_turned_in,
-                              size: _values.toolbarIconSize,
-                              color: _hue.outlines
-                          );
-                          break;
-                        default:
-                          _eventIcon = new Icon(
-                              Icons.event,
-                              size: _values.toolbarIconSize,
-                              color: _hue.outlines
-                          );
-                          break;
-                      }
-
-                      return new Container(
-                        color: _hue.outlines,
-                        padding: EdgeInsets.fromLTRB(0.0, 3.0, 0.0, 0.0),
-                        child: Container(
-                          color: _hue.background,
-                          child: ListTile(
-                            title: Container(
-                              alignment: Alignment.centerLeft,
-                              child: Text(ds.title),
-                            ),
-                            subtitle: Container(
-                              alignment: Alignment.centerLeft,
-                              child: Text(ds.type + ' - ' + ds.time + 'hrs.'),
-                            ),
-                            trailing: _eventIcon,
-                            onTap: (){
-                              if(ds.type == _values.eventType['ceremony']){
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => EventScreen(event: ds, adminView: false,)
-                                    )
-                                );
-                              }
-                            },
-                          ),
-                        ),
-                      );
-                    }
+          _screenContent = ListView.builder(
+              controller: _scrollController,
+              shrinkWrap: true,
+              itemCount: list.length,
+              itemBuilder: (BuildContext context, int index){
+                return Card(
+                  child: Text(list[index].title),
                 );
               }
-            });
-          }
+          );
+        });
+      }else{
+        setState(() {
+          _screenContent = Image.asset(
+            _values.logoColored
+          );
         });
       }
     });
@@ -160,418 +231,81 @@ class _HomeScreen extends State<HomeScreen>{
     double _responsiveHeight = _screenHeight / _values.defaultDivisionForResponsiveHeight; //Función para altura responsiva de cada card en la lista
 
 
-    return WillPopScope( //Este widget nos permite describir el proceso de stack de las pantallas, principalmente el que pueda o no salir del stack de la aplicación
-        child: DefaultTabController(
-          length: 2,
-          child: OrientationBuilder(
-            builder: (context, orientation){
-              return orientation == Orientation.portrait
-                  ?
-              Scaffold(
-                  appBar: AppBar(
-                    backgroundColor: _hue.carmesi,
-                    title: Text("Inicio"),
-                    bottom: TabBar(
-                      tabs: <Widget>[
-                        Tab(text: 'ENMFM',),
-                        Tab(text: 'Calendario',)
-                      ],
-                    ),
-                    actions: <Widget>[
-                      IconButton(
-                        icon: Icon(
-                          Icons.assignment_ind,
-                          size: _values.toolbarIconSize,
-                        ),
-                        tooltip: 'Administrar',
-                        onPressed: (){
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => LoginScreen(),
-                              )
-                          );
-                        },
-                      ),
-                      Container(
-                        width: _values.containerWidth,
-                      )
-                    ],
+    return OrientationBuilder(
+      builder: (context, orientation){
+        return orientation == Orientation.portrait
+            ?
+        Scaffold(
+            appBar: AppBar(
+              backgroundColor: _hue.carmesi,
+              title: Text("Inicio"),
+              actions: <Widget>[
+                IconButton(
+                  icon: Icon(
+                    Icons.assignment_ind,
+                    size: _values.toolbarIconSize,
                   ),
-                  body: TabBarView(
-                    children: <Widget>[
-                      SingleChildScrollView(
-                        controller: _scrollController,
-                        scrollDirection: Axis.vertical,
-                        child: Column(
-                          children: <Widget>[
-                            Image.asset(
-                              _values.enmfmBuilding,
-                              fit: BoxFit.cover,
-                              height: _responsiveHeight / 1.3,
-                            ),
-                            SizedBox(height: _values.smallSizedBoxStandardHeight,),
-                            Container(
-                              width: _screenWidth / 1.2,
-                              child: Text(
-                                _values.welcomeText,
-                                style: _values.plainTextStyle,
-                                textAlign: TextAlign.center,
-                              ),
-                            ),
-                            SizedBox(height: _values.smallSizedBoxStandardHeight,),
-                            FlatButton(
-                              textColor: _hue.carmesi,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: <Widget>[
-                                  Text("Ir a página web"),
-                                  Icon(
-                                    Icons.launch,
-                                    color: _hue.carmesi,
-                                  )
-                                ],
-                              ),
-                              onPressed: (){
-                                LaunchURL(_values.urlWebPage);
-                              },
-                            )
-                          ],
-                        ),
-                      ),
-                      Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: <Widget>[
-                          TableCalendar(
-                            startingDayOfWeek: StartingDayOfWeek.monday,
-                            formatAnimation: FormatAnimation.scale,
-                            calendarController: _calendarController,
-                            locale: 'es',
-                            initialSelectedDay: DateTime.now(),
-                            calendarStyle: CalendarStyle(
-                              canEventMarkersOverflow: false,
-                              markersAlignment: Alignment.bottomCenter,
-                              markersColor: _hue.carmesi,
-                              markersMaxAmount: 5,
-                              outsideDaysVisible: true,
-                              todayColor: _hue.ocean,
-                              weekdayStyle: _values.calendarDayTextStyle,
-                              weekendStyle: _values.calendarWeekendDayTextStyle,
-                            ),
-                            headerStyle: HeaderStyle(
-                                centerHeaderTitle: true,
-                                formatButtonShowsNext: false,
-                                titleTextStyle: _values.contentTextStyle,
-                                formatButtonVisible: false
-                            ),
-                            onDaySelected: (day, events){
-                              events.sort((a, b) => a.time.compareTo(b.time));
-                              setState(() {
-                                _eventListView = ListView.builder(
-                                    scrollDirection: Axis.vertical,
-                                    controller: _scrollController,
-                                    shrinkWrap: true,
-                                    itemCount: events.length,
-                                    itemBuilder: (context, index){
-                                      Event ds = events[index];
-
-                                      Icon _eventIcon;
-
-                                      switch(ds.type){
-                                        case 'ceremonia':
-                                          _eventIcon = new Icon(
-                                              Icons.event,
-                                              size: _values.toolbarIconSize,
-                                              color: _hue.outlines
-                                          );
-                                          break;
-                                        case 'exámen':
-                                          _eventIcon = new Icon(
-                                              Icons.description,
-                                              size: _values.toolbarIconSize,
-                                              color: _hue.outlines
-                                          );
-                                          break;
-                                        case 'entrega':
-                                          _eventIcon = new Icon(
-                                              Icons.assignment_turned_in,
-                                              size: _values.toolbarIconSize,
-                                              color: _hue.outlines
-                                          );
-                                          break;
-                                        default:
-                                          _eventIcon = new Icon(
-                                              Icons.event,
-                                              size: _values.toolbarIconSize,
-                                              color: _hue.outlines
-                                          );
-                                          break;
-                                      }
-
-                                      return new Container(
-                                        color: _hue.outlines,
-                                        padding: EdgeInsets.fromLTRB(0.0, 3.0, 0.0, 0.0),
-                                        child: Container(
-                                          color: _hue.background,
-                                          child: ListTile(
-                                            title: Container(
-                                              alignment: Alignment.centerLeft,
-                                              child: Text(ds.title),
-                                            ),
-                                            subtitle: Container(
-                                              alignment: Alignment.centerLeft,
-                                              child: Text(ds.type + ' - ' + ds.time + 'hrs.'),
-                                            ),
-                                            trailing: _eventIcon,
-                                            onTap: (){
-                                              if(ds.type == _values.eventType['ceremony']){
-                                                print("COSA EN EL HOME NO MAMES!");
-                                                Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                        builder: (context) => EventScreen(event: ds, adminView: false,)
-                                                    )
-                                                );
-                                              }
-                                            },
-                                          ),
-                                        ),
-                                      );
-                                    }
-                                );
-                              });
-                            },
-                            events: _calendarEvents,
-                          ),
-                          SizedBox(height: _values.mediumSizedBoxStandardHeight,),
-                          Expanded(child: _eventListView,)
-                        ],
-                      )
-                    ],
-                  )
-              )
-                  :
-              Scaffold(
-                  appBar: AppBar(
-                    backgroundColor: _hue.carmesi,
-                    title: Text("Inicio"),
-                    bottom: TabBar(
-                      tabs: <Widget>[
-                        Tab(text: 'ENMFM',),
-                        Tab(text: 'Calendario',)
-                      ],
-                    ),
-                    actions: <Widget>[
-                      IconButton(
-                        icon: Icon(
-                          Icons.assignment_ind,
-                          size: _values.toolbarIconSize,
-                        ),
-                        tooltip: 'Administrar',
-                        onPressed: (){
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => LoginScreen(),
-                              )
-                          );
-                        },
-                      ),
-                      Container(
-                        width: _values.containerWidth,
-                      )
-                    ],
+                  tooltip: 'Administrar',
+                  onPressed: (){
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => LoginScreen(),
+                        )
+                    );
+                  },
+                ),
+                Container(
+                  width: _values.containerWidth,
+                )
+              ],
+            ),
+            body: Center(
+              child: _screenContent,
+            )
+        )
+            :
+        Scaffold(
+            appBar: AppBar(
+              backgroundColor: _hue.carmesi,
+              title: Text("Inicio"),
+              actions: <Widget>[
+                IconButton(
+                  icon: Icon(
+                    Icons.assignment_ind,
+                    size: _values.toolbarIconSize,
                   ),
-                  body: TabBarView(
-                    children: <Widget>[
-                      SingleChildScrollView(
-                        controller: _scrollController,
-                        scrollDirection: Axis.vertical,
-                        child: Column(
-                          children: <Widget>[
-                            Parallax.inside(
-                              child: Image.asset(
-                                _values.enmfmBuilding,
-                                fit: BoxFit.cover,
-                                height: _responsiveHeight / 1.1,
-                                width: _screenWidth,
-                              ),
-                              mainAxisExtent: _responsiveHeight / 1.3),
-                            SizedBox(height: _values.smallSizedBoxStandardHeight,),
-                            Container(
-                              width: _screenWidth / 1.2,
-                              child: Text(
-                                _values.welcomeText,
-                                style: _values.plainTextStyle,
-                                textAlign: TextAlign.center,
-                              ),
-                            ),
-                            SizedBox(height: _values.smallSizedBoxStandardHeight,),
-                            /*MaterialButton(
-                          elevation: values.buttonElevation,
-                          minWidth: _screenWidth / 1.5,
-                          padding: EdgeInsets.fromLTRB(values.standardPaddingLeft, values.standardPaddingTop, values.standardPaddingRight, values.standardPaddingBottom),
-                          color: Colors.transparent,
-                          textColor: hue.carmesi,
-                          child: Text(
-                            "Ir a página web",
-                            textAlign: TextAlign.center,
-                            style: values.materialButtonBoldTextStyle,
-                          ),
-                          onPressed: (){
-                            LaunchURL(values.urlWebPage);
-                          },
-                        )*/
-                            FlatButton(
-                              textColor: _hue.carmesi,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: <Widget>[
-                                  Text("Ir a página web"),
-                                  Icon(
-                                    Icons.launch,
-                                    color: _hue.carmesi,
-                                  )
-                                ],
-                              ),
-                              onPressed: (){
-                                LaunchURL(_values.urlWebPage);
-                              },
-                            )
-                          ],
-                        ),
-                      ),
-                      SingleChildScrollView(
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: <Widget>[
-                            TableCalendar(
-                              startingDayOfWeek: StartingDayOfWeek.monday,
-                              initialCalendarFormat: CalendarFormat.week,
-                              formatAnimation: FormatAnimation.scale,
-                              calendarController: _calendarController,
-                              locale: 'es',
-                              initialSelectedDay: DateTime.now(),
-                              calendarStyle: CalendarStyle(
-                                canEventMarkersOverflow: false,
-                                markersAlignment: Alignment.bottomCenter,
-                                markersColor: _hue.carmesi,
-                                markersMaxAmount: 5,
-                                outsideDaysVisible: true,
-                                todayColor: _hue.ocean,
-                                weekdayStyle: _values.calendarDayTextStyle,
-                                weekendStyle: _values.calendarWeekendDayTextStyle,
-                              ),
-                              headerStyle: HeaderStyle(
-                                  centerHeaderTitle: true,
-                                  formatButtonShowsNext: false,
-                                  titleTextStyle: _values.contentTextStyle,
-                                  formatButtonVisible: false
-                              ),
-                              onDaySelected: (day, events){
-                                events.sort((a, b) => a.time.compareTo(b.time));
-                                setState(() {
-                                  _eventListView = ListView.builder(
-                                      scrollDirection: Axis.vertical,
-                                      controller: _scrollController,
-                                      shrinkWrap: true,
-                                      itemCount: events.length,
-                                      itemBuilder: (context, index){
-                                        Event ds = events[index];
-
-                                        Icon _eventIcon;
-
-                                        switch(ds.type){
-                                          case 'ceremonia':
-                                            _eventIcon = new Icon(
-                                                Icons.event,
-                                                size: _values.toolbarIconSize,
-                                                color: _hue.outlines
-                                            );
-                                            break;
-                                          case 'exámen':
-                                            _eventIcon = new Icon(
-                                                Icons.description,
-                                                size: _values.toolbarIconSize,
-                                                color: _hue.outlines
-                                            );
-                                            break;
-                                          case 'entrega':
-                                            _eventIcon = new Icon(
-                                                Icons.assignment_turned_in,
-                                                size: _values.toolbarIconSize,
-                                                color: _hue.outlines
-                                            );
-                                            break;
-                                          default:
-                                            _eventIcon = new Icon(
-                                                Icons.event,
-                                                size: _values.toolbarIconSize,
-                                                color: _hue.outlines
-                                            );
-                                            break;
-                                        }
-
-                                        return new Container(
-                                          color: _hue.outlines,
-                                          padding: EdgeInsets.fromLTRB(0.0, 3.0, 0.0, 0.0),
-                                          child: Container(
-                                            color: _hue.background,
-                                            child: ListTile(
-                                              title: Container(
-                                                alignment: Alignment.centerLeft,
-                                                child: Text(ds.title),
-                                              ),
-                                              subtitle: Container(
-                                                alignment: Alignment.centerLeft,
-                                                child: Text(ds.type + ' - ' + ds.time + 'hrs.'),
-                                              ),
-                                              trailing: _eventIcon,
-                                              onTap: (){
-                                                if(ds.type == _values.eventType['ceremony']){
-                                                  Navigator.push(
-                                                      context,
-                                                      MaterialPageRoute(
-                                                          builder: (context) => EventScreen(event: ds, adminView: false,)
-                                                      )
-                                                  );
-                                                }
-                                              },
-                                            ),
-                                          ),
-                                        );
-                                      }
-                                  );
-                                });
-                              },
-                              events: _calendarEvents,
-                            ),
-                            SizedBox(height: _values.mediumSizedBoxStandardHeight,),
-                            _eventListView
-                          ],
-                        ),
-                      )
-                    ],
-                  )
-              );
-            },
-          ),
-        ),
-        onWillPop: () => Future.value(false) //Esta línea es la que previene que una pantalla pueda regresar a la anterior
+                  tooltip: 'Administrar',
+                  onPressed: (){
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => LoginScreen(),
+                        )
+                    );
+                  },
+                ),
+                Container(
+                  width: _values.containerWidth,
+                )
+              ],
+            ),
+            body: SingleChildScrollView()
+        );
+      },
     );
   }
 
   @override
   void dispose() {
     _scrollController.dispose();
-    _calendarController.dispose();
     super.dispose();
   }
 
 }
 
-class EventScreen extends StatefulWidget {
-  EventScreen({Key key, this.event, this.adminView, this.newEventDateTime}) : super(key: key);
+class EventDetailsScreen extends StatefulWidget {
+  EventDetailsScreen({Key key, this.event, this.adminView, this.newEventDateTime}) : super(key: key);
 
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
@@ -590,7 +324,7 @@ class EventScreen extends StatefulWidget {
   _EventScreen createState() => _EventScreen();
 }
 
-class _EventScreen extends State<EventScreen>{
+class _EventScreen extends State<EventDetailsScreen>{
 
   static Values _values;
   static Hues _hue;
@@ -1998,7 +1732,7 @@ class _LoginScreen extends State<LoginScreen>{
                   Navigator.of(context).pop();
                   values.firestoreReference.collection('admins').where('email', isEqualTo: fireUser.email).snapshots().listen((data){
 
-                    Admin user = new Admin(fireUser.uid, data.documents[0].documentID, data.documents[0]['nickname'], data.documents[0]['email'], data.documents[0]['admin'], data.documents[0]['masterAdmin']);
+                    User user = new User(fireUser.uid, data.documents[0].documentID, data.documents[0]['nickname'], data.documents[0]['email'], data.documents[0]['admin'], data.documents[0]['masterAdmin']);
                     Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -2087,7 +1821,7 @@ class AdminScreen extends StatefulWidget {
   // used by the build method of the State. Fields in a Widget subclass are
   // always marked "final".
 
-  final Admin user;
+  final User user;
 
   @override
   _AdminScreen createState() => _AdminScreen();
@@ -2148,7 +1882,7 @@ class _AdminScreen extends State<AdminScreen> with SingleTickerProviderStateMixi
             Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => EventScreen(event: _event, adminView: true, newEventDateTime: _calendarController.selectedDay,),
+                  builder: (context) => EventDetailsScreen(event: _event, adminView: true, newEventDateTime: _calendarController.selectedDay,),
                 )
             );
             break;
@@ -2175,7 +1909,7 @@ class _AdminScreen extends State<AdminScreen> with SingleTickerProviderStateMixi
 
     _position = Offset(_screenWidth / 1.2, _screenHeight / 1.2);
 
-    await RetrieveEvents(context).then((map){
+    await RetrieveCalendarEvents(context).then((map){
       if(!map.containsKey(null)){
         setState(() {
           _calendarEvents = map;
@@ -2250,14 +1984,14 @@ class _AdminScreen extends State<AdminScreen> with SingleTickerProviderStateMixi
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (context) => EventScreen(event: ds, adminView: true,)
+                                          builder: (context) => EventDetailsScreen(event: ds, adminView: true,)
                                       )
                                   );
                                 }else{
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (context) => EventScreen(event: ds, adminView: false,)
+                                          builder: (context) => EventDetailsScreen(event: ds, adminView: false,)
                                       )
                                   );
                                 }
@@ -2373,14 +2107,14 @@ class _AdminScreen extends State<AdminScreen> with SingleTickerProviderStateMixi
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (context) => EventScreen(event: ds, adminView: true,)
+                                          builder: (context) => EventDetailsScreen(event: ds, adminView: true,)
                                       )
                                   );
                                 }else{
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (context) => EventScreen(event: ds, adminView: false,)
+                                          builder: (context) => EventDetailsScreen(event: ds, adminView: false,)
                                       )
                                   );
                                 }
@@ -2495,14 +2229,14 @@ class _AdminScreen extends State<AdminScreen> with SingleTickerProviderStateMixi
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (context) => EventScreen(event: ds, adminView: true,)
+                                          builder: (context) => EventDetailsScreen(event: ds, adminView: true,)
                                       )
                                   );
                                 }else{
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (context) => EventScreen(event: ds, adminView: false,)
+                                          builder: (context) => EventDetailsScreen(event: ds, adminView: false,)
                                       )
                                   );
                                 }
@@ -2582,7 +2316,7 @@ class _AdminScreen extends State<AdminScreen> with SingleTickerProviderStateMixi
                                       )
                                   ).then((response){
                                     if(response){
-                                      Admin admin = new Admin(ds['idAuth'], ds.documentID, ds['nickname'], ds['email'], ds['admin'], ds['masterAdmin']);
+                                      User admin = new User(ds['idAuth'], ds.documentID, ds['nickname'], ds['email'], ds['admin'], ds['masterAdmin']);
 
                                       showDialog(
                                           context: context,
@@ -2670,7 +2404,7 @@ class _AdminScreen extends State<AdminScreen> with SingleTickerProviderStateMixi
                                       )
                                   ).then((response){
                                     if(response){
-                                      Admin admin = new Admin(ds['idAuth'], ds.documentID, ds['nickname'], ds['email'], ds['admin'], ds['masterAdmin']);
+                                      User admin = new User(ds['idAuth'], ds.documentID, ds['nickname'], ds['email'], ds['admin'], ds['masterAdmin']);
 
                                       showDialog(
                                           context: context,
@@ -2768,7 +2502,7 @@ class _AdminScreen extends State<AdminScreen> with SingleTickerProviderStateMixi
                                       )
                                   ).then((response){
                                     if(response){
-                                      Admin admin = new Admin(ds['idAuth'], ds.documentID, ds['nickname'], ds['email'], ds['admin'], ds['masterAdmin']);
+                                      User admin = new User(ds['idAuth'], ds.documentID, ds['nickname'], ds['email'], ds['admin'], ds['masterAdmin']);
 
                                       showDialog(
                                           context: context,
@@ -3284,7 +3018,7 @@ class _AdminScreen extends State<AdminScreen> with SingleTickerProviderStateMixi
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => EventScreen(event: _event, adminView: true, newEventDateTime: _calendarController.selectedDay,),
+                            builder: (context) => EventDetailsScreen(event: _event, adminView: true, newEventDateTime: _calendarController.selectedDay,),
                           )
                       );
                       break;

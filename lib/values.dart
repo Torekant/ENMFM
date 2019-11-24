@@ -53,6 +53,7 @@ class Values{
   //maps
   Map<String, int> dialogPurposes = {"Crear administrador": 0, "Recuperar contraseña": 1, "Cambiar correo": 2};
   Map<String, String> eventType = {'ceremony': 'ceremonia', 'exam': 'exámen', 'delivery': 'entrega'};
+  var menuOptions = ['Horario', 'Agenda', 'Administración', 'Calificaciones', 'Avisos', 'Eventos',  'Noticias'];
 
   //timer
   int defaultTimer = 3;
@@ -82,6 +83,9 @@ class Values{
 
   //textfields defaults
   BorderSide textFieldFocusBorderSide = new BorderSide(color: hue.chicken);
+
+  //Card defaults
+ double cardElevation = 5.0;
 }
 
 class Hues{
