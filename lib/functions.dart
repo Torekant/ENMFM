@@ -72,6 +72,23 @@ Future<List> RetrieveListEvents(BuildContext context) async{
   _documents = _snapshots.documents;
 
   _documents.sort((a, b) => DateTime.parse(a['date']).compareTo(DateTime.parse(b['date'])));
+  _documents.sort((a, b) {
+    if(a['date'] == b['date']){
+      String _aTime = a['time'];
+      String _part1 = _aTime.substring(0, 2);
+      String _part2 = _aTime.substring(3, 5);
+      _aTime = _part1 + _part2;
+      String _bTime = b['time'];
+      _part1 = _bTime.substring(0, 2);
+      _part2 = _bTime.substring(3, 5);
+      _bTime = _part1 + _part2;
+      int _aIntTime = int.parse(_aTime);
+      int _bIntTime = int.parse(_bTime);
+
+      return _aIntTime.compareTo(_bIntTime);
+    }
+    return 0;
+  });
 
   for(int i=0; i < _documents.length; i++){
     Event _event = new Event(_documents[i].documentID, _documents[i]['title'], _documents[i]['image'], _documents[i]['place'], _documents[i]['date'], _documents[i]['time'], _documents[i]['description'], _documents[i]['type']);
@@ -205,7 +222,9 @@ Future<String> PickImage(Event event, BuildContext context) async {
   return finalURL;
 }
 
-String BuildEventDayText(String formattedDate){
+String BuildEventDayText(String formattedDate, int mode){
+  String dateText;
+
   String year = formattedDate.substring(0, 4);
   String month = formattedDate.substring(5, 7);
 
@@ -251,8 +270,13 @@ String BuildEventDayText(String formattedDate){
       break;
   }
 
-  String day = formattedDate.substring(8);
-  String dateText = day + " / " + month + " / " + year;
+  if(mode == 0){
+    String day = formattedDate.substring(8);
+    dateText = day + " de " + month;
+  }else{
+    String day = formattedDate.substring(8);
+    dateText = day + " / " + month + " / " + year;
+  }
 
   return dateText;
 }

@@ -185,7 +185,6 @@ class _EventsScreen extends State<EventsScreen>{
   Image _image;
   Widget _screenContent;
 
-
   @override
   void initState() {
     // TODO: implement initState
@@ -198,6 +197,18 @@ class _EventsScreen extends State<EventsScreen>{
     );
     _screenContent = _image;
 
+  }
+
+  @override
+  void didChangeDependencies() {
+    // TODO: implement didChangeDependencies
+    super.didChangeDependencies();
+    double _screenWidth = MediaQuery.of(context).size.width; //lee el ancho de dispositivo
+    double _screenHeight = MediaQuery.of(context).size.height; //lee el largo del dispositivo
+
+    double _responsiveHeight = _screenHeight / _values.defaultDivisionForResponsiveHeight; //Función para altura responsiva de cada card en la lista
+    double _responsiveWidth = _screenWidth / _values.defaultDivisionForResponsiveWidth; //Función para altura responsiva de cada card en la lista
+
     RetrieveListEvents(context).then((list){
       if(list.isNotEmpty){
         setState(() {
@@ -206,8 +217,48 @@ class _EventsScreen extends State<EventsScreen>{
               shrinkWrap: true,
               itemCount: list.length,
               itemBuilder: (BuildContext context, int index){
-                return Card(
-                  child: Text(list[index].title),
+                String _dateText = BuildEventDayText(list[index].date, 0);
+                return GestureDetector(
+                  child: Card(
+                    child: Container(
+                      //height: _responsiveHeight * 1,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          Parallax.inside(
+                              child: CachedNetworkImage(
+                                width: double.maxFinite,
+                                height: _responsiveHeight * 1,
+                                fit: BoxFit.cover,
+                                imageUrl: list[index].image,
+                                placeholder: (context, url) => Image.asset(_values.loadingAnimation, fit: BoxFit.fill, width: double.maxFinite, height: _responsiveHeight,),
+                                errorWidget: (context,url,error) => new Center(
+                                  child: Icon(Icons.error),
+                                ),
+                              ),
+                              mainAxisExtent: _responsiveHeight / 1
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: <Widget>[
+                              Text(
+                                _dateText + " a las " + list[index].time + "hrs.",
+                                style: _values.subtitleTextStyle,
+                              )
+                            ],
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                  onTap: (){
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => EventDetailsScreen(event: list[index], adminView: false,)
+                        )
+                    );
+                  },
                 );
               }
           );
@@ -215,7 +266,7 @@ class _EventsScreen extends State<EventsScreen>{
       }else{
         setState(() {
           _screenContent = Image.asset(
-            _values.logoColored
+              _values.logoColored
           );
         });
       }
@@ -229,7 +280,6 @@ class _EventsScreen extends State<EventsScreen>{
     double _screenHeight = MediaQuery.of(context).size.height; //lee el largo del dispositivo
 
     double _responsiveHeight = _screenHeight / _values.defaultDivisionForResponsiveHeight; //Función para altura responsiva de cada card en la lista
-
 
     return OrientationBuilder(
       builder: (context, orientation){
@@ -307,24 +357,15 @@ class _EventsScreen extends State<EventsScreen>{
 class EventDetailsScreen extends StatefulWidget {
   EventDetailsScreen({Key key, this.event, this.adminView, this.newEventDateTime}) : super(key: key);
 
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
   final Event event;
   final bool adminView;
   final DateTime newEventDateTime;
 
   @override
-  _EventScreen createState() => _EventScreen();
+  _EventDetailsScreen createState() => _EventDetailsScreen();
 }
 
-class _EventScreen extends State<EventDetailsScreen>{
+class _EventDetailsScreen extends State<EventDetailsScreen>{
 
   static Values _values;
   static Hues _hue;
@@ -354,9 +395,9 @@ class _EventScreen extends State<EventDetailsScreen>{
       widget.event.time = "00:00";
       DateFormat df = new DateFormat('yyyy-MM-dd');
       widget.event.date = df.format(widget.newEventDateTime);
-      _spanishFormattedText = BuildEventDayText(df.format(widget.newEventDateTime));
+      _spanishFormattedText = BuildEventDayText(df.format(widget.newEventDateTime), 1);
     }else{
-      _spanishFormattedText = BuildEventDayText(widget.event.date);
+      _spanishFormattedText = BuildEventDayText(widget.event.date, 1);
     }
   }
 
@@ -1023,7 +1064,7 @@ class _EventScreen extends State<EventDetailsScreen>{
                                 String format = date.toString().substring(0, 10);
                                 setState(() {
                                   widget.event.date = format;
-                                  _spanishFormattedText = BuildEventDayText(widget.event.date);
+                                  _spanishFormattedText = BuildEventDayText(widget.event.date, 1);
                                 });
                               },
                               currentTime: widget.newEventDateTime,
@@ -1251,7 +1292,7 @@ class _EventScreen extends State<EventDetailsScreen>{
                                   String format = date.toString().substring(0, 10);
                                   setState(() {
                                     widget.event.date = format;
-                                    _spanishFormattedText = BuildEventDayText(widget.event.date);
+                                    _spanishFormattedText = BuildEventDayText(widget.event.date, 1);
                                   });
                                 },
                                 currentTime: widget.newEventDateTime,
@@ -1369,20 +1410,18 @@ class _EventScreen extends State<EventDetailsScreen>{
         children: <Widget>[
           Container(
               alignment: _values.centerAlignment,
-              child: Stack(
-                children: <Widget>[
-                  Parallax.inside(
-                      child: CachedNetworkImage(
-                        imageUrl: widget.event.image,
-                        placeholder: (context, url) => Image.asset(_values.loadingAnimation, fit: BoxFit.fill, width: double.maxFinite, height: _responsiveHeight,),
-                        errorWidget: (context,url,error) => new Icon(Icons.error),
-                        width: double.maxFinite,
-                        height: _responsiveHeight * 1.1,
-                        fit: BoxFit.cover,
-                      ),
-                      mainAxisExtent: _responsiveHeight / 1.1
+              child: Parallax.inside(
+                  child: CachedNetworkImage(
+                    width: double.maxFinite,
+                    height: _responsiveHeight * 1,
+                    fit: BoxFit.cover,
+                    imageUrl: widget.event.image,
+                    placeholder: (context, url) => Image.asset(_values.loadingAnimation, fit: BoxFit.fill, width: double.maxFinite, height: _responsiveHeight,),
+                    errorWidget: (context,url,error) => new Center(
+                      child: Icon(Icons.error),
+                    ),
                   ),
-                ],
+                  mainAxisExtent: _responsiveHeight / 1
               )
           ),
           SizedBox(height: _responsiveHeight / 22,),
