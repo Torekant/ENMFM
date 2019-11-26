@@ -50,103 +50,296 @@ class _HomeScreen extends State<HomeScreen>{
   @override
   Widget build(BuildContext context) {
 
-    double _screenWidth = MediaQuery.of(context).size.width; //lee el ancho de dispositivo
     double _screenHeight = MediaQuery.of(context).size.height; //lee el largo del dispositivo
 
     double _responsiveHeight = _screenHeight / _values.defaultDivisionForResponsiveHeight; //Función para altura responsiva de cada card en la lista
-    double _responsiveWidth = _screenWidth / _values.defaultDivisionForResponsiveWidth; //Función para altura responsiva de cada card en la lista
 
 
-    return Scaffold(
-        appBar: AppBar(
-          backgroundColor: _hue.carmesi,
-          title: Text("Inicio"),
-          actions: <Widget>[
-            IconButton(
-              icon: Icon(
-                Icons.assignment_ind,
-                size: _values.toolbarIconSize,
-              ),
-              tooltip: 'Administrar',
-              onPressed: (){
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => LoginScreen(),
-                    )
-                );
-              },
-            ),
-            Container(
-              width: _values.containerWidth,
-            )
-          ],
-        ),
-        body: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            Expanded(
-              child: Column(
-                children: <Widget>[
-                  ListView.builder(
-                      controller: _scrollController,
-                      shrinkWrap: true,
-                      itemCount: _values.menuOptions.length,
-                      itemBuilder: (BuildContext context, int index){
-                        return GestureDetector(
-                          child: Card(
-                            elevation: _values.cardElevation,
-                            child: Container(
-                              height: _responsiveHeight / 5,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: <Widget>[
-                                  Text(
-                                    _values.menuOptions[index],
-                                    style: _values.titleTextStyle,
-                                  ),
-                                  Icon(Icons.arrow_forward_ios)
-                                ],
-                              ),
-                            ),
-                          ),
-                          onTap: (){
-                            switch(index){
-                              case 5:
-                                Navigator.push(
-                                  context,
-                                    MaterialPageRoute(
-                                        builder: (context) => EventsScreen()
-                                    )
-                                );
-                                break;
-                            }
-                          },
-                        );
-                      }
+    return OrientationBuilder(
+      builder: (context, orientation){
+        return orientation == Orientation.portrait
+            ?
+        Scaffold(
+            appBar: AppBar(
+              backgroundColor: _hue.carmesi,
+              title: Text("Inicio"),
+              actions: <Widget>[
+                IconButton(
+                  icon: Icon(
+                    Icons.assignment_ind,
+                    size: _values.toolbarIconSize,
                   ),
-                  SizedBox(height: _responsiveHeight / 10,),
-                  FlatButton(
-                    textColor: _hue.carmesi,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Text("Ir a página web"),
-                        Icon(
-                          Icons.launch,
-                          color: _hue.carmesi,
+                  tooltip: 'Administrar',
+                  onPressed: (){
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => LoginScreen(),
                         )
-                      ],
-                    ),
-                    onPressed: (){
-                      LaunchURL(_values.urlWebPage);
-                    },
+                    );
+                  },
+                ),
+                Container(
+                  width: _values.containerWidth,
+                )
+              ],
+            ),
+            body: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Expanded(
+                  child: Column(
+                    children: <Widget>[
+                      ListView.builder(
+                          controller: _scrollController,
+                          shrinkWrap: true,
+                          itemCount: _values.menuOptions.length,
+                          itemBuilder: (BuildContext context, int index){
+                            return GestureDetector(
+                              child: Card(
+                                elevation: _values.cardElevation,
+                                child: Container(
+                                  height: _responsiveHeight / 5,
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: <Widget>[
+                                      Text(
+                                        _values.menuOptions[index],
+                                        style: _values.titleTextStyle,
+                                      ),
+                                      Icon(Icons.arrow_forward_ios)
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              onTap: (){
+                                switch(index){
+                                  case 0:
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => ScheduleScreen()
+                                        )
+                                    );
+                                    break;
+                                  case 1:
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => AgendaScreen()
+                                        )
+                                    );
+                                    break;
+                                  case 2:
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => AdministrationScreen()
+                                        )
+                                    );
+                                    break;
+                                  case 3:
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => GradesScreen()
+                                        )
+                                    );
+                                    break;
+                                  case 4:
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => AnnouncementsScreen()
+                                        )
+                                    );
+                                    break;
+                                  case 5:
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => EventsScreen()
+                                        )
+                                    );
+                                    break;
+                                  case 6:
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => NewsScreen()
+                                        )
+                                    );
+                                    break;
+                                }
+                              },
+                            );
+                          }
+                      ),
+                      SizedBox(height: _responsiveHeight / 10,),
+                      FlatButton(
+                        textColor: _hue.carmesi,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            Text("Ir a página web"),
+                            Icon(
+                              Icons.launch,
+                              color: _hue.carmesi,
+                            )
+                          ],
+                        ),
+                        onPressed: (){
+                          LaunchURL(_values.urlWebPage);
+                        },
+                      )
+                    ],
+                  ),
+                )
+              ],
+            )
+        )
+            :
+        Scaffold(
+            appBar: AppBar(
+              backgroundColor: _hue.carmesi,
+              title: Text("Inicio"),
+              actions: <Widget>[
+                IconButton(
+                  icon: Icon(
+                    Icons.assignment_ind,
+                    size: _values.toolbarIconSize,
+                  ),
+                  tooltip: 'Administrar',
+                  onPressed: (){
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => LoginScreen(),
+                        )
+                    );
+                  },
+                ),
+                Container(
+                  width: _values.containerWidth,
+                )
+              ],
+            ),
+            body: SingleChildScrollView(
+              controller: _scrollController,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Column(
+                    children: <Widget>[
+                      ListView.builder(
+                          controller: _scrollController,
+                          shrinkWrap: true,
+                          itemCount: _values.menuOptions.length,
+                          itemBuilder: (BuildContext context, int index){
+                            return GestureDetector(
+                              child: Card(
+                                elevation: _values.cardElevation,
+                                child: Container(
+                                  height: _responsiveHeight / 2.5,
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: <Widget>[
+                                      Text(
+                                        _values.menuOptions[index],
+                                        style: _values.titleTextStyle,
+                                      ),
+                                      Icon(Icons.arrow_forward_ios)
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              onTap: (){
+                                switch(index){
+                                  case 0:
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => ScheduleScreen()
+                                        )
+                                    );
+                                    break;
+                                  case 1:
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => AgendaScreen()
+                                        )
+                                    );
+                                    break;
+                                  case 2:
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => AdministrationScreen()
+                                        )
+                                    );
+                                    break;
+                                  case 3:
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => GradesScreen()
+                                        )
+                                    );
+                                    break;
+                                  case 4:
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => AnnouncementsScreen()
+                                        )
+                                    );
+                                    break;
+                                  case 5:
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => EventsScreen()
+                                        )
+                                    );
+                                    break;
+                                  case 6:
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => NewsScreen()
+                                        )
+                                    );
+                                    break;
+                                }
+                              },
+                            );
+                          }
+                      ),
+                      SizedBox(height: _responsiveHeight / 10,),
+                      FlatButton(
+                        textColor: _hue.carmesi,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            Text("Ir a página web"),
+                            Icon(
+                              Icons.launch,
+                              color: _hue.carmesi,
+                            )
+                          ],
+                        ),
+                        onPressed: (){
+                          LaunchURL(_values.urlWebPage);
+                        },
+                      )
+                    ],
                   )
                 ],
               ),
             )
-          ],
-        )
+        );
+      },
     );
   }
 
@@ -157,6 +350,561 @@ class _HomeScreen extends State<HomeScreen>{
     super.dispose();
   }
 
+}
+
+class ScheduleScreen extends StatefulWidget {
+  ScheduleScreen({Key key}) : super(key: key);
+
+  @override
+  _ScheduleScreen createState() => _ScheduleScreen();
+}
+
+class _ScheduleScreen extends State<ScheduleScreen>{
+
+  static Values _values;
+  static Hues _hue;
+  ScrollController _scrollController;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _values = new Values();
+    _hue = new Hues();
+    _scrollController = new ScrollController();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+
+    double _screenWidth = MediaQuery.of(context).size.width; //lee el ancho de dispositivo
+    double _screenHeight = MediaQuery.of(context).size.height; //lee el largo del dispositivo
+    //double _symmetricPadding; //padding lateral de la pantalla
+
+    //_symmetricPadding =  (_screenWidth * values.widthPaddingUnit) / 10; //Función que nos permite hacer un padding responsivo a cualquier resolución en ancho
+    double _responsiveHeight = _screenHeight / _values.defaultDivisionForResponsiveHeight; //Función para altura responsiva de cada card en la lista
+    double _responsiveWidth = _screenWidth / _values.defaultDivisionForResponsiveWidth; //Función para altura responsiva de cada card en la lista
+
+    return OrientationBuilder(
+      builder: (context, orientation){
+        return orientation == Orientation.portrait
+            ?
+        Scaffold(
+          backgroundColor: _hue.background,
+          appBar: AppBar(
+            backgroundColor: _hue.carmesi,
+            title: Text("Horario"),
+          ),
+          body: SingleChildScrollView(
+            controller: _scrollController,
+            child: Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Container(
+                    child: Text(
+                      "Nuestros expertos en tecnología están trabajando muy duro para que está sección esté activa.",
+                      style: _values.titleTextStyle,
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  Image.asset(
+                    _values.noContentImage,
+                    height: _responsiveHeight / 1.5,
+                    width: _responsiveWidth * 1.5,
+                    fit: BoxFit.fill,
+                  )
+                ],
+              ),
+            ),
+          ),
+        )
+            :
+        Scaffold(
+          backgroundColor: _hue.background,
+          appBar: AppBar(
+            backgroundColor: _hue.carmesi,
+            title: Text("Horario"),
+          ),
+          body: SingleChildScrollView(
+            controller: _scrollController,
+            child: Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Container(
+                    child: Text(
+                      "Nuestros expertos en tecnología están trabajando muy duro para que está sección esté activa.",
+                      style: _values.titleTextStyle,
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  Image.asset(
+                    _values.noContentImage,
+                    height: _responsiveHeight * 1.5,
+                    width: _responsiveWidth,
+                    fit: BoxFit.fill,
+                  )
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    _scrollController.dispose();
+    super.dispose();
+  }
+}
+
+class AgendaScreen extends StatefulWidget {
+  AgendaScreen({Key key}) : super(key: key);
+
+  @override
+  _AgendaScreen createState() => _AgendaScreen();
+}
+
+class _AgendaScreen extends State<AgendaScreen>{
+
+  static Values _values;
+  static Hues _hue;
+  ScrollController _scrollController;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _values = new Values();
+    _hue = new Hues();
+    _scrollController = new ScrollController();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+
+    double _screenWidth = MediaQuery.of(context).size.width; //lee el ancho de dispositivo
+    double _screenHeight = MediaQuery.of(context).size.height; //lee el largo del dispositivo
+    //double _symmetricPadding; //padding lateral de la pantalla
+
+    //_symmetricPadding =  (_screenWidth * values.widthPaddingUnit) / 10; //Función que nos permite hacer un padding responsivo a cualquier resolución en ancho
+    double _responsiveHeight = _screenHeight / _values.defaultDivisionForResponsiveHeight; //Función para altura responsiva de cada card en la lista
+    double _responsiveWidth = _screenWidth / _values.defaultDivisionForResponsiveWidth; //Función para altura responsiva de cada card en la lista
+
+    return OrientationBuilder(
+      builder: (context, orientation){
+        return orientation == Orientation.portrait
+            ?
+        Scaffold(
+          backgroundColor: _hue.background,
+          appBar: AppBar(
+            backgroundColor: _hue.carmesi,
+            title: Text("Agenda"),
+          ),
+          body: SingleChildScrollView(
+            controller: _scrollController,
+            child: Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Container(
+                    child: Text(
+                      "Nuestros expertos en tecnología están trabajando muy duro para que está sección esté activa.",
+                      style: _values.titleTextStyle,
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  Image.asset(
+                    _values.noContentImage,
+                    height: _responsiveHeight / 1.5,
+                    width: _responsiveWidth * 1.5,
+                    fit: BoxFit.fill,
+                  )
+                ],
+              ),
+            ),
+          ),
+        )
+            :
+        Scaffold(
+          backgroundColor: _hue.background,
+          appBar: AppBar(
+            backgroundColor: _hue.carmesi,
+            title: Text("Agenda"),
+          ),
+          body: SingleChildScrollView(
+            controller: _scrollController,
+            child: Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Container(
+                    child: Text(
+                      "Nuestros expertos en tecnología están trabajando muy duro para que está sección esté activa.",
+                      style: _values.titleTextStyle,
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  Image.asset(
+                    _values.noContentImage,
+                    height: _responsiveHeight * 1.5,
+                    width: _responsiveWidth,
+                    fit: BoxFit.fill,
+                  )
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    _scrollController.dispose();
+    super.dispose();
+  }
+}
+
+class AdministrationScreen extends StatefulWidget {
+  AdministrationScreen({Key key}) : super(key: key);
+
+  @override
+  _AdministrationScreen createState() => _AdministrationScreen();
+}
+
+class _AdministrationScreen extends State<AdministrationScreen>{
+
+  static Values _values;
+  static Hues _hue;
+  ScrollController _scrollController;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _values = new Values();
+    _hue = new Hues();
+    _scrollController = new ScrollController();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+
+    double _screenWidth = MediaQuery.of(context).size.width; //lee el ancho de dispositivo
+    double _screenHeight = MediaQuery.of(context).size.height; //lee el largo del dispositivo
+    //double _symmetricPadding; //padding lateral de la pantalla
+
+    //_symmetricPadding =  (_screenWidth * values.widthPaddingUnit) / 10; //Función que nos permite hacer un padding responsivo a cualquier resolución en ancho
+    double _responsiveHeight = _screenHeight / _values.defaultDivisionForResponsiveHeight; //Función para altura responsiva de cada card en la lista
+    double _responsiveWidth = _screenWidth / _values.defaultDivisionForResponsiveWidth; //Función para altura responsiva de cada card en la lista
+
+    return OrientationBuilder(
+      builder: (context, orientation){
+        return orientation == Orientation.portrait
+            ?
+        Scaffold(
+          backgroundColor: _hue.background,
+          appBar: AppBar(
+            backgroundColor: _hue.carmesi,
+            title: Text("Administración"),
+          ),
+          body: SingleChildScrollView(
+            controller: _scrollController,
+            child: Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Container(
+                    child: Text(
+                      "Nuestros expertos en tecnología están trabajando muy duro para que está sección esté activa.",
+                      style: _values.titleTextStyle,
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  Image.asset(
+                    _values.noContentImage,
+                    height: _responsiveHeight / 1.5,
+                    width: _responsiveWidth * 1.5,
+                    fit: BoxFit.fill,
+                  )
+                ],
+              ),
+            ),
+          ),
+        )
+            :
+        Scaffold(
+          backgroundColor: _hue.background,
+          appBar: AppBar(
+            backgroundColor: _hue.carmesi,
+            title: Text("Administración"),
+          ),
+          body: SingleChildScrollView(
+            controller: _scrollController,
+            child: Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Container(
+                    child: Text(
+                      "Nuestros expertos en tecnología están trabajando muy duro para que está sección esté activa.",
+                      style: _values.titleTextStyle,
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  Image.asset(
+                    _values.noContentImage,
+                    height: _responsiveHeight * 1.5,
+                    width: _responsiveWidth,
+                    fit: BoxFit.fill,
+                  )
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    _scrollController.dispose();
+    super.dispose();
+  }
+}
+
+class GradesScreen extends StatefulWidget {
+  GradesScreen({Key key}) : super(key: key);
+
+  @override
+  _GradesScreen createState() => _GradesScreen();
+}
+
+class _GradesScreen extends State<GradesScreen>{
+
+  static Values _values;
+  static Hues _hue;
+  ScrollController _scrollController;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _values = new Values();
+    _hue = new Hues();
+    _scrollController = new ScrollController();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+
+    double _screenWidth = MediaQuery.of(context).size.width; //lee el ancho de dispositivo
+    double _screenHeight = MediaQuery.of(context).size.height; //lee el largo del dispositivo
+    //double _symmetricPadding; //padding lateral de la pantalla
+
+    //_symmetricPadding =  (_screenWidth * values.widthPaddingUnit) / 10; //Función que nos permite hacer un padding responsivo a cualquier resolución en ancho
+    double _responsiveHeight = _screenHeight / _values.defaultDivisionForResponsiveHeight; //Función para altura responsiva de cada card en la lista
+    double _responsiveWidth = _screenWidth / _values.defaultDivisionForResponsiveWidth; //Función para altura responsiva de cada card en la lista
+
+    return OrientationBuilder(
+      builder: (context, orientation){
+        return orientation == Orientation.portrait
+            ?
+        Scaffold(
+          backgroundColor: _hue.background,
+          appBar: AppBar(
+            backgroundColor: _hue.carmesi,
+            title: Text("Calificaciones"),
+          ),
+          body: SingleChildScrollView(
+            controller: _scrollController,
+            child: Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Container(
+                    child: Text(
+                      "Nuestros expertos en tecnología están trabajando muy duro para que está sección esté activa.",
+                      style: _values.titleTextStyle,
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  Image.asset(
+                    _values.noContentImage,
+                    height: _responsiveHeight / 1.5,
+                    width: _responsiveWidth * 1.5,
+                    fit: BoxFit.fill,
+                  )
+                ],
+              ),
+            ),
+          ),
+        )
+            :
+        Scaffold(
+          backgroundColor: _hue.background,
+          appBar: AppBar(
+            backgroundColor: _hue.carmesi,
+            title: Text("Calificaciones"),
+          ),
+          body: SingleChildScrollView(
+            controller: _scrollController,
+            child: Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Container(
+                    child: Text(
+                      "Nuestros expertos en tecnología están trabajando muy duro para que está sección esté activa.",
+                      style: _values.titleTextStyle,
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  Image.asset(
+                    _values.noContentImage,
+                    height: _responsiveHeight * 1.5,
+                    width: _responsiveWidth,
+                    fit: BoxFit.fill,
+                  )
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    _scrollController.dispose();
+    super.dispose();
+  }
+}
+
+class AnnouncementsScreen extends StatefulWidget {
+  AnnouncementsScreen({Key key}) : super(key: key);
+
+  @override
+  _AnnouncementsScreen createState() => _AnnouncementsScreen();
+}
+
+class _AnnouncementsScreen extends State<AnnouncementsScreen>{
+
+  static Values _values;
+  static Hues _hue;
+  ScrollController _scrollController;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _values = new Values();
+    _hue = new Hues();
+    _scrollController = new ScrollController();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+
+    double _screenWidth = MediaQuery.of(context).size.width; //lee el ancho de dispositivo
+    double _screenHeight = MediaQuery.of(context).size.height; //lee el largo del dispositivo
+    //double _symmetricPadding; //padding lateral de la pantalla
+
+    //_symmetricPadding =  (_screenWidth * values.widthPaddingUnit) / 10; //Función que nos permite hacer un padding responsivo a cualquier resolución en ancho
+    double _responsiveHeight = _screenHeight / _values.defaultDivisionForResponsiveHeight; //Función para altura responsiva de cada card en la lista
+    double _responsiveWidth = _screenWidth / _values.defaultDivisionForResponsiveWidth; //Función para altura responsiva de cada card en la lista
+
+    return OrientationBuilder(
+      builder: (context, orientation){
+        return orientation == Orientation.portrait
+            ?
+        Scaffold(
+          backgroundColor: _hue.background,
+          appBar: AppBar(
+            backgroundColor: _hue.carmesi,
+            title: Text("Avisos"),
+          ),
+          body: SingleChildScrollView(
+            controller: _scrollController,
+            child: Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Container(
+                    child: Text(
+                      "Nuestros expertos en tecnología están trabajando muy duro para que está sección esté activa.",
+                      style: _values.titleTextStyle,
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  Image.asset(
+                    _values.noContentImage,
+                    height: _responsiveHeight / 1.5,
+                    width: _responsiveWidth * 1.5,
+                    fit: BoxFit.fill,
+                  )
+                ],
+              ),
+            ),
+          ),
+        )
+            :
+        Scaffold(
+          backgroundColor: _hue.background,
+          appBar: AppBar(
+            backgroundColor: _hue.carmesi,
+            title: Text("Avisos"),
+          ),
+          body: SingleChildScrollView(
+            controller: _scrollController,
+            child: Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Container(
+                    child: Text(
+                      "Nuestros expertos en tecnología están trabajando muy duro para que está sección esté activa.",
+                      style: _values.titleTextStyle,
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  Image.asset(
+                    _values.noContentImage,
+                    height: _responsiveHeight * 1.5,
+                    width: _responsiveWidth,
+                    fit: BoxFit.fill,
+                  )
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    _scrollController.dispose();
+    super.dispose();
+  }
 }
 
 class EventsScreen extends StatefulWidget {
@@ -182,8 +930,7 @@ class _EventsScreen extends State<EventsScreen>{
   static Hues _hue;
 
   ScrollController _scrollController;
-  Image _image;
-  Widget _screenContent;
+  Widget _screenPortraitContent, _screenLandscapeContent;
 
   @override
   void initState() {
@@ -192,10 +939,12 @@ class _EventsScreen extends State<EventsScreen>{
     _values  = new Values();
     _hue = new Hues();
     _scrollController = new ScrollController();
-    _image = Image.asset(
-      _values.loadingAnimation
+    _screenPortraitContent = Image.asset(
+        _values.loadingAnimation
     );
-    _screenContent = _image;
+    _screenLandscapeContent = Image.asset(
+        _values.loadingAnimation
+    );
 
   }
 
@@ -203,16 +952,14 @@ class _EventsScreen extends State<EventsScreen>{
   void didChangeDependencies() {
     // TODO: implement didChangeDependencies
     super.didChangeDependencies();
-    double _screenWidth = MediaQuery.of(context).size.width; //lee el ancho de dispositivo
     double _screenHeight = MediaQuery.of(context).size.height; //lee el largo del dispositivo
 
     double _responsiveHeight = _screenHeight / _values.defaultDivisionForResponsiveHeight; //Función para altura responsiva de cada card en la lista
-    double _responsiveWidth = _screenWidth / _values.defaultDivisionForResponsiveWidth; //Función para altura responsiva de cada card en la lista
 
     RetrieveListEvents(context).then((list){
       if(list.isNotEmpty){
         setState(() {
-          _screenContent = ListView.builder(
+          _screenPortraitContent = ListView.builder(
               controller: _scrollController,
               shrinkWrap: true,
               itemCount: list.length,
@@ -262,10 +1009,63 @@ class _EventsScreen extends State<EventsScreen>{
                 );
               }
           );
+          _screenLandscapeContent = ListView.builder(
+              controller: _scrollController,
+              shrinkWrap: true,
+              itemCount: list.length,
+              itemBuilder: (BuildContext context, int index){
+                String _dateText = BuildEventDayText(list[index].date, 0);
+                return GestureDetector(
+                  child: Card(
+                    child: Container(
+                      //height: _responsiveHeight * 1,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          Parallax.inside(
+                              child: CachedNetworkImage(
+                                width: double.maxFinite,
+                                height: _responsiveHeight * 1,
+                                fit: BoxFit.cover,
+                                imageUrl: list[index].image,
+                                placeholder: (context, url) => Image.asset(_values.loadingAnimation, fit: BoxFit.fill, width: double.maxFinite, height: _responsiveHeight,),
+                                errorWidget: (context,url,error) => new Center(
+                                  child: Icon(Icons.error),
+                                ),
+                              ),
+                              mainAxisExtent: _responsiveHeight / 1
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: <Widget>[
+                              Text(
+                                _dateText + " a las " + list[index].time + "hrs.",
+                                style: _values.subtitleTextStyle,
+                              )
+                            ],
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                  onTap: (){
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => EventDetailsScreen(event: list[index], adminView: false,)
+                        )
+                    );
+                  },
+                );
+              }
+          );
         });
       }else{
         setState(() {
-          _screenContent = Image.asset(
+          _screenPortraitContent = Image.asset(
+              _values.logoColored
+          );
+          _screenLandscapeContent = Image.asset(
               _values.logoColored
           );
         });
@@ -275,11 +1075,6 @@ class _EventsScreen extends State<EventsScreen>{
 
   @override
   Widget build(BuildContext context) {
-
-    double _screenWidth = MediaQuery.of(context).size.width; //lee el ancho de dispositivo
-    double _screenHeight = MediaQuery.of(context).size.height; //lee el largo del dispositivo
-
-    double _responsiveHeight = _screenHeight / _values.defaultDivisionForResponsiveHeight; //Función para altura responsiva de cada card en la lista
 
     return OrientationBuilder(
       builder: (context, orientation){
@@ -311,7 +1106,7 @@ class _EventsScreen extends State<EventsScreen>{
               ],
             ),
             body: Center(
-              child: _screenContent,
+              child: _screenPortraitContent,
             )
         )
             :
@@ -340,7 +1135,9 @@ class _EventsScreen extends State<EventsScreen>{
                 )
               ],
             ),
-            body: SingleChildScrollView()
+            body: Center(
+              child: _screenLandscapeContent,
+            )
         );
       },
     );
@@ -1643,6 +2440,117 @@ class _EventDetailsScreen extends State<EventDetailsScreen>{
     super.dispose();
   }
 
+}
+
+class NewsScreen extends StatefulWidget {
+  NewsScreen({Key key}) : super(key: key);
+
+  @override
+  _NewsScreen createState() => _NewsScreen();
+}
+
+class _NewsScreen extends State<NewsScreen>{
+
+  static Values _values;
+  static Hues _hue;
+  ScrollController _scrollController;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _values = new Values();
+    _hue = new Hues();
+    _scrollController = new ScrollController();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+
+    double _screenWidth = MediaQuery.of(context).size.width; //lee el ancho de dispositivo
+    double _screenHeight = MediaQuery.of(context).size.height; //lee el largo del dispositivo
+    //double _symmetricPadding; //padding lateral de la pantalla
+
+    //_symmetricPadding =  (_screenWidth * values.widthPaddingUnit) / 10; //Función que nos permite hacer un padding responsivo a cualquier resolución en ancho
+    double _responsiveHeight = _screenHeight / _values.defaultDivisionForResponsiveHeight; //Función para altura responsiva de cada card en la lista
+    double _responsiveWidth = _screenWidth / _values.defaultDivisionForResponsiveWidth; //Función para altura responsiva de cada card en la lista
+
+    return OrientationBuilder(
+      builder: (context, orientation){
+        return orientation == Orientation.portrait
+            ?
+        Scaffold(
+            backgroundColor: _hue.background,
+            appBar: AppBar(
+              backgroundColor: _hue.carmesi,
+              title: Text("Noticias"),
+            ),
+            body: SingleChildScrollView(
+              controller: _scrollController,
+              child: Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Container(
+                      child: Text(
+                        "Nuestros expertos en tecnología están trabajando muy duro para que está sección esté activa.",
+                        style: _values.titleTextStyle,
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    Image.asset(
+                      _values.noContentImage,
+                      height: _responsiveHeight / 1.5,
+                      width: _responsiveWidth * 1.5,
+                      fit: BoxFit.fill,
+                    )
+                  ],
+                ),
+              ),
+            ),
+        )
+            :
+        Scaffold(
+          backgroundColor: _hue.background,
+          appBar: AppBar(
+            backgroundColor: _hue.carmesi,
+            title: Text("Noticias"),
+          ),
+          body: SingleChildScrollView(
+            controller: _scrollController,
+            child: Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Container(
+                    child: Text(
+                      "Nuestros expertos en tecnología están trabajando muy duro para que está sección esté activa.",
+                      style: _values.titleTextStyle,
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  Image.asset(
+                    _values.noContentImage,
+                    height: _responsiveHeight * 1.5,
+                    width: _responsiveWidth,
+                    fit: BoxFit.fill,
+                  )
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    _scrollController.dispose();
+    super.dispose();
+  }
 }
 
 class LoginScreen extends StatefulWidget {
