@@ -65,7 +65,7 @@ Future<List> RetrieveListEvents(BuildContext context) async{
   List<Event> _list = new List();
 
   DateFormat df = new DateFormat('yyyy-MM-dd');
-  String _todaysDate = df.format(DateTime.now().subtract(Duration(days: 6)));
+  String _todaysDate = df.format(DateTime.now());
   String _aWeekFromTodayDate = df.format(DateTime.now().add(Duration(days: 7)));
 
   _snapshots = await values.firestoreReference.collection('events').where('date', isGreaterThanOrEqualTo: _todaysDate).where('date', isLessThanOrEqualTo: _aWeekFromTodayDate).getDocuments();

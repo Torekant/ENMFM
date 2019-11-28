@@ -13,6 +13,7 @@ class Values{
   TextStyle materialButtonBoldTextStyle = TextStyle(fontFamily: 'Montserrat', fontSize: 20.0, color: hue.background, fontWeight: FontWeight.bold);
   TextStyle textFieldTextStyle = TextStyle(fontFamily: 'Montserrat', color: hue.outlines, fontWeight: FontWeight.normal);
   TextStyle flatButtonTextStyle = TextStyle(fontFamily: 'Montserrat', color: hue.outlines, fontWeight: FontWeight.normal, fontSize: 15.0);
+  TextStyle launcherFlatButtonTextStyle = TextStyle(fontFamily: 'Montserrat', color: hue.carmesi, fontWeight: FontWeight.normal, fontSize: 20.0);
   TextStyle plainTextStyle = TextStyle(fontFamily: 'Montserrat', color: hue.outlines, fontSize: 16.0);
   TextStyle calendarDayTextStyle = TextStyle(fontFamily: 'Montserrat', color: hue.outlines, fontSize: 15.0);
   TextStyle calendarWeekendDayTextStyle = TextStyle(fontFamily: 'Montserrat', color: hue.carmesi, fontSize: 15.0);
