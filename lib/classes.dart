@@ -165,12 +165,13 @@ class _CustomFormDialog extends State<CustomFormDialog>{
   @override
   void initState() {
     super.initState();
-    TextEditingController _mailTextController = new TextEditingController(text: _email);
-    TextEditingController _passwordTextController = new TextEditingController(text:  _pass);
-    TextEditingController _nickTextController = new TextEditingController(text:  _nick);
 
     switch(widget.dialogPurpose){
       case 0:
+        TextEditingController _mailTextController = new TextEditingController(text: _email);
+        TextEditingController _passwordTextController = new TextEditingController(text:  _pass);
+        TextEditingController _nickTextController = new TextEditingController(text:  _nick);
+
         _formColumn = Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
@@ -315,6 +316,8 @@ class _CustomFormDialog extends State<CustomFormDialog>{
         );
         break;
       case 1:
+        TextEditingController _mailTextController = new TextEditingController(text: _email);
+
         _formColumn = Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
@@ -377,6 +380,9 @@ class _CustomFormDialog extends State<CustomFormDialog>{
         );
         break;
       case 2:
+        TextEditingController _mailTextController = new TextEditingController(text: _email);
+        TextEditingController _passwordTextController = new TextEditingController(text:  _pass);
+
         _formColumn = Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
@@ -426,6 +432,66 @@ class _CustomFormDialog extends State<CustomFormDialog>{
           onPressed: () async{
             if (_formKey.currentState.validate()) {
               Navigator.of(context).pop(_passwordTextController.text);
+            }
+          },
+          child: Text(widget.acceptButtonText),
+          textColor: hue.ocean,
+        );
+        break;
+      case 3:
+        TextEditingController _textController = new TextEditingController(text: _email);
+
+        _formColumn = Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            Text(widget.description, textAlign: TextAlign.center,),
+            SizedBox(height: values.smallSizedBoxStandardHeight,),
+            TextFormField(
+              maxLines: null,
+              controller: _textController,
+              decoration: new InputDecoration(
+                  labelText: "Aviso",
+                  labelStyle: values.textFieldTextStyle,
+                  fillColor: Colors.white,
+                  filled: true,
+                  border: new OutlineInputBorder(
+                    borderRadius: new BorderRadius.circular(values.standardBorderRadius),
+                    borderSide: new BorderSide(
+                      color: hue.outlines,
+                    ),
+                  ),
+                  focusedBorder: new OutlineInputBorder(
+                      borderRadius: new BorderRadius.circular(values.standardBorderRadius),
+                      borderSide: new BorderSide(
+                          color: hue.outlines
+                      )
+                  )
+              ),
+              validator: (val) {
+                if(val.length==0) {
+                  return values.emptyTextFieldMessage;
+                }else{
+                  return null;
+                }
+              },
+              onEditingComplete: (){
+                setState(() {
+                  _nick = _textController.text;
+                });
+                FocusScope.of(context).requestFocus(FocusNode());
+              },
+              keyboardType: TextInputType.text,
+              style: values.textFieldTextStyle,
+            ),
+          ],
+        );
+
+        _acceptButton = FlatButton(
+          onPressed: () async{
+            if (_formKey.currentState.validate()) {
+              Navigator.of(context).pop(_textController.text);
             }
           },
           child: Text(widget.acceptButtonText),
@@ -954,5 +1020,17 @@ class User{
       return false;
     }
 
+  }
+}
+
+class Announcement{
+  String id;
+  String text;
+  DateTime timestamp;
+
+  Announcement(String id, String text, DateTime timestamp){
+    this.id = id;
+    this.text = text;
+    this.timestamp = timestamp;
   }
 }

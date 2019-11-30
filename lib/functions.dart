@@ -19,6 +19,35 @@ LaunchURL(String url) async {
   }
 }
 
+Future<bool> CreateAnnouncement(BuildContext context, String announcementText) async{
+  Values _values = new Values();
+
+  await _values.firestoreReference.collection('announcements').add({
+    'text': announcementText,
+    'timestamp': DateTime.now().toString()
+  }).then((data){
+    return true;
+  });
+
+}
+
+Future<List> RetrieveAnnouncements(BuildContext context) async{
+  Values _values = new Values();
+  List<Announcement> _list = new List();
+  QuerySnapshot _snapshots;
+  List<DocumentSnapshot> _documents;
+  
+  _snapshots = await _values.firestoreReference.collection('announcements').where('timestamp', isLessThanOrEqualTo: DateTime.now().toString()).where('timestamp', isGreaterThanOrEqualTo: DateTime.now().subtract(Duration(days: 7)).toString()).orderBy('timestamp', descending: true).getDocuments();
+  _documents = _snapshots.documents;
+
+  for(int i=0; i < _documents.length; i++){
+    Announcement _announcement = new Announcement(_documents[i].documentID, _documents[i]['text'], DateTime.parse(_documents[i]['timestamp']));
+    _list.add(_announcement);
+  }
+
+  return _list;
+}
+
 Future<Map> RetrieveCalendarEvents(BuildContext context) async{
   Values values = new Values();
   QuerySnapshot _snapshots;

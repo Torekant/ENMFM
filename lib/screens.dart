@@ -150,7 +150,7 @@ class _HomeScreen extends State<HomeScreen>{
                                     Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                            builder: (context) => AnnouncementsScreen()
+                                            builder: (context) => AnnouncementsScreen(adminView: false,)
                                         )
                                     );
                                     break;
@@ -294,7 +294,7 @@ class _HomeScreen extends State<HomeScreen>{
                                     Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                            builder: (context) => AnnouncementsScreen()
+                                            builder: (context) => AnnouncementsScreen(adminView: false,)
                                         )
                                     );
                                     break;
@@ -416,7 +416,7 @@ class _ScheduleScreen extends State<ScheduleScreen>{
                     ),
                   ),
                   Image.asset(
-                    _values.noContentImage,
+                    _values.screenOnWork,
                     height: _responsiveHeight / 1.5,
                     width: _responsiveWidth * 1.5,
                     fit: BoxFit.fill,
@@ -447,7 +447,7 @@ class _ScheduleScreen extends State<ScheduleScreen>{
                     ),
                   ),
                   Image.asset(
-                    _values.noContentImage,
+                    _values.screenOnWork,
                     height: _responsiveHeight * 1.5,
                     width: _responsiveWidth,
                     fit: BoxFit.fill,
@@ -527,7 +527,7 @@ class _AgendaScreen extends State<AgendaScreen>{
                     ),
                   ),
                   Image.asset(
-                    _values.noContentImage,
+                    _values.screenOnWork,
                     height: _responsiveHeight / 1.5,
                     width: _responsiveWidth * 1.5,
                     fit: BoxFit.fill,
@@ -558,7 +558,7 @@ class _AgendaScreen extends State<AgendaScreen>{
                     ),
                   ),
                   Image.asset(
-                    _values.noContentImage,
+                    _values.screenOnWork,
                     height: _responsiveHeight * 1.5,
                     width: _responsiveWidth,
                     fit: BoxFit.fill,
@@ -638,7 +638,7 @@ class _AdministrationScreen extends State<AdministrationScreen>{
                     ),
                   ),
                   Image.asset(
-                    _values.noContentImage,
+                    _values.screenOnWork,
                     height: _responsiveHeight / 1.5,
                     width: _responsiveWidth * 1.5,
                     fit: BoxFit.fill,
@@ -669,7 +669,7 @@ class _AdministrationScreen extends State<AdministrationScreen>{
                     ),
                   ),
                   Image.asset(
-                    _values.noContentImage,
+                    _values.screenOnWork,
                     height: _responsiveHeight * 1.5,
                     width: _responsiveWidth,
                     fit: BoxFit.fill,
@@ -749,7 +749,7 @@ class _GradesScreen extends State<GradesScreen>{
                     ),
                   ),
                   Image.asset(
-                    _values.noContentImage,
+                    _values.screenOnWork,
                     height: _responsiveHeight / 1.5,
                     width: _responsiveWidth * 1.5,
                     fit: BoxFit.fill,
@@ -780,7 +780,7 @@ class _GradesScreen extends State<GradesScreen>{
                     ),
                   ),
                   Image.asset(
-                    _values.noContentImage,
+                    _values.screenOnWork,
                     height: _responsiveHeight * 1.5,
                     width: _responsiveWidth,
                     fit: BoxFit.fill,
@@ -803,7 +803,9 @@ class _GradesScreen extends State<GradesScreen>{
 }
 
 class AnnouncementsScreen extends StatefulWidget {
-  AnnouncementsScreen({Key key}) : super(key: key);
+  AnnouncementsScreen({Key key, this.adminView}) : super(key: key);
+
+  final bool adminView;
 
   @override
   _AnnouncementsScreen createState() => _AnnouncementsScreen();
@@ -815,6 +817,11 @@ class _AnnouncementsScreen extends State<AnnouncementsScreen>{
   static Hues _hue;
   ScrollController _scrollController;
 
+  FloatingActionButton _floatingActionButton;
+  Offset _position;
+
+  Widget _screenPortraitContent, _screenLandscapeContent;
+
   @override
   void initState() {
     // TODO: implement initState
@@ -822,18 +829,187 @@ class _AnnouncementsScreen extends State<AnnouncementsScreen>{
     _values = new Values();
     _hue = new Hues();
     _scrollController = new ScrollController();
+    _screenPortraitContent = Center(
+      child: Image.asset(
+          _values.loadingAnimation
+      ),
+    );
+    _screenLandscapeContent = Center(
+      child: Image.asset(
+          _values.loadingAnimation
+      ),
+    );
+
+    if(widget.adminView == true){
+      _floatingActionButton = FloatingActionButton(
+        tooltip: "Crear aviso",
+        backgroundColor: _hue.ocean,
+        child: Icon(Icons.add),
+        onPressed: (){
+          showDialog(
+              context: context,
+              builder: (BuildContext context) => CustomFormDialog(
+                description: "Escriba el nuevo aviso.",
+                acceptButtonText: "Publicar",
+                cancelButtonText: "Cancelar",
+                dialogPurpose: _values.dialogPurposes["Crear aviso"],
+              )
+          ).then((result){
+            if(result != false){
+              showDialog(
+                  context: context,
+                  builder: (BuildContext context) => CustomLoadDialog()
+              );
+              CreateAnnouncement(context, result).then((result){
+                Navigator.pop(context);
+                  showDialog(
+                      context: context,
+                      builder: (BuildContext context) => CustomDialog(
+                        description: "El aviso de ha publicado con éxito.",
+                        acceptButtonText: "Genial",
+                      )
+                  );
+              });
+            }
+          });
+        },
+      );
+    }else{
+      _position = Offset(0.0, 0.0);
+      _floatingActionButton = null;
+    }
+  }
+
+  @override
+  void didChangeDependencies() async{
+    // TODO: implement didChangeDependencies
+    super.didChangeDependencies();
+    double _screenWidth = MediaQuery.of(context).size.width; //lee el ancho de dispositivo
+    double _screenHeight = MediaQuery.of(context).size.height; //lee el largo del dispositivo
+
+    double _responsivePadding = _screenWidth / _values.defaultSymmetricPadding; //lee el ancho de dispositivo
+
+    if(widget.adminView == true){
+      _position = Offset(_screenWidth / 1.2, _screenHeight / 1.2);
+    }
+
+    await RetrieveAnnouncements(context).then((list){
+      if(list.isNotEmpty){
+        setState(() {
+          _screenPortraitContent = ListView.builder(
+            padding: EdgeInsets.symmetric(horizontal: _responsivePadding),
+            controller: _scrollController,
+            shrinkWrap: true,
+            itemCount: list.length,
+            itemBuilder: (BuildContext context, int index){
+              return GestureDetector(
+                child: Card(
+                  elevation: _values.cardElevation,
+                  child: Container(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          controller: _scrollController,
+                          child: Text(
+                            list[index].timestamp.toString(),
+                            style: _values.subtitleTextStyle,
+                          ),
+                        ),
+                        SizedBox(
+                          height: _values.smallSizedBoxStandardHeight,
+                        ),
+                        Container(
+                          alignment: Alignment.center,
+                          padding: EdgeInsets.symmetric(horizontal: _responsivePadding),
+                          child: Text(
+                            list[index].text,
+                            style: _values.subtitleTextStyle,
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+                onTap: (){
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => EventDetailsScreen(event: list[index], adminView: false,)
+                      )
+                  );
+                },
+              );
+            }
+          );
+          _screenLandscapeContent = ListView.builder(
+              padding: EdgeInsets.symmetric(horizontal: _responsivePadding),
+              controller: _scrollController,
+              shrinkWrap: true,
+              itemCount: list.length,
+              itemBuilder: (BuildContext context, int index){
+                return GestureDetector(
+                  child: Card(
+                    elevation: _values.cardElevation,
+                    child: Container(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            controller: _scrollController,
+                            child: Text(
+                              list[index].timestamp.toString(),
+                              style: _values.subtitleTextStyle,
+                            ),
+                          ),
+                          SizedBox(
+                            height: _values.smallSizedBoxStandardHeight,
+                          ),
+                          Container(
+                            alignment: Alignment.center,
+                            padding: EdgeInsets.symmetric(horizontal: _responsivePadding),
+                            child: Text(
+                              list[index].text,
+                              style: _values.subtitleTextStyle,
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                  onTap: (){
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => EventDetailsScreen(event: list[index], adminView: false,)
+                        )
+                    );
+                  },
+                );
+              }
+          );
+        });
+      }else{
+        setState(() {
+          _screenPortraitContent = Center(
+            child: Image.asset(
+                _values.noContentFound
+            ),
+          );
+          _screenLandscapeContent = Center(
+            child: Image.asset(
+                _values.noContentFound
+            ),
+          );
+        });
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-
-    double _screenWidth = MediaQuery.of(context).size.width; //lee el ancho de dispositivo
-    double _screenHeight = MediaQuery.of(context).size.height; //lee el largo del dispositivo
-    //double _symmetricPadding; //padding lateral de la pantalla
-
-    //_symmetricPadding =  (_screenWidth * values.widthPaddingUnit) / 10; //Función que nos permite hacer un padding responsivo a cualquier resolución en ancho
-    double _responsiveHeight = _screenHeight / _values.defaultDivisionForResponsiveHeight; //Función para altura responsiva de cada card en la lista
-    double _responsiveWidth = _screenWidth / _values.defaultDivisionForResponsiveWidth; //Función para altura responsiva de cada card en la lista
 
     return OrientationBuilder(
       builder: (context, orientation){
@@ -845,29 +1021,28 @@ class _AnnouncementsScreen extends State<AnnouncementsScreen>{
             backgroundColor: _hue.carmesi,
             title: Text("Avisos"),
           ),
-          body: SingleChildScrollView(
-            controller: _scrollController,
-            child: Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Container(
-                    child: Text(
-                      "Nuestros expertos en tecnología están trabajando muy duro para que está sección esté activa.",
-                      style: _values.titleTextStyle,
-                      textAlign: TextAlign.center,
-                    ),
+          body: _screenPortraitContent,
+          floatingActionButton: Stack(
+            children: <Widget>[
+              Positioned(
+                left: _position.dx,
+                top:  _position.dy,
+                child: Draggable(
+                  feedback: Container(
+                    child: _floatingActionButton,
                   ),
-                  Image.asset(
-                    _values.noContentImage,
-                    height: _responsiveHeight / 1.5,
-                    width: _responsiveWidth * 1.5,
-                    fit: BoxFit.fill,
-                  )
-                ],
-              ),
-            ),
+                  child: Container(
+                    child: _floatingActionButton,
+                  ),
+                  childWhenDragging: Container(),
+                  onDragEnd: (details){
+                    setState(() {
+                      _position = details.offset;
+                    });
+                  },
+                ),
+              )
+            ],
           ),
         )
             :
@@ -877,28 +1052,28 @@ class _AnnouncementsScreen extends State<AnnouncementsScreen>{
             backgroundColor: _hue.carmesi,
             title: Text("Avisos"),
           ),
-          body: SingleChildScrollView(
-            controller: _scrollController,
-            child: Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  Container(
-                    child: Text(
-                      "Nuestros expertos en tecnología están trabajando muy duro para que está sección esté activa.",
-                      style: _values.titleTextStyle,
-                      textAlign: TextAlign.center,
-                    ),
+          body: _screenLandscapeContent,
+          floatingActionButton: Stack(
+            children: <Widget>[
+              Positioned(
+                left: _position.dx,
+                top:  _position.dy,
+                child: Draggable(
+                  feedback: Container(
+                    child: _floatingActionButton,
                   ),
-                  Image.asset(
-                    _values.noContentImage,
-                    height: _responsiveHeight * 1.5,
-                    width: _responsiveWidth,
-                    fit: BoxFit.fill,
-                  )
-                ],
-              ),
-            ),
+                  child: Container(
+                    child: _floatingActionButton,
+                  ),
+                  childWhenDragging: Container(),
+                  onDragEnd: (details){
+                    setState(() {
+                      _position = details.offset;
+                    });
+                  },
+                ),
+              )
+            ],
           ),
         );
       },
@@ -916,7 +1091,7 @@ class _AnnouncementsScreen extends State<AnnouncementsScreen>{
 class EventsScreen extends StatefulWidget {
   EventsScreen({Key key, this.adminView}) : super(key: key);
 
-  final adminView;
+  final bool adminView;
 
 
   @override
@@ -951,6 +1126,7 @@ class _EventsScreen extends State<EventsScreen>{
       _calendarEvents = Map();
       _eventListView = ListView(shrinkWrap: true,);
       _floatingActionButton = FloatingActionButton(
+        tooltip: "Crear evento",
         backgroundColor: _hue.ocean,
         child: Icon(Icons.add),
         onPressed: (){
@@ -1196,12 +1372,12 @@ class _EventsScreen extends State<EventsScreen>{
           setState(() {
             _screenPortraitContent = Center(
               child: Image.asset(
-                  _values.logoColored
+                  _values.noContentFound
               ),
             );
             _screenLandscapeContent = Center(
               child: Image.asset(
-                  _values.logoColored
+                  _values.noContentFound
               ),
             );
           });
@@ -2880,7 +3056,7 @@ class _NewsScreen extends State<NewsScreen>{
                       ),
                     ),
                     Image.asset(
-                      _values.noContentImage,
+                      _values.screenOnWork,
                       height: _responsiveHeight / 1.5,
                       width: _responsiveWidth * 1.5,
                       fit: BoxFit.fill,
@@ -2911,7 +3087,7 @@ class _NewsScreen extends State<NewsScreen>{
                     ),
                   ),
                   Image.asset(
-                    _values.noContentImage,
+                    _values.screenOnWork,
                     height: _responsiveHeight * 1.5,
                     width: _responsiveWidth,
                     fit: BoxFit.fill,
@@ -3295,7 +3471,7 @@ class _AdminScreen extends State<AdminScreen> with SingleTickerProviderStateMixi
                                 Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) => AnnouncementsScreen()
+                                        builder: (context) => AnnouncementsScreen(adminView: true,)
                                     )
                                 );
                                 break;
@@ -3479,7 +3655,7 @@ class _AdminScreen extends State<AdminScreen> with SingleTickerProviderStateMixi
                                 Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) => AnnouncementsScreen()
+                                        builder: (context) => AnnouncementsScreen(adminView: true,)
                                     )
                                 );
                                 break;
@@ -3669,7 +3845,7 @@ class _AdminScreen extends State<AdminScreen> with SingleTickerProviderStateMixi
                                 Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) => AnnouncementsScreen()
+                                        builder: (context) => AnnouncementsScreen(adminView: true,)
                                     )
                                 );
                                 break;
@@ -3769,7 +3945,7 @@ class _AdminScreen extends State<AdminScreen> with SingleTickerProviderStateMixi
                                 Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) => AnnouncementsScreen()
+                                        builder: (context) => AnnouncementsScreen(adminView: true,)
                                     )
                                 );
                                 break;

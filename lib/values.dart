@@ -52,7 +52,7 @@ class Values{
   int numberOfAdminTabs = 1;
 
   //maps
-  Map<String, int> dialogPurposes = {"Crear administrador": 0, "Recuperar contraseña": 1, "Cambiar correo": 2};
+  Map<String, int> dialogPurposes = {"Crear administrador": 0, "Recuperar contraseña": 1, "Cambiar correo": 2, "Crear aviso": 3};
   Map<String, String> eventType = {'ceremony': 'ceremonia', 'exam': 'exámen', 'delivery': 'entrega'};
   var menuOptions = ['Horario', 'Agenda', 'Administración', 'Calificaciones', 'Avisos', 'Eventos',  'Noticias'];
 
@@ -68,7 +68,8 @@ class Values{
   String loadingAnimation = assetsPath + "loading.gif";
   String retrievingListAnimation = assetsPath + "retrieving.gif";
   String defaultPlace = assetsPath + "logo_gray.jpg";
-  String noContentImage = assetsPath + "on_work_enmfm.jpg";
+  String screenOnWork = assetsPath + "on_work_enmfm.jpg";
+  String noContentFound = assetsPath + "no_content.png";
 
   //responsive
   double defaultDivisionForResponsiveHeight = 2.2;
