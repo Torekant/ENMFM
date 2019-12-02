@@ -902,6 +902,8 @@ class _AnnouncementsScreen extends State<AnnouncementsScreen>{
             shrinkWrap: true,
             itemCount: list.length,
             itemBuilder: (BuildContext context, int index){
+              DateFormat df = new DateFormat('dd-MM-yyyy');
+              String _announcementDate = df.format(list[index].timestamp);
               return GestureDetector(
                 child: Card(
                   elevation: _values.cardElevation,
@@ -913,12 +915,13 @@ class _AnnouncementsScreen extends State<AnnouncementsScreen>{
                           scrollDirection: Axis.horizontal,
                           controller: _scrollController,
                           child: Text(
-                            list[index].timestamp.toString(),
+                            _announcementDate,
                             style: _values.subtitleTextStyle,
                           ),
                         ),
-                        SizedBox(
-                          height: _values.smallSizedBoxStandardHeight,
+                        Container(
+                          color: _hue.carmesi,
+                          height: _values.lineSizedBoxHeight,
                         ),
                         Container(
                           alignment: Alignment.center,
@@ -932,14 +935,6 @@ class _AnnouncementsScreen extends State<AnnouncementsScreen>{
                     ),
                   ),
                 ),
-                onTap: (){
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => EventDetailsScreen(event: list[index], adminView: false,)
-                      )
-                  );
-                },
               );
             }
           );
@@ -979,14 +974,6 @@ class _AnnouncementsScreen extends State<AnnouncementsScreen>{
                       ),
                     ),
                   ),
-                  onTap: (){
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => EventDetailsScreen(event: list[index], adminView: false,)
-                        )
-                    );
-                  },
                 );
               }
           );
