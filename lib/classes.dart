@@ -1034,3 +1034,15 @@ class Announcement{
     this.timestamp = timestamp;
   }
 }
+
+class New{
+  String id;
+  String text;
+  bool hasGallery;
+
+  New(String id, String text, bool hasGallery){
+    this.id = id;
+    this.text = text;
+    this.hasGallery = hasGallery;
+  }
+}

@@ -70,6 +70,14 @@ class _SplashScreen extends State<SplashScreen> {
     super.initState();
     values = new Values();
     hue  = new Hues();
+    Timer(Duration(seconds: values.defaultTimer), () {
+      Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => HomeScreen(),
+          )
+      );
+    });
     final FirebaseMessaging _messaging = FirebaseMessaging();
     _messaging.getToken().then((token){
       print(token);
@@ -81,14 +89,6 @@ class _SplashScreen extends State<SplashScreen> {
   void didChangeDependencies() {
     // TODO: implement didChangeDependencies
     super.didChangeDependencies();
-    Timer(Duration(seconds: values.defaultTimer), () {
-          Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                builder: (context) => HomeScreen(),
-              )
-          );
-    });
   }
 
   @override

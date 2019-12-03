@@ -166,7 +166,7 @@ class _HomeScreen extends State<HomeScreen>{
                                     Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                            builder: (context) => NewsScreen()
+                                            builder: (context) => NewsScreen(adminView: false,)
                                         )
                                     );
                                     break;
@@ -310,7 +310,7 @@ class _HomeScreen extends State<HomeScreen>{
                                     Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                            builder: (context) => NewsScreen()
+                                            builder: (context) => NewsScreen(adminView: false,)
                                         )
                                     );
                                     break;
@@ -2986,7 +2986,9 @@ class _EventDetailsScreen extends State<EventDetailsScreen>{
 }
 
 class NewsScreen extends StatefulWidget {
-  NewsScreen({Key key}) : super(key: key);
+  NewsScreen({Key key, this.adminView}) : super(key: key);
+
+  final bool adminView;
 
   @override
   _NewsScreen createState() => _NewsScreen();
@@ -2998,6 +3000,9 @@ class _NewsScreen extends State<NewsScreen>{
   static Hues _hue;
   ScrollController _scrollController;
 
+  FloatingActionButton _floatingActionButton;
+  Offset _position;
+
   @override
   void initState() {
     // TODO: implement initState
@@ -3005,53 +3010,82 @@ class _NewsScreen extends State<NewsScreen>{
     _values = new Values();
     _hue = new Hues();
     _scrollController = new ScrollController();
+
+    if(widget.adminView == true){
+      _floatingActionButton = FloatingActionButton(
+        tooltip: "Crear noticia",
+        backgroundColor: _hue.ocean,
+        child: Icon(Icons.add),
+        onPressed: (){
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => NewDetailsScreen(adminView: true,)
+              )
+          );
+        },
+      );
+    }else{
+      _position = Offset(0.0, 0.0);
+      _floatingActionButton = null;
+    }
   }
 
   @override
-  Widget build(BuildContext context) {
-
+  void didChangeDependencies() {
+    // TODO: implement didChangeDependencies
+    super.didChangeDependencies();
     double _screenWidth = MediaQuery.of(context).size.width; //lee el ancho de dispositivo
     double _screenHeight = MediaQuery.of(context).size.height; //lee el largo del dispositivo
     //double _symmetricPadding; //padding lateral de la pantalla
 
     //_symmetricPadding =  (_screenWidth * values.widthPaddingUnit) / 10; //Función que nos permite hacer un padding responsivo a cualquier resolución en ancho
-    double _responsiveHeight = _screenHeight / _values.defaultDivisionForResponsiveHeight; //Función para altura responsiva de cada card en la lista
-    double _responsiveWidth = _screenWidth / _values.defaultDivisionForResponsiveWidth; //Función para altura responsiva de cada card en la lista
+
+    if(widget.adminView == true){
+      _position = Offset(_screenWidth / 1.2, _screenHeight / 1.2);
+    }
+
+  }
+
+  @override
+  Widget build(BuildContext context) {
 
     return OrientationBuilder(
       builder: (context, orientation){
         return orientation == Orientation.portrait
             ?
         Scaffold(
-            backgroundColor: _hue.background,
-            appBar: AppBar(
-              backgroundColor: _hue.carmesi,
-              title: Text("Noticias"),
-            ),
-            body: SingleChildScrollView(
-              controller: _scrollController,
-              child: Center(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Container(
-                      child: Text(
-                        "Nuestros expertos en tecnología están trabajando muy duro para que está sección esté activa.",
-                        style: _values.titleTextStyle,
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                    Image.asset(
-                      _values.screenOnWork,
-                      height: _responsiveHeight / 1.5,
-                      width: _responsiveWidth * 1.5,
-                      fit: BoxFit.fill,
-                    )
-                  ],
+          backgroundColor: _hue.background,
+          appBar: AppBar(
+            backgroundColor: _hue.carmesi,
+            title: Text("Noticias"),
+          ),
+          body: SingleChildScrollView(
+            controller: _scrollController,
+            child: Text("Portrait mode"),
+          ),
+          floatingActionButton: Stack(
+            children: <Widget>[
+              Positioned(
+                left: _position.dx,
+                top:  _position.dy,
+                child: Draggable(
+                  feedback: Container(
+                    child: _floatingActionButton,
+                  ),
+                  child: Container(
+                    child: _floatingActionButton,
+                  ),
+                  childWhenDragging: Container(),
+                  onDragEnd: (details){
+                    setState(() {
+                      _position = details.offset;
+                    });
+                  },
                 ),
-              ),
-            ),
+              )
+            ],
+          ),
         )
             :
         Scaffold(
@@ -3062,26 +3096,247 @@ class _NewsScreen extends State<NewsScreen>{
           ),
           body: SingleChildScrollView(
             controller: _scrollController,
-            child: Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  Container(
-                    child: Text(
-                      "Nuestros expertos en tecnología están trabajando muy duro para que está sección esté activa.",
-                      style: _values.titleTextStyle,
-                      textAlign: TextAlign.center,
+            child: Text("Landscape mode"),
+          ),
+          floatingActionButton: Stack(
+            children: <Widget>[
+              Positioned(
+                left: _position.dx,
+                top:  _position.dy,
+                child: Draggable(
+                  feedback: Container(
+                    child: _floatingActionButton,
+                  ),
+                  child: Container(
+                    child: _floatingActionButton,
+                  ),
+                  childWhenDragging: Container(),
+                  onDragEnd: (details){
+                    setState(() {
+                      _position = details.offset;
+                    });
+                  },
+                ),
+              )
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    _scrollController.dispose();
+    super.dispose();
+  }
+}
+
+class NewDetailsScreen extends StatefulWidget {
+  NewDetailsScreen({Key key, this.adminView}) : super(key: key);
+
+  final bool adminView;
+
+  @override
+  _NewDetailsScreen createState() => _NewDetailsScreen();
+}
+
+class _NewDetailsScreen extends State<NewDetailsScreen>{
+
+  static Values _values;
+  static Hues _hue;
+  ScrollController _scrollController;
+
+  FloatingActionButton _floatingActionButton;
+  Offset _position;
+
+  Widget _screenPortraitContent, _screenLandscapeContent;
+
+  TextEditingController _textEditingController;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _values = new Values();
+    _hue = new Hues();
+    _scrollController = new ScrollController();
+    _screenPortraitContent = new Scaffold();
+    _screenLandscapeContent = new Scaffold();
+
+    if(widget.adminView == true){
+      _floatingActionButton = FloatingActionButton(
+        tooltip: "Guardar noticia",
+        backgroundColor: _hue.ocean,
+        child: Icon(Icons.save),
+        onPressed: (){
+          print("presionamiento desu");
+        },
+      );
+      _textEditingController = new TextEditingController();
+    }else{
+      _position = Offset(0.0, 0.0);
+      _floatingActionButton = null;
+    }
+  }
+
+  @override
+  void didChangeDependencies() {
+    // TODO: implement didChangeDependencies
+    super.didChangeDependencies();
+    double _screenWidth = MediaQuery.of(context).size.width; //lee el ancho de dispositivo
+    double _screenHeight = MediaQuery.of(context).size.height; //lee el largo del dispositivo
+    //double _symmetricPadding; //padding lateral de la pantalla
+
+    //_symmetricPadding =  (_screenWidth * values.widthPaddingUnit) / 10; //Función que nos permite hacer un padding responsivo a cualquier resolución en ancho
+
+    if(widget.adminView == true){
+      _position = Offset(_screenWidth / 1.2, _screenHeight / 1.2);
+
+      _screenPortraitContent = SingleChildScrollView(
+        padding: EdgeInsets.symmetric(horizontal: _screenWidth / _values.defaultSymmetricPadding),
+        controller: _scrollController,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            SizedBox(height: _values.toolbarGapSizedBox,),
+            TextFormField(
+              controller: _textEditingController,
+              maxLines: null,
+              decoration: new InputDecoration(
+                  labelText: "Texto de la noticia",
+                  labelStyle: _values.textFieldTextStyle,
+                  fillColor: Colors.white,
+                  filled: true,
+                  border: new OutlineInputBorder(
+                    borderRadius: new BorderRadius.circular(_values.standardBorderRadius),
+                    borderSide: new BorderSide(
+                      color: _hue.outlines,
                     ),
                   ),
-                  Image.asset(
-                    _values.screenOnWork,
-                    height: _responsiveHeight * 1.5,
-                    width: _responsiveWidth,
-                    fit: BoxFit.fill,
+                  focusedBorder: new OutlineInputBorder(
+                      borderRadius: new BorderRadius.circular(_values.standardBorderRadius),
+                      borderSide: new BorderSide(
+                        color: _hue.outlines,
+                      )
                   )
-                ],
               ),
+              validator: (val) {
+                if(val.length==0) {
+                  return _values.emptyTextFieldMessage;
+                }else{
+                  return null;
+                }
+              },
+              keyboardType: TextInputType.text,
+              style: _values.textFieldTextStyle,
             ),
+            SizedBox(height: _screenHeight / 15,),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: <Widget>[
+                IconButton(
+                  icon: Icon(
+                    Icons.add_a_photo,
+                    color: _hue.outlines,
+                  ),
+                  onPressed: (){
+                    print("le fotés");
+                  },
+                )
+              ],
+            ),
+            Row(
+              children: <Widget>[
+                Text(
+                  "Galería",
+                  style: _values.subtitleTextStyle,
+                ),
+                Expanded(
+                  child: Container(
+                    color: _hue.outlines,
+                    height: _values.lineSizedBoxHeight,
+                  ),
+                )
+              ],
+            ),
+          ],
+        ),
+      );
+    }
+
+  }
+
+  @override
+  Widget build(BuildContext context) {
+
+    return OrientationBuilder(
+      builder: (context, orientation){
+        return orientation == Orientation.portrait
+            ?
+        Scaffold(
+          backgroundColor: _hue.background,
+          appBar: AppBar(
+            backgroundColor: _hue.carmesi,
+            title: Text("Galería"),
+          ),
+          body: _screenPortraitContent,
+          floatingActionButton: Stack(
+            children: <Widget>[
+              Positioned(
+                left: _position.dx,
+                top:  _position.dy,
+                child: Draggable(
+                  feedback: Container(
+                    child: _floatingActionButton,
+                  ),
+                  child: Container(
+                    child: _floatingActionButton,
+                  ),
+                  childWhenDragging: Container(),
+                  onDragEnd: (details){
+                    setState(() {
+                      _position = details.offset;
+                    });
+                  },
+                ),
+              )
+            ],
+          ),
+        )
+            :
+        Scaffold(
+          backgroundColor: _hue.background,
+          appBar: AppBar(
+            backgroundColor: _hue.carmesi,
+            title: Text("Galería"),
+          ),
+          body: SingleChildScrollView(
+            controller: _scrollController,
+            child: Text("Landscape mode"),
+          ),
+          floatingActionButton: Stack(
+            children: <Widget>[
+              Positioned(
+                left: _position.dx,
+                top:  _position.dy,
+                child: Draggable(
+                  feedback: Container(
+                    child: _floatingActionButton,
+                  ),
+                  child: Container(
+                    child: _floatingActionButton,
+                  ),
+                  childWhenDragging: Container(),
+                  onDragEnd: (details){
+                    setState(() {
+                      _position = details.offset;
+                    });
+                  },
+                ),
+              )
+            ],
           ),
         );
       },
@@ -3474,7 +3729,7 @@ class _AdminScreen extends State<AdminScreen> with SingleTickerProviderStateMixi
                                 Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) => NewsScreen()
+                                        builder: (context) => NewsScreen(adminView: true,)
                                     )
                                 );
                                 break;
@@ -3658,7 +3913,7 @@ class _AdminScreen extends State<AdminScreen> with SingleTickerProviderStateMixi
                                 Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) => NewsScreen()
+                                        builder: (context) => NewsScreen(adminView: true,)
                                     )
                                 );
                                 break;
@@ -3848,7 +4103,7 @@ class _AdminScreen extends State<AdminScreen> with SingleTickerProviderStateMixi
                                 Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) => NewsScreen()
+                                        builder: (context) => NewsScreen(adminView: true,)
                                     )
                                 );
                                 break;
@@ -3948,7 +4203,7 @@ class _AdminScreen extends State<AdminScreen> with SingleTickerProviderStateMixi
                                 Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) => NewsScreen()
+                                        builder: (context) => NewsScreen(adminView: true,)
                                     )
                                 );
                                 break;
