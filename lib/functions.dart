@@ -10,6 +10,8 @@ import 'values.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
+import 'package:multi_image_picker/multi_image_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 LaunchURL(String url) async {
   if (await canLaunch(url)) {
@@ -29,6 +31,45 @@ Future<bool> CreateAnnouncement(BuildContext context, String announcementText) a
     return true;
   });
 
+}
+
+Future<bool> CreateNew(BuildContext context, List<String> _imagesList, String _newText) async{
+  Values _values = new Values();
+  bool _gallery = false;
+
+  if(_imagesList.isNotEmpty){
+    _gallery = true;
+  }
+
+  await _values.firestoreReference.collection('news').add({
+    'text': _newText,
+    'hasGallery': _gallery,
+    'images': _imagesList,
+    'timestamp': DateTime.now().toString()
+  }).then((data){
+    return true;
+  });
+
+  return true;
+}
+
+Future<List> RetrieveNews(BuildContext context) async{
+  Values _values = new Values();
+  List<New> _list = new List();
+  QuerySnapshot _snapshots;
+  List<DocumentSnapshot> _documents;
+
+  _snapshots = await _values.firestoreReference.collection('news').where('timestamp', isLessThanOrEqualTo: DateTime.now().toString()).where('timestamp', isGreaterThanOrEqualTo: DateTime.now().subtract(Duration(days: 7)).toString()).orderBy('timestamp', descending: true).getDocuments();
+  _documents = _snapshots.documents;
+
+  for(int i=0; i < _documents.length; i++){
+    New _new = new New(_documents[i].documentID, _documents[i]['text'], _documents[i]['hasGallery'], _documents[i]['images'], DateTime.parse(_documents[i]['timestamp']));
+    _list.add(_new);
+
+    return _list;
+  }
+
+  return _list;
 }
 
 Future<List> RetrieveAnnouncements(BuildContext context) async{
@@ -249,6 +290,41 @@ Future<String> PickImage(Event event, BuildContext context) async {
   }
 
   return finalURL;
+}
+
+Future<dynamic> SaveNewsImageOnCloud(Asset imageFile) async {
+  Values values = new Values();
+
+  ByteData _byteImageData = await imageFile.getByteData();
+  String imageName = randomAlphaNumeric(20);
+  String fileName = imageName + DateTime.now().toString();
+  StorageUploadTask uploadTask =  values.storageReference.child("news").child(fileName + "/").putData(_byteImageData.buffer.asUint8List());
+  await uploadTask.onComplete;
+
+  return values.storageReference.child("news").child(fileName + "/").getDownloadURL();
+
+}
+
+Future<dynamic> DeleteNewsImageOnCloud(List<String> _imagesList) async {
+  Values values = new Values();
+
+  for(int i = 0; i < _imagesList.length; i++){
+    await values.storageReference.getStorage().getReferenceFromUrl(_imagesList[i]).then((ref){
+      ref.delete();
+    });
+  }
+
+  return true;
+}
+
+Future<bool> DeleteOneNewsImage(String url) async{
+  Values values = new Values();
+
+  await values.storageReference.getStorage().getReferenceFromUrl(url).then((ref){
+    ref.delete();
+  });
+
+  return true;
 }
 
 String BuildEventDayText(String formattedDate, int mode){

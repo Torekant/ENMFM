@@ -1039,10 +1039,14 @@ class New{
   String id;
   String text;
   bool hasGallery;
+  List<dynamic> imageList;
+  DateTime timestamp;
 
-  New(String id, String text, bool hasGallery){
+  New(String id, String text, bool hasGallery, List<dynamic> imageList, DateTime timestamp){
     this.id = id;
     this.text = text;
     this.hasGallery = hasGallery;
+    this.imageList = imageList;
+    this.timestamp = timestamp;
   }
 }

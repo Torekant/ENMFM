@@ -12,6 +12,7 @@ import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:table_calendar/table_calendar.dart';
+import 'package:multi_image_picker/multi_image_picker.dart';
 
 class HomeScreen extends StatefulWidget {
   HomeScreen({Key key}) : super(key: key);
@@ -3002,6 +3003,7 @@ class _NewsScreen extends State<NewsScreen>{
 
   FloatingActionButton _floatingActionButton;
   Offset _position;
+  Widget _finalScreen;
 
   @override
   void initState() {
@@ -3010,6 +3012,12 @@ class _NewsScreen extends State<NewsScreen>{
     _values = new Values();
     _hue = new Hues();
     _scrollController = new ScrollController();
+    _newsList = new List();
+    _finalScreen = Center(
+      child: Image.asset(
+          _values.loadingAnimation
+      ),
+    );
 
     if(widget.adminView == true){
       _floatingActionButton = FloatingActionButton(
@@ -3032,7 +3040,7 @@ class _NewsScreen extends State<NewsScreen>{
   }
 
   @override
-  void didChangeDependencies() {
+  void didChangeDependencies() async{
     // TODO: implement didChangeDependencies
     super.didChangeDependencies();
     double _screenWidth = MediaQuery.of(context).size.width; //lee el ancho de dispositivo
@@ -3044,6 +3052,55 @@ class _NewsScreen extends State<NewsScreen>{
     if(widget.adminView == true){
       _position = Offset(_screenWidth / 1.2, _screenHeight / 1.2);
     }
+
+    await RetrieveNews(context).then((list){
+      if(list.isNotEmpty){
+        setState(() {
+          _finalScreen = SingleChildScrollView(
+            padding: EdgeInsets.symmetric(horizontal: _screenWidth / _values.defaultSymmetricPadding),
+            controller: _scrollController,
+            child: ListView.builder(
+              itemCount: list.length,
+              shrinkWrap: true,
+              itemBuilder: (BuildContext context, int index){
+                return GestureDetector(
+                  child: Card(
+                    elevation: _values.cardElevation,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        Text(list[index].text, style: _values.contentTextStyle,),
+                        Container(color: _hue.outlines, height: _values.lineSizedBoxHeight,),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: <Widget>[
+                            FlatButton(
+                              textColor: _hue.ocean,
+                              child: Text("Galería", style: _values.flatButtonTextStyle,),
+                              onPressed: (){
+
+                              },
+                            )
+                          ],
+                        )
+                      ],
+                    ),
+                  ),
+                );
+              }
+            ),
+          );
+        });
+      }else{
+        setState(() {
+          _finalScreen = Center(
+            child: Image.asset(
+                _values.noContentFound
+            ),
+          );
+        });
+      }
+    });
 
   }
 
@@ -3060,10 +3117,7 @@ class _NewsScreen extends State<NewsScreen>{
             backgroundColor: _hue.carmesi,
             title: Text("Noticias"),
           ),
-          body: SingleChildScrollView(
-            controller: _scrollController,
-            child: Text("Portrait mode"),
-          ),
+          body: _finalScreen,
           floatingActionButton: Stack(
             children: <Widget>[
               Positioned(
@@ -3154,6 +3208,8 @@ class _NewDetailsScreen extends State<NewDetailsScreen>{
   Widget _screenPortraitContent, _screenLandscapeContent;
 
   TextEditingController _textEditingController;
+  List<String> _imageUrlList;
+  var _formKey;
 
   @override
   void initState() {
@@ -3164,14 +3220,26 @@ class _NewDetailsScreen extends State<NewDetailsScreen>{
     _scrollController = new ScrollController();
     _screenPortraitContent = new Scaffold();
     _screenLandscapeContent = new Scaffold();
+    _imageUrlList = new List();
 
     if(widget.adminView == true){
+      _formKey = GlobalKey<FormState>();
       _floatingActionButton = FloatingActionButton(
         tooltip: "Guardar noticia",
         backgroundColor: _hue.ocean,
         child: Icon(Icons.save),
         onPressed: (){
-          print("presionamiento desu");
+          if(_formKey.currentState.validate()){
+            showDialog(
+              context: context,
+              builder: (BuildContext context) => CustomLoadDialog()
+            );
+
+            CreateNew(context, _imageUrlList, _textEditingController.text).then((result){
+                Navigator.pop(context);
+                Navigator.pop(context);
+            });
+          }
         },
       );
       _textEditingController = new TextEditingController();
@@ -3193,7 +3261,19 @@ class _NewDetailsScreen extends State<NewDetailsScreen>{
 
     if(widget.adminView == true){
       _position = Offset(_screenWidth / 1.2, _screenHeight / 1.2);
+    }
 
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    double _screenWidth = MediaQuery.of(context).size.width; //lee el ancho de dispositivo
+    double _screenHeight = MediaQuery.of(context).size.height; //lee el largo del dispositivo
+    //double _symmetricPadding; //padding lateral de la pantalla
+
+    //_symmetricPadding =  (_screenWidth * values.widthPaddingUnit) / 10; //Función que nos permite hacer un padding responsivo a cualquier resolución en ancho
+
+    if(widget.adminView == true){
       _screenPortraitContent = SingleChildScrollView(
         padding: EdgeInsets.symmetric(horizontal: _screenWidth / _values.defaultSymmetricPadding),
         controller: _scrollController,
@@ -3201,36 +3281,39 @@ class _NewDetailsScreen extends State<NewDetailsScreen>{
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             SizedBox(height: _values.toolbarGapSizedBox,),
-            TextFormField(
-              controller: _textEditingController,
-              maxLines: null,
-              decoration: new InputDecoration(
-                  labelText: "Texto de la noticia",
-                  labelStyle: _values.textFieldTextStyle,
-                  fillColor: Colors.white,
-                  filled: true,
-                  border: new OutlineInputBorder(
-                    borderRadius: new BorderRadius.circular(_values.standardBorderRadius),
-                    borderSide: new BorderSide(
-                      color: _hue.outlines,
-                    ),
-                  ),
-                  focusedBorder: new OutlineInputBorder(
+            Form(
+              key: _formKey,
+              child: TextFormField(
+                controller: _textEditingController,
+                maxLines: null,
+                decoration: new InputDecoration(
+                    labelText: "Texto de la noticia",
+                    labelStyle: _values.textFieldTextStyle,
+                    fillColor: Colors.white,
+                    filled: true,
+                    border: new OutlineInputBorder(
                       borderRadius: new BorderRadius.circular(_values.standardBorderRadius),
                       borderSide: new BorderSide(
                         color: _hue.outlines,
-                      )
-                  )
+                      ),
+                    ),
+                    focusedBorder: new OutlineInputBorder(
+                        borderRadius: new BorderRadius.circular(_values.standardBorderRadius),
+                        borderSide: new BorderSide(
+                          color: _hue.outlines,
+                        )
+                    )
+                ),
+                validator: (val) {
+                  if(val.length==0) {
+                    return _values.emptyTextFieldMessage;
+                  }else{
+                    return null;
+                  }
+                },
+                keyboardType: TextInputType.text,
+                style: _values.textFieldTextStyle,
               ),
-              validator: (val) {
-                if(val.length==0) {
-                  return _values.emptyTextFieldMessage;
-                }else{
-                  return null;
-                }
-              },
-              keyboardType: TextInputType.text,
-              style: _values.textFieldTextStyle,
             ),
             SizedBox(height: _screenHeight / 15,),
             Row(
@@ -3241,8 +3324,24 @@ class _NewDetailsScreen extends State<NewDetailsScreen>{
                     Icons.add_a_photo,
                     color: _hue.outlines,
                   ),
-                  onPressed: (){
-                    print("le fotés");
+                  onPressed: () async{
+                    var resultList = await MultiImagePicker.pickImages(
+                      maxImages :  100,
+                      enableCamera: true,
+                    );
+
+                    // The data selected here comes back in the list
+                    for ( var imageFile in resultList) {
+                      SaveNewsImageOnCloud(imageFile).then((downloadUrl) {
+                        // Get the download URL
+                        setState(() {
+                          _imageUrlList.add(downloadUrl);
+                        });
+                      }).catchError((err) {
+                        Navigator.pop(context);
+                        print(err);
+                      });
+                    }
                   },
                 )
               ],
@@ -3261,83 +3360,148 @@ class _NewDetailsScreen extends State<NewDetailsScreen>{
                 )
               ],
             ),
+            GridView.count(
+              shrinkWrap: true,
+              crossAxisCount: 2,
+              children: List.generate(_imageUrlList.length, (index){
+                return Center(
+                  child: Stack(
+                    children: <Widget>[
+                      CachedNetworkImage(
+                        imageUrl: _imageUrlList[index],
+                        placeholder: (context, url) => Image.asset(_values.loadingAnimation, fit: BoxFit.fill, width: double.maxFinite, height: _screenHeight / 3,),
+                        errorWidget: (context,url,error) => new Icon(Icons.error),
+                        width: double.maxFinite,
+                        height: _screenHeight / 3,
+                        fit: BoxFit.cover,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: <Widget>[
+                          Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.all(Radius.circular(_values.standardBorderRadius * 5)),
+                              color: _hue.carmesi
+                            ),
+                            child: IconButton(
+                              icon: Icon(
+                                Icons.delete,
+                                color: _hue.background,
+                              ),
+                              tooltip: "Borrar",
+                              onPressed: (){
+                                DeleteOneNewsImage(_imageUrlList[index]);
+                                setState(() {
+                                  _imageUrlList.removeAt(index);
+                                });
+                              },
+                            ),
+                          )
+                        ],
+                      ),
+                    ],
+                  ),
+                );
+              }),
+            )
           ],
         ),
       );
     }
 
-  }
-
-  @override
-  Widget build(BuildContext context) {
-
     return OrientationBuilder(
       builder: (context, orientation){
         return orientation == Orientation.portrait
             ?
-        Scaffold(
-          backgroundColor: _hue.background,
-          appBar: AppBar(
-            backgroundColor: _hue.carmesi,
-            title: Text("Galería"),
-          ),
-          body: _screenPortraitContent,
-          floatingActionButton: Stack(
-            children: <Widget>[
-              Positioned(
-                left: _position.dx,
-                top:  _position.dy,
-                child: Draggable(
-                  feedback: Container(
-                    child: _floatingActionButton,
+        WillPopScope(
+          child: Scaffold(
+            backgroundColor: _hue.background,
+            appBar: AppBar(
+              backgroundColor: _hue.carmesi,
+              title: Text("Galería"),
+            ),
+            body: _screenPortraitContent,
+            floatingActionButton: Stack(
+              children: <Widget>[
+                Positioned(
+                  left: _position.dx,
+                  top:  _position.dy,
+                  child: Draggable(
+                    feedback: Container(
+                      child: _floatingActionButton,
+                    ),
+                    child: Container(
+                      child: _floatingActionButton,
+                    ),
+                    childWhenDragging: Container(),
+                    onDragEnd: (details){
+                      setState(() {
+                        _position = details.offset;
+                      });
+                    },
                   ),
-                  child: Container(
-                    child: _floatingActionButton,
-                  ),
-                  childWhenDragging: Container(),
-                  onDragEnd: (details){
-                    setState(() {
-                      _position = details.offset;
-                    });
-                  },
-                ),
-              )
-            ],
+                )
+              ],
+            ),
           ),
+          onWillPop: (){
+            return showDialog(
+                context: context,
+                builder: (BuildContext context) => CustomAlertDialog(description: "Si se va ahora no se guardará la noticia.", acceptButtonText: "Aceptar", cancelButtonText: "Cancelar",)
+            ).then((result){
+              if(result == true){
+                DeleteNewsImageOnCloud(_imageUrlList);
+                return true;
+              }else{
+                return false;
+              }
+            });
+          },
         )
             :
-        Scaffold(
-          backgroundColor: _hue.background,
-          appBar: AppBar(
-            backgroundColor: _hue.carmesi,
-            title: Text("Galería"),
-          ),
-          body: SingleChildScrollView(
-            controller: _scrollController,
-            child: Text("Landscape mode"),
-          ),
-          floatingActionButton: Stack(
-            children: <Widget>[
-              Positioned(
-                left: _position.dx,
-                top:  _position.dy,
-                child: Draggable(
-                  feedback: Container(
-                    child: _floatingActionButton,
+        WillPopScope(
+          child: Scaffold(
+            backgroundColor: _hue.background,
+            appBar: AppBar(
+              backgroundColor: _hue.carmesi,
+              title: Text("Galería"),
+            ),
+            body: _screenPortraitContent,
+            floatingActionButton: Stack(
+              children: <Widget>[
+                Positioned(
+                  left: _position.dx,
+                  top:  _position.dy,
+                  child: Draggable(
+                    feedback: Container(
+                      child: _floatingActionButton,
+                    ),
+                    child: Container(
+                      child: _floatingActionButton,
+                    ),
+                    childWhenDragging: Container(),
+                    onDragEnd: (details){
+                      setState(() {
+                        _position = details.offset;
+                      });
+                    },
                   ),
-                  child: Container(
-                    child: _floatingActionButton,
-                  ),
-                  childWhenDragging: Container(),
-                  onDragEnd: (details){
-                    setState(() {
-                      _position = details.offset;
-                    });
-                  },
-                ),
-              )
-            ],
+                )
+              ],
+            ),
           ),
+          onWillPop: (){
+            showDialog(
+                context: context,
+                builder: (BuildContext context) => CustomAlertDialog(description: "Si se va ahora no se guardará la noticia.", acceptButtonText: "Aceptar", cancelButtonText: "Cancelar",)
+            ).then((result){
+              if(result){
+                DeleteNewsImageOnCloud(_imageUrlList).then((result){
+                  Navigator.pop(context);
+                });
+              }
+            });
+          },
         );
       },
     );
