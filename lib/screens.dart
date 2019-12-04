@@ -3012,7 +3012,6 @@ class _NewsScreen extends State<NewsScreen>{
     _values = new Values();
     _hue = new Hues();
     _scrollController = new ScrollController();
-    _newsList = new List();
     _finalScreen = Center(
       child: Image.asset(
           _values.loadingAnimation
@@ -3028,7 +3027,7 @@ class _NewsScreen extends State<NewsScreen>{
           Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => NewDetailsScreen(adminView: true,)
+                builder: (context) => NewDetailsScreen(adminView: true, notice: new New(null, null, null, null, null),)
               )
           );
         },
@@ -3063,28 +3062,48 @@ class _NewsScreen extends State<NewsScreen>{
               itemCount: list.length,
               shrinkWrap: true,
               itemBuilder: (BuildContext context, int index){
-                return GestureDetector(
-                  child: Card(
-                    elevation: _values.cardElevation,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
+                Widget _galleryButton;
+                if(list[index].hasGallery){
+                  _galleryButton = FlatButton(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
-                        Text(list[index].text, style: _values.contentTextStyle,),
-                        Container(color: _hue.outlines, height: _values.lineSizedBoxHeight,),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: <Widget>[
-                            FlatButton(
-                              textColor: _hue.ocean,
-                              child: Text("Galería", style: _values.flatButtonTextStyle,),
-                              onPressed: (){
-
-                              },
-                            )
-                          ],
+                        Text(
+                          "Galería",
+                          style: _values.galleryFlatButtonTextStyle,
+                        ),
+                        Icon(
+                          Icons.arrow_forward_ios,
+                          color: _hue.ocean,
                         )
                       ],
                     ),
+                    onPressed: (){
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (BuildContext context) => NewDetailsScreen(adminView: widget.adminView, notice: list[index],)
+                          )
+                      );
+                    },
+                  );
+                }else{
+                  _galleryButton = SizedBox(height: _values.toolbarIconSize,);
+                }
+                return Card(
+                  elevation: _values.cardElevation,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Text(list[index].text, style: _values.contentTextStyle,),
+                      Container(color: _hue.outlines, height: _values.lineSizedBoxHeight,),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: <Widget>[
+                          _galleryButton
+                        ],
+                      )
+                    ],
                   ),
                 );
               }
@@ -3188,9 +3207,10 @@ class _NewsScreen extends State<NewsScreen>{
 }
 
 class NewDetailsScreen extends StatefulWidget {
-  NewDetailsScreen({Key key, this.adminView}) : super(key: key);
+  NewDetailsScreen({Key key, this.adminView, this.notice}) : super(key: key);
 
   final bool adminView;
+  final New notice;
 
   @override
   _NewDetailsScreen createState() => _NewDetailsScreen();
@@ -3208,7 +3228,7 @@ class _NewDetailsScreen extends State<NewDetailsScreen>{
   Widget _screenPortraitContent, _screenLandscapeContent;
 
   TextEditingController _textEditingController;
-  List<String> _imageUrlList;
+  List<dynamic> _imageUrlList;
   var _formKey;
 
   @override
@@ -3220,7 +3240,12 @@ class _NewDetailsScreen extends State<NewDetailsScreen>{
     _scrollController = new ScrollController();
     _screenPortraitContent = new Scaffold();
     _screenLandscapeContent = new Scaffold();
-    _imageUrlList = new List();
+
+    if(widget.notice.imageList != null){
+      _imageUrlList = widget.notice.imageList;
+    }else{
+      _imageUrlList = new List();
+    }
 
     if(widget.adminView == true){
       _formKey = GlobalKey<FormState>();
@@ -3242,7 +3267,12 @@ class _NewDetailsScreen extends State<NewDetailsScreen>{
           }
         },
       );
-      _textEditingController = new TextEditingController();
+
+      if(widget.notice.text != null){
+        _textEditingController = new TextEditingController(text: widget.notice.text);
+      }else{
+        _textEditingController = new TextEditingController();
+      }
     }else{
       _position = Offset(0.0, 0.0);
       _floatingActionButton = null;
@@ -3407,6 +3437,52 @@ class _NewDetailsScreen extends State<NewDetailsScreen>{
           ],
         ),
       );
+    }else{
+      _screenPortraitContent = SingleChildScrollView(
+        padding: EdgeInsets.symmetric(horizontal: _screenWidth / _values.defaultSymmetricPadding),
+        controller: _scrollController,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            SizedBox(height: _values.toolbarGapSizedBox,),
+            Text(
+              widget.notice.text,
+              style: _values.contentTextStyle,
+            ),
+            SizedBox(height: _screenHeight / 15,),
+            Row(
+              children: <Widget>[
+                Text(
+                  "Galería",
+                  style: _values.subtitleTextStyle,
+                ),
+                Expanded(
+                  child: Container(
+                    color: _hue.outlines,
+                    height: _values.lineSizedBoxHeight,
+                  ),
+                )
+              ],
+            ),
+            GridView.count(
+              shrinkWrap: true,
+              crossAxisCount: 2,
+              children: List.generate(_imageUrlList.length, (index){
+                return Center(
+                  child: CachedNetworkImage(
+                    imageUrl: _imageUrlList[index],
+                    placeholder: (context, url) => Image.asset(_values.loadingAnimation, fit: BoxFit.fill, width: double.maxFinite, height: _screenHeight / 3,),
+                    errorWidget: (context,url,error) => new Icon(Icons.error),
+                    width: double.maxFinite,
+                    height: _screenHeight / 3,
+                    fit: BoxFit.cover,
+                  ),
+                );
+              }),
+            )
+          ],
+        ),
+      );
     }
 
     return OrientationBuilder(
@@ -3445,17 +3521,22 @@ class _NewDetailsScreen extends State<NewDetailsScreen>{
             ),
           ),
           onWillPop: (){
-            return showDialog(
-                context: context,
-                builder: (BuildContext context) => CustomAlertDialog(description: "Si se va ahora no se guardará la noticia.", acceptButtonText: "Aceptar", cancelButtonText: "Cancelar",)
-            ).then((result){
-              if(result == true){
-                DeleteNewsImageOnCloud(_imageUrlList);
-                return true;
-              }else{
-                return false;
-              }
-            });
+            if(widget.adminView == true && widget.notice.id == null){
+              return showDialog(
+                  context: context,
+                  builder: (BuildContext context) => CustomAlertDialog(description: "Si se va ahora no se guardará la noticia.", acceptButtonText: "Aceptar", cancelButtonText: "Cancelar",)
+              ).then((result){
+                if(result == true){
+                  DeleteNewsImageOnCloud(_imageUrlList);
+                  return true;
+                }else{
+                  return false;
+                }
+              });
+            }else{
+              Navigator.pop(context);
+              Future.value(false);
+            }
           },
         )
             :
@@ -3491,16 +3572,21 @@ class _NewDetailsScreen extends State<NewDetailsScreen>{
             ),
           ),
           onWillPop: (){
-            showDialog(
-                context: context,
-                builder: (BuildContext context) => CustomAlertDialog(description: "Si se va ahora no se guardará la noticia.", acceptButtonText: "Aceptar", cancelButtonText: "Cancelar",)
-            ).then((result){
-              if(result){
-                DeleteNewsImageOnCloud(_imageUrlList).then((result){
-                  Navigator.pop(context);
-                });
-              }
-            });
+            if(widget.adminView == true && widget.notice.id == null){
+              return showDialog(
+                  context: context,
+                  builder: (BuildContext context) => CustomAlertDialog(description: "Si se va ahora no se guardará la noticia.", acceptButtonText: "Aceptar", cancelButtonText: "Cancelar",)
+              ).then((result){
+                if(result == true){
+                  DeleteNewsImageOnCloud(_imageUrlList);
+                  return true;
+                }else{
+                  return false;
+                }
+              });
+            }else{
+              Navigator.pop(context);
+            }
           },
         );
       },

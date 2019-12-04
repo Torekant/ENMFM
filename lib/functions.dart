@@ -33,7 +33,7 @@ Future<bool> CreateAnnouncement(BuildContext context, String announcementText) a
 
 }
 
-Future<bool> CreateNew(BuildContext context, List<String> _imagesList, String _newText) async{
+Future<bool> CreateNew(BuildContext context, List<dynamic> _imagesList, String _newText) async{
   Values _values = new Values();
   bool _gallery = false;
 
@@ -65,8 +65,6 @@ Future<List> RetrieveNews(BuildContext context) async{
   for(int i=0; i < _documents.length; i++){
     New _new = new New(_documents[i].documentID, _documents[i]['text'], _documents[i]['hasGallery'], _documents[i]['images'], DateTime.parse(_documents[i]['timestamp']));
     _list.add(_new);
-
-    return _list;
   }
 
   return _list;
@@ -305,7 +303,7 @@ Future<dynamic> SaveNewsImageOnCloud(Asset imageFile) async {
 
 }
 
-Future<dynamic> DeleteNewsImageOnCloud(List<String> _imagesList) async {
+Future<dynamic> DeleteNewsImageOnCloud(List<dynamic> _imagesList) async {
   Values values = new Values();
 
   for(int i = 0; i < _imagesList.length; i++){
