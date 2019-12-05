@@ -7,6 +7,7 @@ import 'values.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:random_string/random_string.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:photo_view/photo_view.dart';
 
 class MyConnectivity {
   MyConnectivity._internal();
@@ -141,6 +142,30 @@ class CustomLoadDialog extends StatelessWidget{
           ),
         ),
         onWillPop: () => Future.value(false)
+    );
+  }
+
+}
+
+class ExpandedImageDialog extends StatelessWidget{
+
+  final url;
+
+  ExpandedImageDialog({
+    @required this.url,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+
+    return new AlertDialog(
+      backgroundColor: Colors.transparent,
+      content: Container(
+        child: PhotoView(
+          backgroundDecoration: BoxDecoration(color: Colors.transparent),
+          imageProvider: NetworkImage(url),
+        ),
+      ),
     );
   }
 

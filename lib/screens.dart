@@ -3397,13 +3397,23 @@ class _NewDetailsScreen extends State<NewDetailsScreen>{
                 return Center(
                   child: Stack(
                     children: <Widget>[
-                      CachedNetworkImage(
-                        imageUrl: _imageUrlList[index],
-                        placeholder: (context, url) => Image.asset(_values.loadingAnimation, fit: BoxFit.fill, width: double.maxFinite, height: _screenHeight / 3,),
-                        errorWidget: (context,url,error) => new Icon(Icons.error),
-                        width: double.maxFinite,
-                        height: _screenHeight / 3,
-                        fit: BoxFit.cover,
+                      GestureDetector(
+                        child: Center(
+                          child: CachedNetworkImage(
+                            imageUrl: _imageUrlList[index],
+                            placeholder: (context, url) => Image.asset(_values.loadingAnimation, fit: BoxFit.fill, width: double.maxFinite, height: _screenHeight / 3,),
+                            errorWidget: (context,url,error) => new Icon(Icons.error),
+                            width: double.maxFinite,
+                            height: _screenHeight / 3,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                        onTap: (){
+                          showDialog(
+                              context: context,
+                              builder: (BuildContext context) => ExpandedImageDialog(url: _imageUrlList[index],)
+                          );
+                        },
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.end,
@@ -3468,15 +3478,23 @@ class _NewDetailsScreen extends State<NewDetailsScreen>{
               shrinkWrap: true,
               crossAxisCount: 2,
               children: List.generate(_imageUrlList.length, (index){
-                return Center(
-                  child: CachedNetworkImage(
-                    imageUrl: _imageUrlList[index],
-                    placeholder: (context, url) => Image.asset(_values.loadingAnimation, fit: BoxFit.fill, width: double.maxFinite, height: _screenHeight / 3,),
-                    errorWidget: (context,url,error) => new Icon(Icons.error),
-                    width: double.maxFinite,
-                    height: _screenHeight / 3,
-                    fit: BoxFit.cover,
+                return GestureDetector(
+                  child: Center(
+                    child: CachedNetworkImage(
+                      imageUrl: _imageUrlList[index],
+                      placeholder: (context, url) => Image.asset(_values.loadingAnimation, fit: BoxFit.fill, width: double.maxFinite, height: _screenHeight / 3,),
+                      errorWidget: (context,url,error) => new Icon(Icons.error),
+                      width: double.maxFinite,
+                      height: _screenHeight / 3,
+                      fit: BoxFit.cover,
+                    ),
                   ),
+                  onTap: (){
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) => ExpandedImageDialog(url: _imageUrlList[index],)
+                    );
+                  },
                 );
               }),
             )
