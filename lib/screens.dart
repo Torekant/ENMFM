@@ -13,6 +13,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
+import 'package:back_button_interceptor/back_button_interceptor.dart';
 
 class HomeScreen extends StatefulWidget {
   HomeScreen({Key key}) : super(key: key);
@@ -3090,6 +3091,7 @@ class _NewsScreen extends State<NewsScreen>{
                 }else{
                   _galleryButton = SizedBox(height: _values.toolbarIconSize,);
                 }
+
                 return Card(
                   elevation: _values.cardElevation,
                   child: Column(
@@ -3230,6 +3232,8 @@ class _NewDetailsScreen extends State<NewDetailsScreen>{
   TextEditingController _textEditingController;
   List<dynamic> _imageUrlList;
   var _formKey;
+  String _newFinalText, _showMoreButtonText;
+  Widget _showMoreFlatButton;
 
   @override
   void initState() {
@@ -3240,6 +3244,9 @@ class _NewDetailsScreen extends State<NewDetailsScreen>{
     _scrollController = new ScrollController();
     _screenPortraitContent = new Scaffold();
     _screenLandscapeContent = new Scaffold();
+    BackButtonInterceptor.add(backInterceptor);
+    _showMoreButtonText = "Ver más";
+
 
     if(widget.notice.imageList != null){
       _imageUrlList = widget.notice.imageList;
@@ -3279,6 +3286,51 @@ class _NewDetailsScreen extends State<NewDetailsScreen>{
     }
   }
 
+  bool backInterceptor(bool stopDefaultButtonEvent){
+    if(widget.adminView == true && widget.notice.id == null){
+      showDialog(
+          context: context,
+          builder: (BuildContext context) => CustomAlertDialog(description: "Si se va ahora no se guardará la noticia.", acceptButtonText: "Aceptar", cancelButtonText: "Cancelar",)
+      ).then((result){
+        if(result == true){
+          DeleteNewsImageOnCloud(_imageUrlList);
+          Navigator.pop(context);
+          return false;
+        }else{
+          return true;
+        }
+      });
+    }else{
+      return false;
+    }
+  }
+
+  void _setShowMoreButton(){
+    setState(() {
+      _showMoreFlatButton = FlatButton(
+        child: Text(
+          _showMoreButtonText,
+          style: _values.galleryFlatButtonTextStyle,
+        ),
+        onPressed: (){
+          if(_showMoreButtonText == 'Ver más'){
+            setState(() {
+              _newFinalText = widget.notice.text;
+              _showMoreButtonText = "Ver menos";
+            });
+            _setShowMoreButton();
+          }else{
+            setState(() {
+              _newFinalText = widget.notice.text.substring(0, 100) + "...";
+              _showMoreButtonText = "Ver más";
+            });
+            _setShowMoreButton();
+          }
+        },
+      );
+    });
+  }
+
   @override
   void didChangeDependencies() {
     // TODO: implement didChangeDependencies
@@ -3291,6 +3343,34 @@ class _NewDetailsScreen extends State<NewDetailsScreen>{
 
     if(widget.adminView == true){
       _position = Offset(_screenWidth / 1.2, _screenHeight / 1.2);
+    }else{
+      if(widget.notice.text.length > 100){
+        _newFinalText = widget.notice.text.substring(0, 100) + "...";
+        _showMoreFlatButton = FlatButton(
+          child: Text(
+            _showMoreButtonText,
+            style: _values.galleryFlatButtonTextStyle,
+          ),
+          onPressed: (){
+            if(_showMoreButtonText == 'Ver más'){
+              setState(() {
+                _newFinalText = widget.notice.text;
+                _showMoreButtonText = "Ver menos";
+              });
+              _setShowMoreButton();
+            }else{
+              setState(() {
+                _newFinalText = widget.notice.text.substring(0, 100) + "...";
+                _showMoreButtonText = "Ver más";
+              });
+              _setShowMoreButton();
+            }
+          },
+        );
+      }else{
+        _newFinalText = widget.notice.text;
+        _showMoreFlatButton = Container();
+      }
     }
 
   }
@@ -3456,8 +3536,14 @@ class _NewDetailsScreen extends State<NewDetailsScreen>{
           children: <Widget>[
             SizedBox(height: _values.toolbarGapSizedBox,),
             Text(
-              widget.notice.text,
+              _newFinalText,
               style: _values.contentTextStyle,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: <Widget>[
+                _showMoreFlatButton
+              ],
             ),
             SizedBox(height: _screenHeight / 15,),
             Row(
@@ -3507,55 +3593,35 @@ class _NewDetailsScreen extends State<NewDetailsScreen>{
       builder: (context, orientation){
         return orientation == Orientation.portrait
             ?
-        WillPopScope(
-          child: Scaffold(
-            backgroundColor: _hue.background,
-            appBar: AppBar(
-              backgroundColor: _hue.carmesi,
-              title: Text("Galería"),
-            ),
-            body: _screenPortraitContent,
-            floatingActionButton: Stack(
-              children: <Widget>[
-                Positioned(
-                  left: _position.dx,
-                  top:  _position.dy,
-                  child: Draggable(
-                    feedback: Container(
-                      child: _floatingActionButton,
-                    ),
-                    child: Container(
-                      child: _floatingActionButton,
-                    ),
-                    childWhenDragging: Container(),
-                    onDragEnd: (details){
-                      setState(() {
-                        _position = details.offset;
-                      });
-                    },
-                  ),
-                )
-              ],
-            ),
+        Scaffold(
+          backgroundColor: _hue.background,
+          appBar: AppBar(
+            backgroundColor: _hue.carmesi,
+            title: Text("Galería"),
           ),
-          onWillPop: (){
-            if(widget.adminView == true && widget.notice.id == null){
-              return showDialog(
-                  context: context,
-                  builder: (BuildContext context) => CustomAlertDialog(description: "Si se va ahora no se guardará la noticia.", acceptButtonText: "Aceptar", cancelButtonText: "Cancelar",)
-              ).then((result){
-                if(result == true){
-                  DeleteNewsImageOnCloud(_imageUrlList);
-                  return true;
-                }else{
-                  return false;
-                }
-              });
-            }else{
-              Navigator.pop(context);
-              Future.value(false);
-            }
-          },
+          body: _screenPortraitContent,
+          floatingActionButton: Stack(
+            children: <Widget>[
+              Positioned(
+                left: _position.dx,
+                top:  _position.dy,
+                child: Draggable(
+                  feedback: Container(
+                    child: _floatingActionButton,
+                  ),
+                  child: Container(
+                    child: _floatingActionButton,
+                  ),
+                  childWhenDragging: Container(),
+                  onDragEnd: (details){
+                    setState(() {
+                      _position = details.offset;
+                    });
+                  },
+                ),
+              )
+            ],
+          ),
         )
             :
         WillPopScope(
@@ -3615,6 +3681,7 @@ class _NewDetailsScreen extends State<NewDetailsScreen>{
   void dispose() {
     // TODO: implement dispose
     _scrollController.dispose();
+    BackButtonInterceptor.remove(backInterceptor);
     super.dispose();
   }
 }
