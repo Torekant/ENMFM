@@ -14,6 +14,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
 import 'package:back_button_interceptor/back_button_interceptor.dart';
+import 'package:expandable/expandable.dart';
 
 class HomeScreen extends StatefulWidget {
   HomeScreen({Key key}) : super(key: key);
@@ -3028,7 +3029,7 @@ class _NewsScreen extends State<NewsScreen>{
           Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => NewDetailsScreen(adminView: true, notice: new New(null, null, null, null, null),)
+                builder: (context) => NewDetailsScreen(adminView: true, notice: new New(null, null, null, null, null, null),)
               )
           );
         },
@@ -3063,6 +3064,7 @@ class _NewsScreen extends State<NewsScreen>{
               itemCount: list.length,
               shrinkWrap: true,
               itemBuilder: (BuildContext context, int index){
+
                 Widget _galleryButton;
                 if(list[index].hasGallery){
                   _galleryButton = FlatButton(
@@ -3097,7 +3099,12 @@ class _NewsScreen extends State<NewsScreen>{
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: <Widget>[
-                      Text(list[index].text, style: _values.contentTextStyle,),
+                      ExpandablePanel(
+                        collapsed: Text(list[index].title, style: _values.contentTextStyle, softWrap: true, maxLines: 2, overflow: TextOverflow.ellipsis,),
+                        expanded: Text(list[index].text, style: _values.contentTextStyle, softWrap: true,),
+                        hasIcon: true,
+                        tapBodyToCollapse: true,
+                      ),
                       Container(color: _hue.outlines, height: _values.lineSizedBoxHeight,),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.end,
@@ -3229,7 +3236,7 @@ class _NewDetailsScreen extends State<NewDetailsScreen>{
 
   Widget _screenPortraitContent, _screenLandscapeContent;
 
-  TextEditingController _textEditingController;
+  TextEditingController _textEditingController, _titleEditingController;
   List<dynamic> _imageUrlList;
   var _formKey;
   String _newFinalText, _showMoreButtonText;
@@ -3267,7 +3274,7 @@ class _NewDetailsScreen extends State<NewDetailsScreen>{
               builder: (BuildContext context) => CustomLoadDialog()
             );
 
-            CreateNew(context, _imageUrlList, _textEditingController.text).then((result){
+            CreateNew(context, _imageUrlList, _textEditingController.text, _titleEditingController.text).then((result){
                 Navigator.pop(context);
                 Navigator.pop(context);
             });
@@ -3277,8 +3284,10 @@ class _NewDetailsScreen extends State<NewDetailsScreen>{
 
       if(widget.notice.text != null){
         _textEditingController = new TextEditingController(text: widget.notice.text);
+        _titleEditingController = new TextEditingController(text: widget.notice.title);
       }else{
         _textEditingController = new TextEditingController();
+        _titleEditingController = new TextEditingController();
       }
     }else{
       _position = Offset(0.0, 0.0);
@@ -3337,9 +3346,6 @@ class _NewDetailsScreen extends State<NewDetailsScreen>{
     super.didChangeDependencies();
     double _screenWidth = MediaQuery.of(context).size.width; //lee el ancho de dispositivo
     double _screenHeight = MediaQuery.of(context).size.height; //lee el largo del dispositivo
-    //double _symmetricPadding; //padding lateral de la pantalla
-
-    //_symmetricPadding =  (_screenWidth * values.widthPaddingUnit) / 10; //Función que nos permite hacer un padding responsivo a cualquier resolución en ancho
 
     if(widget.adminView == true){
       _position = Offset(_screenWidth / 1.2, _screenHeight / 1.2);
@@ -3379,9 +3385,6 @@ class _NewDetailsScreen extends State<NewDetailsScreen>{
   Widget build(BuildContext context) {
     double _screenWidth = MediaQuery.of(context).size.width; //lee el ancho de dispositivo
     double _screenHeight = MediaQuery.of(context).size.height; //lee el largo del dispositivo
-    //double _symmetricPadding; //padding lateral de la pantalla
-
-    //_symmetricPadding =  (_screenWidth * values.widthPaddingUnit) / 10; //Función que nos permite hacer un padding responsivo a cualquier resolución en ancho
 
     if(widget.adminView == true){
       _screenPortraitContent = SingleChildScrollView(
@@ -3393,36 +3396,73 @@ class _NewDetailsScreen extends State<NewDetailsScreen>{
             SizedBox(height: _values.toolbarGapSizedBox,),
             Form(
               key: _formKey,
-              child: TextFormField(
-                controller: _textEditingController,
-                maxLines: null,
-                decoration: new InputDecoration(
-                    labelText: "Texto de la noticia",
-                    labelStyle: _values.textFieldTextStyle,
-                    fillColor: Colors.white,
-                    filled: true,
-                    border: new OutlineInputBorder(
-                      borderRadius: new BorderRadius.circular(_values.standardBorderRadius),
-                      borderSide: new BorderSide(
-                        color: _hue.outlines,
-                      ),
-                    ),
-                    focusedBorder: new OutlineInputBorder(
-                        borderRadius: new BorderRadius.circular(_values.standardBorderRadius),
-                        borderSide: new BorderSide(
-                          color: _hue.outlines,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  TextFormField(
+                    controller: _titleEditingController,
+                    maxLines: null,
+                    decoration: new InputDecoration(
+                        labelText: "Título",
+                        labelStyle: _values.textFieldTextStyle,
+                        fillColor: Colors.white,
+                        filled: true,
+                        border: new OutlineInputBorder(
+                          borderRadius: new BorderRadius.circular(_values.standardBorderRadius),
+                          borderSide: new BorderSide(
+                            color: _hue.outlines,
+                          ),
+                        ),
+                        focusedBorder: new OutlineInputBorder(
+                            borderRadius: new BorderRadius.circular(_values.standardBorderRadius),
+                            borderSide: new BorderSide(
+                              color: _hue.outlines,
+                            )
                         )
-                    )
-                ),
-                validator: (val) {
-                  if(val.length==0) {
-                    return _values.emptyTextFieldMessage;
-                  }else{
-                    return null;
-                  }
-                },
-                keyboardType: TextInputType.text,
-                style: _values.textFieldTextStyle,
+                    ),
+                    validator: (val) {
+                      if(val.length==0) {
+                        return _values.emptyTextFieldMessage;
+                      }else{
+                        return null;
+                      }
+                    },
+                    keyboardType: TextInputType.text,
+                    style: _values.textFieldTextStyle,
+                  ),
+                  SizedBox(height: _screenHeight / 30,),
+                  TextFormField(
+                    controller: _textEditingController,
+                    maxLines: null,
+                    decoration: new InputDecoration(
+                        labelText: "Texto de la noticia",
+                        labelStyle: _values.textFieldTextStyle,
+                        fillColor: Colors.white,
+                        filled: true,
+                        border: new OutlineInputBorder(
+                          borderRadius: new BorderRadius.circular(_values.standardBorderRadius),
+                          borderSide: new BorderSide(
+                            color: _hue.outlines,
+                          ),
+                        ),
+                        focusedBorder: new OutlineInputBorder(
+                            borderRadius: new BorderRadius.circular(_values.standardBorderRadius),
+                            borderSide: new BorderSide(
+                              color: _hue.outlines,
+                            )
+                        )
+                    ),
+                    validator: (val) {
+                      if(val.length==0) {
+                        return _values.emptyTextFieldMessage;
+                      }else{
+                        return null;
+                      }
+                    },
+                    keyboardType: TextInputType.text,
+                    style: _values.textFieldTextStyle,
+                  )
+                ],
               ),
             ),
             SizedBox(height: _screenHeight / 15,),
@@ -3535,6 +3575,16 @@ class _NewDetailsScreen extends State<NewDetailsScreen>{
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             SizedBox(height: _values.toolbarGapSizedBox,),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Text(
+                widget.notice.title,
+                style: _values.titleTextStyle,
+              ),
+            ),
+            SizedBox(height: _screenHeight / 50,),
+            Container(color: _hue.outlines, height: _values.lineSizedBoxHeight,),
+            SizedBox(height: _screenHeight / 50,),
             Text(
               _newFinalText,
               style: _values.contentTextStyle,

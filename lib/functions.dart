@@ -33,7 +33,7 @@ Future<bool> CreateAnnouncement(BuildContext context, String announcementText) a
 
 }
 
-Future<bool> CreateNew(BuildContext context, List<dynamic> _imagesList, String _newText) async{
+Future<bool> CreateNew(BuildContext context, List<dynamic> _imagesList, String _newText, String _newTitle) async{
   Values _values = new Values();
   bool _gallery = false;
 
@@ -42,6 +42,7 @@ Future<bool> CreateNew(BuildContext context, List<dynamic> _imagesList, String _
   }
 
   await _values.firestoreReference.collection('news').add({
+    'title': _newTitle,
     'text': _newText,
     'hasGallery': _gallery,
     'images': _imagesList,
@@ -63,7 +64,7 @@ Future<List> RetrieveNews(BuildContext context) async{
   _documents = _snapshots.documents;
 
   for(int i=0; i < _documents.length; i++){
-    New _new = new New(_documents[i].documentID, _documents[i]['text'], _documents[i]['hasGallery'], _documents[i]['images'], DateTime.parse(_documents[i]['timestamp']));
+    New _new = new New(_documents[i].documentID, _documents[i]['text'], _documents[i]['hasGallery'], _documents[i]['images'], DateTime.parse(_documents[i]['timestamp']), _documents[i]['title']);
     _list.add(_new);
   }
 

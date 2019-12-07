@@ -1062,16 +1062,18 @@ class Announcement{
 
 class New{
   String id;
+  String title;
   String text;
   bool hasGallery;
   List<dynamic> imageList;
   DateTime timestamp;
 
-  New(String id, String text, bool hasGallery, List<dynamic> imageList, DateTime timestamp){
+  New(String id, String text, bool hasGallery, List<dynamic> imageList, DateTime timestamp, String title){
     this.id = id;
     this.text = text;
     this.hasGallery = hasGallery;
     this.imageList = imageList;
     this.timestamp = timestamp;
+    this.title = title;
   }
 }
