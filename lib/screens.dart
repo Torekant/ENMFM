@@ -823,7 +823,7 @@ class _AnnouncementsScreen extends State<AnnouncementsScreen>{
   FloatingActionButton _floatingActionButton;
   Offset _position;
 
-  Widget _screenPortraitContent, _screenLandscapeContent;
+  Widget _finalPortraitScreen, _finalLandscapeScreen;
 
   @override
   void initState() {
@@ -832,12 +832,12 @@ class _AnnouncementsScreen extends State<AnnouncementsScreen>{
     _values = new Values();
     _hue = new Hues();
     _scrollController = new ScrollController();
-    _screenPortraitContent = Center(
+    _finalPortraitScreen = Center(
       child: Image.asset(
           _values.loadingAnimation
       ),
     );
-    _screenLandscapeContent = Center(
+    _finalLandscapeScreen = Center(
       child: Image.asset(
           _values.loadingAnimation
       ),
@@ -898,97 +898,343 @@ class _AnnouncementsScreen extends State<AnnouncementsScreen>{
 
     await RetrieveAnnouncements(context).then((list){
       if(list.isNotEmpty){
-        setState(() {
-          _screenPortraitContent = ListView.builder(
-            padding: EdgeInsets.symmetric(horizontal: _responsivePadding),
-            controller: _scrollController,
-            shrinkWrap: true,
-            itemCount: list.length,
-            itemBuilder: (BuildContext context, int index){
-              DateFormat df = new DateFormat('dd-MM-yyyy');
-              String _announcementDate = df.format(list[index].timestamp);
-              return GestureDetector(
-                child: Card(
-                  elevation: _values.cardElevation,
-                  child: Container(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
-                        SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          controller: _scrollController,
-                          child: Text(
-                            _announcementDate,
-                            style: _values.subtitleTextStyle,
-                          ),
-                        ),
-                        Container(
-                          color: _hue.carmesi,
-                          height: _values.lineSizedBoxHeight,
-                        ),
-                        Container(
-                          alignment: Alignment.center,
-                          padding: EdgeInsets.symmetric(horizontal: _responsivePadding),
-                          child: Text(
-                            list[index].text,
-                            style: _values.subtitleTextStyle,
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
-                ),
-              );
-            }
-          );
-          _screenLandscapeContent = ListView.builder(
-              padding: EdgeInsets.symmetric(horizontal: _responsivePadding),
-              controller: _scrollController,
-              shrinkWrap: true,
-              itemCount: list.length,
-              itemBuilder: (BuildContext context, int index){
-                return GestureDetector(
-                  child: Card(
-                    elevation: _values.cardElevation,
-                    child: Container(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
+        if(widget.adminView == true){
+          setState(() {
+            _finalPortraitScreen = Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                SizedBox(height: _screenHeight / 100,),
+                ListView.builder(
+                    padding: EdgeInsets.symmetric(horizontal: _responsivePadding),
+                    controller: _scrollController,
+                    shrinkWrap: true,
+                    itemCount: list.length,
+                    itemBuilder: (BuildContext context, int index){
+                      DateFormat df = new DateFormat('dd-MM-yyyy');
+                      String _announcementDate = df.format(list[index].timestamp);
+                      return Stack(
                         children: <Widget>[
-                          SingleChildScrollView(
-                            scrollDirection: Axis.horizontal,
-                            controller: _scrollController,
-                            child: Text(
-                              list[index].timestamp.toString(),
-                              style: _values.subtitleTextStyle,
+                          Container(
+                            padding: EdgeInsets.fromLTRB(0.0, _screenHeight / 50, 0.0, 0.0),
+                            child: GestureDetector(
+                              child: Card(
+                                elevation: _values.cardElevation,
+                                child: Container(
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: <Widget>[
+                                      SingleChildScrollView(
+                                        scrollDirection: Axis.horizontal,
+                                        controller: _scrollController,
+                                        child: Text(
+                                          _announcementDate,
+                                          style: _values.subtitleTextStyle,
+                                        ),
+                                      ),
+                                      Container(
+                                        color: _hue.carmesi,
+                                        height: _values.lineSizedBoxHeight,
+                                      ),
+                                      Container(
+                                        alignment: Alignment.center,
+                                        padding: EdgeInsets.symmetric(horizontal: _responsivePadding),
+                                        child: Text(
+                                          list[index].text,
+                                          style: _values.subtitleTextStyle,
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              ),
                             ),
                           ),
-                          SizedBox(
-                            height: _values.smallSizedBoxStandardHeight,
+                          Positioned(
+                            top: 0.0,
+                            left: 0.0,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: <Widget>[
+                                Container(
+                                  height: _screenHeight / 18,
+                                  width:  _screenWidth / 9,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.all(Radius.circular(_values.standardBorderRadius * 5)),
+                                    color: _hue.carmesi,
+                                  ),
+                                  child: IconButton(
+                                    icon: Icon(
+                                      Icons.delete,
+                                      color: _hue.background,
+                                    ),
+                                    tooltip: "Eliminar",
+                                    onPressed: (){
+
+                                    },
+                                  ),
+                                )
+                              ],
+                            ),
                           ),
-                          Container(
-                            alignment: Alignment.center,
-                            padding: EdgeInsets.symmetric(horizontal: _responsivePadding),
-                            child: Text(
-                              list[index].text,
-                              style: _values.subtitleTextStyle,
+                          Positioned(
+                            top: 0.0,
+                            right: 0.0,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: <Widget>[
+                                Container(
+                                  height: _screenHeight / 18,
+                                  width:  _screenWidth / 9,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.all(Radius.circular(_values.standardBorderRadius * 5)),
+                                    color: _hue.ocean,
+                                  ),
+                                  child: IconButton(
+                                    icon: Icon(
+                                      Icons.edit,
+                                      color: _hue.background,
+                                    ),
+                                    tooltip: "Editar",
+                                    onPressed: (){
+
+                                    },
+                                  ),
+                                )
+                              ],
                             ),
                           )
                         ],
-                      ),
-                    ),
-                  ),
-                );
-              }
-          );
-        });
+                      );
+                    }
+                )
+              ],
+            );
+            _finalLandscapeScreen = Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                SizedBox(height: _screenHeight / 100,),
+                ListView.builder(
+                    padding: EdgeInsets.symmetric(horizontal: _responsivePadding),
+                    controller: _scrollController,
+                    shrinkWrap: true,
+                    itemCount: list.length,
+                    itemBuilder: (BuildContext context, int index){
+                      DateFormat df = new DateFormat('dd-MM-yyyy');
+                      String _announcementDate = df.format(list[index].timestamp);
+                      return Stack(
+                        children: <Widget>[
+                          Container(
+                            padding: EdgeInsets.fromLTRB(0.0, _screenHeight / 50, 0.0, 0.0),
+                            child: GestureDetector(
+                              child: Card(
+                                elevation: _values.cardElevation,
+                                child: Container(
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: <Widget>[
+                                      SingleChildScrollView(
+                                        scrollDirection: Axis.horizontal,
+                                        controller: _scrollController,
+                                        child: Text(
+                                          _announcementDate,
+                                          style: _values.subtitleTextStyle,
+                                        ),
+                                      ),
+                                      Container(
+                                        color: _hue.carmesi,
+                                        height: _values.lineSizedBoxHeight,
+                                      ),
+                                      Container(
+                                        alignment: Alignment.center,
+                                        padding: EdgeInsets.symmetric(horizontal: _responsivePadding),
+                                        child: Text(
+                                          list[index].text,
+                                          style: _values.subtitleTextStyle,
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          Positioned(
+                            top: 0.0,
+                            left: 0.0,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: <Widget>[
+                                Container(
+                                  height: _screenHeight / 10,
+                                  width:  _screenWidth / 20,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.all(Radius.circular(_values.standardBorderRadius * 5)),
+                                    color: _hue.carmesi,
+                                  ),
+                                  child: IconButton(
+                                    icon: Icon(
+                                      Icons.delete,
+                                      color: _hue.background,
+                                      size: _screenHeight / 18,
+                                    ),
+                                    tooltip: "Eliminar",
+                                    onPressed: (){
+
+                                    },
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
+                          Positioned(
+                            top: 0.0,
+                            right: 0.0,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: <Widget>[
+                                Container(
+                                  height: _screenHeight / 10,
+                                  width:  _screenWidth / 20,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.all(Radius.circular(_values.standardBorderRadius * 5)),
+                                    color: _hue.ocean,
+                                  ),
+                                  child: IconButton(
+                                    icon: Icon(
+                                      Icons.edit,
+                                      color: _hue.background,
+                                      size: _screenHeight / 18,
+                                    ),
+                                    tooltip: "Editar",
+                                    onPressed: (){
+
+                                    },
+                                  ),
+                                )
+                              ],
+                            ),
+                          )
+                        ],
+                      );
+                    }
+                )
+              ],
+            );
+          });
+        }else{
+          setState(() {
+            _finalPortraitScreen = Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                SizedBox(height: _screenHeight / 100,),
+                ListView.builder(
+                    padding: EdgeInsets.symmetric(horizontal: _responsivePadding),
+                    controller: _scrollController,
+                    shrinkWrap: true,
+                    itemCount: list.length,
+                    itemBuilder: (BuildContext context, int index){
+                      DateFormat df = new DateFormat('dd-MM-yyyy');
+                      String _announcementDate = df.format(list[index].timestamp);
+                      return Container(
+                        padding: EdgeInsets.fromLTRB(0.0, _screenHeight / 150, 0.0, 0.0),
+                        child: GestureDetector(
+                          child: Card(
+                            elevation: _values.cardElevation,
+                            child: Container(
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: <Widget>[
+                                  SingleChildScrollView(
+                                    scrollDirection: Axis.horizontal,
+                                    controller: _scrollController,
+                                    child: Text(
+                                      _announcementDate,
+                                      style: _values.subtitleTextStyle,
+                                    ),
+                                  ),
+                                  Container(
+                                    color: _hue.carmesi,
+                                    height: _values.lineSizedBoxHeight,
+                                  ),
+                                  Container(
+                                    alignment: Alignment.center,
+                                    padding: EdgeInsets.symmetric(horizontal: _responsivePadding),
+                                    child: Text(
+                                      list[index].text,
+                                      style: _values.subtitleTextStyle,
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
+                    }
+                )
+              ],
+            );
+            _finalLandscapeScreen = Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                SizedBox(height: _screenHeight / 100,),
+                ListView.builder(
+                    padding: EdgeInsets.symmetric(horizontal: _responsivePadding),
+                    controller: _scrollController,
+                    shrinkWrap: true,
+                    itemCount: list.length,
+                    itemBuilder: (BuildContext context, int index){
+                      DateFormat df = new DateFormat('dd-MM-yyyy');
+                      String _announcementDate = df.format(list[index].timestamp);
+                      return Container(
+                        padding: EdgeInsets.fromLTRB(0.0, _screenHeight / 100, 0.0, 0.0),
+                        child: GestureDetector(
+                          child: Card(
+                            elevation: _values.cardElevation,
+                            child: Container(
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: <Widget>[
+                                  SingleChildScrollView(
+                                    scrollDirection: Axis.horizontal,
+                                    controller: _scrollController,
+                                    child: Text(
+                                      _announcementDate,
+                                      style: _values.subtitleTextStyle,
+                                    ),
+                                  ),
+                                  Container(
+                                    color: _hue.carmesi,
+                                    height: _values.lineSizedBoxHeight,
+                                  ),
+                                  Container(
+                                    alignment: Alignment.center,
+                                    padding: EdgeInsets.symmetric(horizontal: _responsivePadding),
+                                    child: Text(
+                                      list[index].text,
+                                      style: _values.subtitleTextStyle,
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
+                    }
+                )
+              ],
+            );
+          });
+        }
       }else{
         setState(() {
-          _screenPortraitContent = Center(
+          _finalPortraitScreen = Center(
             child: Image.asset(
                 _values.noContentFound
             ),
           );
-          _screenLandscapeContent = Center(
+          _finalLandscapeScreen = Center(
             child: Image.asset(
                 _values.noContentFound
             ),
@@ -1011,7 +1257,7 @@ class _AnnouncementsScreen extends State<AnnouncementsScreen>{
             backgroundColor: _hue.carmesi,
             title: Text("Avisos"),
           ),
-          body: _screenPortraitContent,
+          body: _finalPortraitScreen,
           floatingActionButton: Stack(
             children: <Widget>[
               Positioned(
@@ -1042,7 +1288,7 @@ class _AnnouncementsScreen extends State<AnnouncementsScreen>{
             backgroundColor: _hue.carmesi,
             title: Text("Avisos"),
           ),
-          body: _screenLandscapeContent,
+          body: _finalLandscapeScreen,
           floatingActionButton: Stack(
             children: <Widget>[
               Positioned(
