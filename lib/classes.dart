@@ -1058,6 +1058,18 @@ class Announcement{
     this.text = text;
     this.timestamp = timestamp;
   }
+
+  Future<bool> DeleteAnnouncement() async{
+    Values values = new Values();
+
+    try{
+      await values.firestoreReference.collection('announcements').document(this.id).delete();
+      return true;
+    }catch(e){
+      return false;
+    }
+
+  }
 }
 
 class New{

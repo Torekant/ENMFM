@@ -883,6 +883,269 @@ class _AnnouncementsScreen extends State<AnnouncementsScreen>{
     }
   }
 
+  void updateListView(int _orientationMode, List _list){
+    double _screenWidth = MediaQuery.of(context).size.width; //lee el ancho de dispositivo
+    double _screenHeight = MediaQuery.of(context).size.height; //lee el largo del dispositivo
+    double _responsivePadding = _screenWidth / _values.defaultSymmetricPadding; //lee el ancho de dispositivo
+
+    _orientationMode == 0 ? _finalPortraitScreen = Column(
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        SizedBox(height: _screenHeight / 100,),
+        ListView.builder(
+            padding: EdgeInsets.symmetric(horizontal: _responsivePadding),
+            controller: _scrollController,
+            shrinkWrap: true,
+            itemCount: _list.length,
+            itemBuilder: (BuildContext context, int index){
+              DateFormat df = new DateFormat('dd-MM-yyyy');
+              String _announcementDate = df.format(_list[index].timestamp);
+              return Stack(
+                children: <Widget>[
+                  Container(
+                    padding: EdgeInsets.fromLTRB(0.0, _screenHeight / 50, 0.0, 0.0),
+                    child: GestureDetector(
+                      child: Card(
+                        elevation: _values.cardElevation,
+                        child: Container(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: <Widget>[
+                              SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                controller: _scrollController,
+                                child: Text(
+                                  _announcementDate,
+                                  style: _values.subtitleTextStyle,
+                                ),
+                              ),
+                              Container(
+                                color: _hue.carmesi,
+                                height: _values.lineSizedBoxHeight,
+                              ),
+                              Container(
+                                alignment: Alignment.center,
+                                padding: EdgeInsets.symmetric(horizontal: _responsivePadding),
+                                child: Text(
+                                  _list[index].text,
+                                  style: _values.subtitleTextStyle,
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    top: 0.0,
+                    left: 0.0,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: <Widget>[
+                        Container(
+                          height: _screenHeight / 18,
+                          width:  _screenWidth / 9,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.all(Radius.circular(_values.standardBorderRadius * 5)),
+                            color: _hue.carmesi,
+                          ),
+                          child: IconButton(
+                            icon: Icon(
+                              Icons.delete,
+                              color: _hue.background,
+                            ),
+                            tooltip: "Eliminar",
+                            onPressed: (){
+                              _list[index].DeleteAnnouncement().then((result){
+                                _list.removeAt(index);
+                                setState(() {
+                                  if(_list.isEmpty){
+                                    _finalPortraitScreen = Center(
+                                      child: Image.asset(
+                                          _values.noContentFound
+                                      ),
+                                    );
+                                  }else{
+                                    updateListView(0, _list);
+                                  }
+                                });
+                              });
+                            },
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                  Positioned(
+                    top: 0.0,
+                    right: 0.0,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: <Widget>[
+                        Container(
+                          height: _screenHeight / 18,
+                          width:  _screenWidth / 9,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.all(Radius.circular(_values.standardBorderRadius * 5)),
+                            color: _hue.ocean,
+                          ),
+                          child: IconButton(
+                            icon: Icon(
+                              Icons.edit,
+                              color: _hue.background,
+                            ),
+                            tooltip: "Editar",
+                            onPressed: (){
+
+                            },
+                          ),
+                        )
+                      ],
+                    ),
+                  )
+                ],
+              );
+            }
+        )
+      ],
+    ) : _finalLandscapeScreen = Column(
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        SizedBox(height: _screenHeight / 100,),
+        ListView.builder(
+            padding: EdgeInsets.symmetric(horizontal: _responsivePadding),
+            controller: _scrollController,
+            shrinkWrap: true,
+            itemCount: _list.length,
+            itemBuilder: (BuildContext context, int index){
+              DateFormat df = new DateFormat('dd-MM-yyyy');
+              String _announcementDate = df.format(_list[index].timestamp);
+              return Stack(
+                children: <Widget>[
+                  Container(
+                    padding: EdgeInsets.fromLTRB(0.0, _screenHeight / 50, 0.0, 0.0),
+                    child: GestureDetector(
+                      child: Card(
+                        elevation: _values.cardElevation,
+                        child: Container(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: <Widget>[
+                              SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                controller: _scrollController,
+                                child: Text(
+                                  _announcementDate,
+                                  style: _values.subtitleTextStyle,
+                                ),
+                              ),
+                              Container(
+                                color: _hue.carmesi,
+                                height: _values.lineSizedBoxHeight,
+                              ),
+                              Container(
+                                alignment: Alignment.center,
+                                padding: EdgeInsets.symmetric(horizontal: _responsivePadding),
+                                child: Text(
+                                  _list[index].text,
+                                  style: _values.subtitleTextStyle,
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    top: 0.0,
+                    left: 0.0,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: <Widget>[
+                        Container(
+                          height: _screenHeight / 10,
+                          width:  _screenWidth / 20,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.all(Radius.circular(_values.standardBorderRadius * 5)),
+                            color: _hue.carmesi,
+                          ),
+                          child: IconButton(
+                            icon: Icon(
+                              Icons.delete,
+                              color: _hue.background,
+                              size: _screenHeight / 18,
+                            ),
+                            tooltip: "Eliminar",
+                            onPressed: (){
+                              _list[index].DeleteAnnouncement().then((result){
+                                if(result){
+                                  setState(() {
+                                    _list.removeAt(index);
+                                    if(_list.isEmpty){
+                                      _finalLandscapeScreen = Center(
+                                        child: Image.asset(
+                                            _values.noContentFound
+                                        ),
+                                      );
+                                    }else{
+                                     updateListView(1, _list);
+                                    }
+                                  });
+                                  showDialog(
+                                      context: context,
+                                      builder: (context) => CustomDialog(description: "El anunció se ha borrado exitosamente.", acceptButtonText: "Aceptar",)
+                                  );
+                                }else{
+                                  showDialog(
+                                      context: context,
+                                      builder: (context) => CustomDialog(description: "Sucedió un problema inesperado, intente más tarde.", acceptButtonText: "Aceptar",)
+                                  );
+                                }
+                              });
+                            },
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                  Positioned(
+                    top: 0.0,
+                    right: 0.0,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: <Widget>[
+                        Container(
+                          height: _screenHeight / 10,
+                          width:  _screenWidth / 20,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.all(Radius.circular(_values.standardBorderRadius * 5)),
+                            color: _hue.ocean,
+                          ),
+                          child: IconButton(
+                            icon: Icon(
+                              Icons.edit,
+                              color: _hue.background,
+                              size: _screenHeight / 18,
+                            ),
+                            tooltip: "Editar",
+                            onPressed: (){
+
+                            },
+                          ),
+                        )
+                      ],
+                    ),
+                  )
+                ],
+              );
+            }
+        )
+      ],
+    );
+  }
+
   @override
   void didChangeDependencies() async{
     // TODO: implement didChangeDependencies
@@ -969,7 +1232,31 @@ class _AnnouncementsScreen extends State<AnnouncementsScreen>{
                                     ),
                                     tooltip: "Eliminar",
                                     onPressed: (){
-
+                                      list[index].DeleteAnnouncement().then((result){
+                                        if(result){
+                                          list.removeAt(index);
+                                          setState(() {
+                                            if(list.isEmpty){
+                                              _finalPortraitScreen = Center(
+                                                child: Image.asset(
+                                                    _values.noContentFound
+                                                ),
+                                              );
+                                            }else{
+                                              updateListView(0, list);
+                                            }
+                                          });
+                                          showDialog(
+                                              context: context,
+                                              builder: (context) => CustomDialog(description: "El anunció se ha borrado exitosamente.", acceptButtonText: "Aceptar",)
+                                          );
+                                        }else{
+                                          showDialog(
+                                              context: context,
+                                              builder: (context) => CustomDialog(description: "Sucedió un problema inesperado, intente más tarde.", acceptButtonText: "Aceptar",)
+                                          );
+                                        }
+                                      });
                                     },
                                   ),
                                 )
@@ -1079,7 +1366,31 @@ class _AnnouncementsScreen extends State<AnnouncementsScreen>{
                                     ),
                                     tooltip: "Eliminar",
                                     onPressed: (){
-
+                                      list[index].DeleteAnnouncement().then((result){
+                                        if(result){
+                                          setState(() {
+                                            list.removeAt(index);
+                                            if(list.isEmpty){
+                                              _finalLandscapeScreen = Center(
+                                                child: Image.asset(
+                                                    _values.noContentFound
+                                                ),
+                                              );
+                                            }else{
+                                              updateListView(1, list);
+                                            }
+                                          });
+                                          showDialog(
+                                              context: context,
+                                              builder: (context) => CustomDialog(description: "El anunció se ha borrado exitosamente.", acceptButtonText: "Aceptar",)
+                                          );
+                                        }else{
+                                          showDialog(
+                                              context: context,
+                                              builder: (context) => CustomDialog(description: "Sucedió un problema inesperado, intente más tarde.", acceptButtonText: "Aceptar",)
+                                          );
+                                        }
+                                      });
                                     },
                                   ),
                                 )
@@ -3302,69 +3613,128 @@ class _NewsScreen extends State<NewsScreen>{
 
     await RetrieveNews(context).then((list){
       if(list.isNotEmpty){
-        setState(() {
-          _finalScreen = SingleChildScrollView(
-            padding: EdgeInsets.symmetric(horizontal: _screenWidth / _values.defaultSymmetricPadding),
-            controller: _scrollController,
-            child: ListView.builder(
-              itemCount: list.length,
-              shrinkWrap: true,
-              itemBuilder: (BuildContext context, int index){
+        if(widget.adminView){
+          setState(() {
+            _finalScreen = SingleChildScrollView(
+              padding: EdgeInsets.symmetric(horizontal: _screenWidth / _values.defaultSymmetricPadding),
+              controller: _scrollController,
+              child: ListView.builder(
+                  itemCount: list.length,
+                  shrinkWrap: true,
+                  itemBuilder: (BuildContext context, int index){
 
-                Widget _galleryButton;
-                if(list[index].hasGallery){
-                  _galleryButton = FlatButton(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Text(
-                          "Galería",
-                          style: _values.galleryFlatButtonTextStyle,
-                        ),
-                        Icon(
-                          Icons.arrow_forward_ios,
-                          color: _hue.ocean,
-                        )
-                      ],
-                    ),
-                    onPressed: (){
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (BuildContext context) => NewDetailsScreen(adminView: widget.adminView, notice: list[index],)
-                          )
-                      );
-                    },
-                  );
-                }else{
-                  _galleryButton = SizedBox(height: _values.toolbarIconSize,);
-                }
-
-                return Card(
-                  elevation: _values.cardElevation,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      ExpandablePanel(
-                        collapsed: Text(list[index].title, style: _values.contentTextStyle, softWrap: true, maxLines: 2, overflow: TextOverflow.ellipsis,),
-                        expanded: Text(list[index].text, style: _values.contentTextStyle, softWrap: true,),
-                        hasIcon: true,
-                        tapBodyToCollapse: true,
-                      ),
-                      Container(color: _hue.outlines, height: _values.lineSizedBoxHeight,),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
+                    return Card(
+                      elevation: _values.cardElevation,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
                         children: <Widget>[
-                          _galleryButton
+                          ExpandablePanel(
+                            collapsed: Text(list[index].title, style: _values.contentTextStyle, softWrap: true, maxLines: 2, overflow: TextOverflow.ellipsis,),
+                            expanded: Text(list[index].text, style: _values.contentTextStyle, softWrap: true,),
+                            hasIcon: true,
+                            tapBodyToCollapse: true,
+                          ),
+                          Container(color: _hue.outlines, height: _values.lineSizedBoxHeight,),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: <Widget>[
+                              FlatButton(
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: <Widget>[
+                                    Text(
+                                      "Editar",
+                                      style: _values.galleryFlatButtonTextStyle,
+                                    ),
+                                    Icon(
+                                      Icons.edit,
+                                      color: _hue.ocean,
+                                    )
+                                  ],
+                                ),
+                                onPressed: (){
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (BuildContext context) => NewDetailsScreen(adminView: widget.adminView, notice: list[index],)
+                                      )
+                                  );
+                                },
+                              )
+                            ],
+                          )
                         ],
-                      )
-                    ],
-                  ),
-                );
-              }
-            ),
-          );
-        });
+                      ),
+                    );
+                  }
+              ),
+            );
+          });
+        }else{
+          setState(() {
+            _finalScreen = SingleChildScrollView(
+              padding: EdgeInsets.symmetric(horizontal: _screenWidth / _values.defaultSymmetricPadding),
+              controller: _scrollController,
+              child: ListView.builder(
+                  itemCount: list.length,
+                  shrinkWrap: true,
+                  itemBuilder: (BuildContext context, int index){
+
+                    Widget _galleryButton;
+                    if(list[index].hasGallery){
+                      _galleryButton = FlatButton(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            Text(
+                              "Galería",
+                              style: _values.galleryFlatButtonTextStyle,
+                            ),
+                            Icon(
+                              Icons.arrow_forward_ios,
+                              color: _hue.ocean,
+                            )
+                          ],
+                        ),
+                        onPressed: (){
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (BuildContext context) => NewDetailsScreen(adminView: widget.adminView, notice: list[index],)
+                              )
+                          );
+                        },
+                      );
+                    }else{
+                      _galleryButton = SizedBox(height: _values.toolbarIconSize,);
+                    }
+
+                    return Card(
+                      elevation: _values.cardElevation,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          ExpandablePanel(
+                            collapsed: Text(list[index].title, style: _values.contentTextStyle, softWrap: true, maxLines: 2, overflow: TextOverflow.ellipsis,),
+                            expanded: Text(list[index].text, style: _values.contentTextStyle, softWrap: true,),
+                            hasIcon: true,
+                            tapBodyToCollapse: true,
+                          ),
+                          Container(color: _hue.outlines, height: _values.lineSizedBoxHeight,),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: <Widget>[
+                              _galleryButton
+                            ],
+                          )
+                        ],
+                      ),
+                    );
+                  }
+              ),
+            );
+          });
+        }
       }else{
         setState(() {
           _finalScreen = Center(
