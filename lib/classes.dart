@@ -150,9 +150,13 @@ class CustomLoadDialog extends StatelessWidget{
 class ExpandedImageDialog extends StatelessWidget{
 
   final url;
+  final width;
+  final height;
 
   ExpandedImageDialog({
     @required this.url,
+    this.width,
+    this.height
   });
 
   @override
@@ -161,6 +165,8 @@ class ExpandedImageDialog extends StatelessWidget{
     return new AlertDialog(
       backgroundColor: Colors.transparent,
       content: Container(
+        height: height,
+        width: width,
         child: PhotoView(
           backgroundDecoration: BoxDecoration(color: Colors.transparent),
           imageProvider: NetworkImage(url),
@@ -1095,5 +1101,36 @@ class New{
     this.imageList = imageList;
     this.timestamp = timestamp;
     this.title = title;
+  }
+
+  Future<bool> destroyNew() async{
+    Values values = new Values();
+
+    await values.firestoreReference.collection('news').document(this.id).delete();
+
+    return true;
+  }
+
+  Future<String> updateNew(String field, String data) async{
+    Values values = new Values();
+
+    switch(field){
+      case 'title':
+        await values.firestoreReference.collection("news").document(this.id).updateData({"title": data});
+        return data;
+        break;
+      case 'text':
+        await values.firestoreReference.collection("news").document(this.id).updateData({"text": data});
+        return data;
+        break;
+    }
+  }
+
+  Future<bool> updateImages(List _urlList) async{
+    Values values = new Values();
+
+    await values.firestoreReference.collection('news').document(this.id).updateData({"images": _urlList});
+
+    return true;
   }
 }

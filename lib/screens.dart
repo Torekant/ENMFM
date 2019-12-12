@@ -1543,10 +1543,18 @@ class _AnnouncementsScreen extends State<AnnouncementsScreen>{
                                           },
                                           onEditingComplete: (){
                                             if (_formKey.currentState.validate()){
+
+                                              showDialog(
+                                                context: context,
+                                                builder: (context) => CustomLoadDialog()
+                                              );
+
                                               _list[index].updateAnnouncement(_textController.text).then((returnedData){
                                                 setState(() {
                                                   _list[index].text = returnedData;
+                                                  enterEditMode(0, _list);
                                                 });
+                                                Navigator.pop(context);
                                               });
                                             }
                                           },
@@ -1725,10 +1733,18 @@ class _AnnouncementsScreen extends State<AnnouncementsScreen>{
                                           },
                                           onEditingComplete: (){
                                             if (_formKey.currentState.validate()){
+
+                                              showDialog(
+                                                  context: context,
+                                                  builder: (context) => CustomLoadDialog()
+                                              );
+
                                               _list[index].updateAnnouncement(_textController.text).then((returnedData){
                                                 setState(() {
                                                   _list[index].text = returnedData;
+                                                  enterEditMode(1, _list);
                                                 });
+                                                Navigator.pop(context);
                                               });
                                             }
                                           },
@@ -4462,10 +4478,7 @@ class _NewsScreen extends State<NewsScreen>{
             backgroundColor: _hue.carmesi,
             title: Text("Noticias"),
           ),
-          body: SingleChildScrollView(
-            controller: _scrollController,
-            child: Text("Landscape mode"),
-          ),
+          body: _finalScreen,
           floatingActionButton: Stack(
             children: <Widget>[
               Positioned(
@@ -4539,34 +4552,60 @@ class _NewDetailsScreen extends State<NewDetailsScreen>{
     _screenLandscapeContent = new Scaffold();
     BackButtonInterceptor.add(backInterceptor);
     _showMoreButtonText = "Ver más";
-
+    _imageUrlList = new List();
 
     if(widget.notice.imageList != null){
-      _imageUrlList = widget.notice.imageList;
-    }else{
-      _imageUrlList = new List();
+      _imageUrlList.addAll(widget.notice.imageList);
     }
 
     if(widget.adminView == true){
       _formKey = GlobalKey<FormState>();
-      _floatingActionButton = FloatingActionButton(
-        tooltip: "Guardar noticia",
-        backgroundColor: _hue.ocean,
-        child: Icon(Icons.save),
-        onPressed: (){
-          if(_formKey.currentState.validate()){
+      if(widget.notice.text == null){
+        _floatingActionButton = FloatingActionButton(
+          tooltip: "Guardar noticia",
+          backgroundColor: _hue.ocean,
+          child: Icon(Icons.save),
+          onPressed: (){
+            if(_formKey.currentState.validate()){
+              showDialog(
+                  context: context,
+                  builder: (BuildContext context) => CustomLoadDialog()
+              );
+
+              CreateNew(context, _imageUrlList, _textEditingController.text, _titleEditingController.text).then((result){
+                Navigator.pop(context);
+                Navigator.pop(context);
+              });
+            }
+          },
+        );
+      }else{
+        _floatingActionButton = FloatingActionButton(
+          tooltip: "Eliminar noticia",
+          backgroundColor: _hue.carmesi,
+          child: Icon(Icons.delete),
+          onPressed: (){
+
             showDialog(
               context: context,
-              builder: (BuildContext context) => CustomLoadDialog()
-            );
+              builder: (context) => CustomAlertDialog(description: "Se borrará la noticia y su galería permanentemente ¿Quiere continuar?", acceptButtonText: "Si", cancelButtonText: "No",)
+            ).then((result){
+              if(result){
+                showDialog(
+                    context: context,
+                    builder: (context) => CustomLoadDialog()
+                );
 
-            CreateNew(context, _imageUrlList, _textEditingController.text, _titleEditingController.text).then((result){
-                Navigator.pop(context);
-                Navigator.pop(context);
+                DeleteNewsImageOnCloud(_imageUrlList);
+                widget.notice.destroyNew().then((result){
+                  Navigator.pop(context);
+                  Navigator.pop(context);
+                });
+              }
             });
-          }
-        },
-      );
+          },
+        );
+      }
 
       if(widget.notice.text != null){
         _textEditingController = new TextEditingController(text: widget.notice.text);
@@ -4713,6 +4752,19 @@ class _NewDetailsScreen extends State<NewDetailsScreen>{
                         return null;
                       }
                     },
+                    onEditingComplete: (){
+                      showDialog(
+                        context: context,
+                        builder: (context) => CustomLoadDialog()
+                      );
+
+                      widget.notice.updateNew('title', _titleEditingController.text).then((response){
+                        setState(() {
+                          widget.notice.title = response;
+                        });
+                        Navigator.pop(context);
+                      });
+                    },
                     keyboardType: TextInputType.text,
                     style: _values.textFieldTextStyle,
                   ),
@@ -4745,6 +4797,19 @@ class _NewDetailsScreen extends State<NewDetailsScreen>{
                         return null;
                       }
                     },
+                    onEditingComplete: (){
+                      showDialog(
+                        context: context,
+                        builder: (context) => CustomLoadDialog()
+                      );
+
+                      widget.notice.updateNew('text', _textEditingController.text).then((response){
+                        setState(() {
+                          widget.notice.text = response;
+                        });
+                        Navigator.pop(context);
+                      });
+                    },
                     keyboardType: TextInputType.text,
                     style: _values.textFieldTextStyle,
                   )
@@ -4773,9 +4838,14 @@ class _NewDetailsScreen extends State<NewDetailsScreen>{
                         setState(() {
                           _imageUrlList.add(downloadUrl);
                         });
+
+                        //Si estamos añadiendo o borrando imágenes a una noticia existente, actualizamos la lista de imágenes en la BD
+                        if(widget.notice.id != null){
+                          widget.notice.updateImages(_imageUrlList);
+                        }
                       }).catchError((err) {
                         Navigator.pop(context);
-                        print(err);
+                        print("Error:" + err.toString());
                       });
                     }
                   },
@@ -4797,6 +4867,8 @@ class _NewDetailsScreen extends State<NewDetailsScreen>{
               ],
             ),
             GridView.count(
+              scrollDirection: Axis.vertical,
+              physics: ScrollPhysics(),
               shrinkWrap: true,
               crossAxisCount: 2,
               children: List.generate(_imageUrlList.length, (index){
@@ -4826,8 +4898,8 @@ class _NewDetailsScreen extends State<NewDetailsScreen>{
                         children: <Widget>[
                           Container(
                             decoration: BoxDecoration(
-                              borderRadius: BorderRadius.all(Radius.circular(_values.standardBorderRadius * 5)),
-                              color: _hue.carmesi
+                                borderRadius: BorderRadius.all(Radius.circular(_values.standardBorderRadius * 5)),
+                                color: _hue.carmesi
                             ),
                             child: IconButton(
                               icon: Icon(
@@ -4840,6 +4912,229 @@ class _NewDetailsScreen extends State<NewDetailsScreen>{
                                 setState(() {
                                   _imageUrlList.removeAt(index);
                                 });
+
+                                //Si estamos añadiendo o borrando imágenes a una noticia existente, actualizamos la lista de imágenes en la BD
+                                if(widget.notice.id != null){
+                                  widget.notice.updateImages(_imageUrlList);
+                                }
+                              },
+                            ),
+                          )
+                        ],
+                      ),
+                    ],
+                  ),
+                );
+              }),
+            )
+          ],
+        ),
+      );
+      _screenLandscapeContent = SingleChildScrollView(
+        padding: EdgeInsets.symmetric(horizontal: _screenWidth / _values.defaultSymmetricPadding),
+        controller: _scrollController,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            SizedBox(height: _values.toolbarGapSizedBox,),
+            Form(
+              key: _formKey,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  TextFormField(
+                    controller: _titleEditingController,
+                    maxLines: null,
+                    decoration: new InputDecoration(
+                        labelText: "Título",
+                        labelStyle: _values.textFieldTextStyle,
+                        fillColor: Colors.white,
+                        filled: true,
+                        border: new OutlineInputBorder(
+                          borderRadius: new BorderRadius.circular(_values.standardBorderRadius),
+                          borderSide: new BorderSide(
+                            color: _hue.outlines,
+                          ),
+                        ),
+                        focusedBorder: new OutlineInputBorder(
+                            borderRadius: new BorderRadius.circular(_values.standardBorderRadius),
+                            borderSide: new BorderSide(
+                              color: _hue.outlines,
+                            )
+                        )
+                    ),
+                    validator: (val) {
+                      if(val.length==0) {
+                        return _values.emptyTextFieldMessage;
+                      }else{
+                        return null;
+                      }
+                    },
+                    onEditingComplete: (){
+                      showDialog(
+                          context: context,
+                          builder: (context) => CustomLoadDialog()
+                      );
+
+                      widget.notice.updateNew('title', _titleEditingController.text).then((response){
+                        setState(() {
+                          widget.notice.title = response;
+                        });
+                        Navigator.pop(context);
+                      });
+                    },
+                    keyboardType: TextInputType.text,
+                    style: _values.textFieldTextStyle,
+                  ),
+                  SizedBox(height: _screenHeight / 30,),
+                  TextFormField(
+                    controller: _textEditingController,
+                    maxLines: null,
+                    decoration: new InputDecoration(
+                        labelText: "Texto de la noticia",
+                        labelStyle: _values.textFieldTextStyle,
+                        fillColor: Colors.white,
+                        filled: true,
+                        border: new OutlineInputBorder(
+                          borderRadius: new BorderRadius.circular(_values.standardBorderRadius),
+                          borderSide: new BorderSide(
+                            color: _hue.outlines,
+                          ),
+                        ),
+                        focusedBorder: new OutlineInputBorder(
+                            borderRadius: new BorderRadius.circular(_values.standardBorderRadius),
+                            borderSide: new BorderSide(
+                              color: _hue.outlines,
+                            )
+                        )
+                    ),
+                    validator: (val) {
+                      if(val.length==0) {
+                        return _values.emptyTextFieldMessage;
+                      }else{
+                        return null;
+                      }
+                    },
+                    onEditingComplete: (){
+                      showDialog(
+                          context: context,
+                          builder: (context) => CustomLoadDialog()
+                      );
+
+                      widget.notice.updateNew('text', _textEditingController.text).then((response){
+                        setState(() {
+                          widget.notice.text = response;
+                        });
+                        Navigator.pop(context);
+                      });
+                    },
+                    keyboardType: TextInputType.text,
+                    style: _values.textFieldTextStyle,
+                  )
+                ],
+              ),
+            ),
+            SizedBox(height: _screenHeight / 15,),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: <Widget>[
+                IconButton(
+                  icon: Icon(
+                    Icons.add_a_photo,
+                    color: _hue.outlines,
+                  ),
+                  onPressed: () async{
+                    var resultList = await MultiImagePicker.pickImages(
+                      maxImages :  100,
+                      enableCamera: true,
+                    );
+
+                    // The data selected here comes back in the list
+                    for ( var imageFile in resultList) {
+                      SaveNewsImageOnCloud(imageFile).then((downloadUrl) {
+                        // Get the download URL
+                        setState(() {
+                          _imageUrlList.add(downloadUrl);
+                        });
+
+                        //Si estamos añadiendo o borrando imágenes a una noticia existente, actualizamos la lista de imágenes en la BD
+                        if(widget.notice.id != null){
+                          widget.notice.updateImages(_imageUrlList);
+                        }
+                      }).catchError((err) {
+                        Navigator.pop(context);
+                        print("Error:" + err.toString());
+                      });
+                    }
+                  },
+                )
+              ],
+            ),
+            Row(
+              children: <Widget>[
+                Text(
+                  "Galería",
+                  style: _values.subtitleTextStyle,
+                ),
+                Expanded(
+                  child: Container(
+                    color: _hue.outlines,
+                    height: _values.lineSizedBoxHeight,
+                  ),
+                )
+              ],
+            ),
+            GridView.count(
+              scrollDirection: Axis.vertical,
+              physics: ScrollPhysics(),
+              shrinkWrap: true,
+              crossAxisCount: 5,
+              children: List.generate(_imageUrlList.length, (index){
+                return Center(
+                  child: Stack(
+                    children: <Widget>[
+                      GestureDetector(
+                        child: Center(
+                          child: CachedNetworkImage(
+                            imageUrl: _imageUrlList[index],
+                            placeholder: (context, url) => Image.asset(_values.loadingAnimation, fit: BoxFit.fill, width: double.maxFinite, height: _screenHeight / 3,),
+                            errorWidget: (context,url,error) => new Icon(Icons.error),
+                            width: double.maxFinite,
+                            height: _screenHeight / 3,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                        onTap: (){
+                          showDialog(
+                              context: context,
+                              builder: (BuildContext context) => ExpandedImageDialog(url: _imageUrlList[index], width: _screenWidth, height: _screenHeight,)
+                          );
+                        },
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: <Widget>[
+                          Container(
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.all(Radius.circular(_values.standardBorderRadius * 5)),
+                                color: _hue.carmesi
+                            ),
+                            child: IconButton(
+                              icon: Icon(
+                                Icons.delete,
+                                color: _hue.background,
+                              ),
+                              tooltip: "Borrar",
+                              onPressed: (){
+                                DeleteOneNewsImage(_imageUrlList[index]);
+                                setState(() {
+                                  _imageUrlList.removeAt(index);
+                                });
+
+                                //Si estamos añadiendo o borrando imágenes a una noticia existente, actualizamos la lista de imágenes en la BD
+                                if(widget.notice.id != null){
+                                  widget.notice.updateImages(_imageUrlList);
+                                }
                               },
                             ),
                           )
@@ -4923,6 +5218,75 @@ class _NewDetailsScreen extends State<NewDetailsScreen>{
           ],
         ),
       );
+      _screenLandscapeContent =  SingleChildScrollView(
+        padding: EdgeInsets.symmetric(horizontal: _screenWidth / _values.defaultSymmetricPadding),
+        controller: _scrollController,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            SizedBox(height: _values.toolbarGapSizedBox,),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Text(
+                widget.notice.title,
+                style: _values.titleTextStyle,
+              ),
+            ),
+            SizedBox(height: _screenHeight / 50,),
+            Container(color: _hue.outlines, height: _values.lineSizedBoxHeight,),
+            SizedBox(height: _screenHeight / 50,),
+            Text(
+              _newFinalText,
+              style: _values.contentTextStyle,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: <Widget>[
+                _showMoreFlatButton
+              ],
+            ),
+            SizedBox(height: _screenHeight / 15,),
+            Row(
+              children: <Widget>[
+                Text(
+                  "Galería",
+                  style: _values.subtitleTextStyle,
+                ),
+                Expanded(
+                  child: Container(
+                    color: _hue.outlines,
+                    height: _values.lineSizedBoxHeight,
+                  ),
+                )
+              ],
+            ),
+            GridView.count(
+              shrinkWrap: true,
+              crossAxisCount: 5,
+              children: List.generate(_imageUrlList.length, (index){
+                return GestureDetector(
+                  child: Center(
+                    child: CachedNetworkImage(
+                      imageUrl: _imageUrlList[index],
+                      placeholder: (context, url) => Image.asset(_values.loadingAnimation, fit: BoxFit.fill, width: double.maxFinite, height: _screenHeight / 3,),
+                      errorWidget: (context,url,error) => new Icon(Icons.error),
+                      width: double.maxFinite,
+                      height: _screenHeight / 3,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  onTap: (){
+                    showDialog(
+                        context: context,
+                        builder: (BuildContext context) => ExpandedImageDialog(url: _imageUrlList[index], height: _screenHeight, width: _screenWidth,)
+                    );
+                  },
+                );
+              }),
+            )
+          ],
+        ),
+      );
     }
 
     return OrientationBuilder(
@@ -4960,54 +5324,35 @@ class _NewDetailsScreen extends State<NewDetailsScreen>{
           ),
         )
             :
-        WillPopScope(
-          child: Scaffold(
-            backgroundColor: _hue.background,
-            appBar: AppBar(
-              backgroundColor: _hue.carmesi,
-              title: Text("Galería"),
-            ),
-            body: _screenPortraitContent,
-            floatingActionButton: Stack(
-              children: <Widget>[
-                Positioned(
-                  left: _position.dx,
-                  top:  _position.dy,
-                  child: Draggable(
-                    feedback: Container(
-                      child: _floatingActionButton,
-                    ),
-                    child: Container(
-                      child: _floatingActionButton,
-                    ),
-                    childWhenDragging: Container(),
-                    onDragEnd: (details){
-                      setState(() {
-                        _position = details.offset;
-                      });
-                    },
-                  ),
-                )
-              ],
-            ),
+        Scaffold(
+          backgroundColor: _hue.background,
+          appBar: AppBar(
+            backgroundColor: _hue.carmesi,
+            title: Text("Galería"),
           ),
-          onWillPop: (){
-            if(widget.adminView == true && widget.notice.id == null){
-              return showDialog(
-                  context: context,
-                  builder: (BuildContext context) => CustomAlertDialog(description: "Si se va ahora no se guardará la noticia.", acceptButtonText: "Aceptar", cancelButtonText: "Cancelar",)
-              ).then((result){
-                if(result == true){
-                  DeleteNewsImageOnCloud(_imageUrlList);
-                  return true;
-                }else{
-                  return false;
-                }
-              });
-            }else{
-              Navigator.pop(context);
-            }
-          },
+          body: _screenLandscapeContent,
+          floatingActionButton: Stack(
+            children: <Widget>[
+              Positioned(
+                left: _position.dx,
+                top:  _position.dy,
+                child: Draggable(
+                  feedback: Container(
+                    child: _floatingActionButton,
+                  ),
+                  child: Container(
+                    child: _floatingActionButton,
+                  ),
+                  childWhenDragging: Container(),
+                  onDragEnd: (details){
+                    setState(() {
+                      _position = details.offset;
+                    });
+                  },
+                ),
+              )
+            ],
+          ),
         );
       },
     );
