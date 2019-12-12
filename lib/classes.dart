@@ -1070,6 +1070,14 @@ class Announcement{
     }
 
   }
+
+  Future<String> updateAnnouncement(String announce) async{
+    Values values = new Values();
+
+    await values.firestoreReference.collection("announcements").document(this.id).updateData({"text": announce});
+    return announce;
+
+  }
 }
 
 class New{
