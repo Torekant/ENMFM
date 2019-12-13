@@ -5192,6 +5192,8 @@ class _NewDetailsScreen extends State<NewDetailsScreen>{
               ],
             ),
             GridView.count(
+              scrollDirection: Axis.vertical,
+              physics: ScrollPhysics(),
               shrinkWrap: true,
               crossAxisCount: 2,
               children: List.generate(_imageUrlList.length, (index){
@@ -5261,6 +5263,8 @@ class _NewDetailsScreen extends State<NewDetailsScreen>{
               ],
             ),
             GridView.count(
+              scrollDirection: Axis.vertical,
+              physics: ScrollPhysics(),
               shrinkWrap: true,
               crossAxisCount: 5,
               children: List.generate(_imageUrlList.length, (index){
