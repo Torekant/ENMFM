@@ -1,4 +1,3 @@
-import 'package:connectivity/connectivity.dart';
 import 'dart:io';
 import 'dart:async';
 import 'package:flutter/material.dart';
@@ -8,44 +7,6 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:random_string/random_string.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:photo_view/photo_view.dart';
-
-class MyConnectivity {
-  MyConnectivity._internal();
-
-  static final MyConnectivity _instance = MyConnectivity._internal();
-
-  static MyConnectivity get instance => _instance;
-
-  Connectivity connectivity = Connectivity();
-
-  StreamController controller = StreamController.broadcast();
-
-  Stream get myStream => controller.stream;
-
-  void initialise() async {
-    ConnectivityResult result = await connectivity.checkConnectivity();
-    _checkStatus(result);
-    connectivity.onConnectivityChanged.listen((result) {
-      _checkStatus(result);
-    });
-  }
-
-  void _checkStatus(ConnectivityResult result) async {
-    bool isOnline = false;
-    try {
-      final result = await InternetAddress.lookup('example.com');
-      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        isOnline = true;
-      } else
-        isOnline = false;
-    } on SocketException catch (_) {
-      isOnline = false;
-    }
-    controller.sink.add({result: isOnline});
-  }
-
-  void disposeStream() => controller.close();
-}
 
 class CustomDialog extends StatelessWidget{
   final description, acceptButtonText;
@@ -336,7 +297,7 @@ class _CustomFormDialog extends State<CustomFormDialog>{
                 builder: (BuildContext context) => CustomLoadDialog()
               );
 
-              await adminDummy.CreateAdmin(_nickTextController.text, _mailTextController.text, _passwordTextController.text, context).then((result){
+              await adminDummy.createAdmin(_nickTextController.text, _mailTextController.text, _passwordTextController.text, context).then((result){
                 Navigator.of(context).pop();
               });
               Navigator.of(context).pop(true);
@@ -402,7 +363,7 @@ class _CustomFormDialog extends State<CustomFormDialog>{
           onPressed: () async{
             if (_formKey.currentState.validate()) {
               User adminDummy = new User('', '', '', '', false, false);
-              await adminDummy.ResetPassword(_mailTextController.text);
+              await adminDummy.resetPassword(_mailTextController.text);
               Navigator.of(context).pop(true);
             }
           },
@@ -585,7 +546,7 @@ class Event{
     this.type = type;
   }
 
-  Future<String> ChangeImage(var image, String newImageName) async{
+  Future<String> changeImage(var image, String newImageName) async{
     Values values = new Values();
 
     String finalURL = "https://i.all3dp.com/cdn-cgi/image/fit=cover,w=1284,h=722,gravity=0.5x0.5,format=auto/wp-content/uploads/2018/12/28144052/background-images-can-come-in-handy-when-modeling-tian-ooi-all3dp-181228.jpg";
@@ -604,7 +565,7 @@ class Event{
     return finalURL;
   }
 
-  Future<String> UpdateEvent(String data, String field) async{
+  Future<String> updateEvent(String data, String field) async{
 
     Values values = new Values();
 
@@ -637,7 +598,7 @@ class Event{
 
   }
 
-  Future<bool> CreateEvent(BuildContext context, var image) async{
+  Future<bool> createEvent(BuildContext context, var image) async{
     Values values = new Values();
 
     String imageName = randomAlphaNumeric(20);
@@ -749,7 +710,7 @@ class Event{
     }
   }
 
-  Future<bool> DeleteEvent(BuildContext context) async{
+  Future<bool> deleteEvent(BuildContext context) async{
     Values values = new Values();
 
     try{
@@ -868,7 +829,7 @@ class User{
     this.masterAdmin = masterAdmin;
   }
 
-  Future<FirebaseUser> CreateAdmin(String nickname, String mail, String password, BuildContext context) async{
+  Future<FirebaseUser> createAdmin(String nickname, String mail, String password, BuildContext context) async{
 
     Values values = new Values();
     FirebaseUser user;
@@ -954,7 +915,7 @@ class User{
 
   }
 
-  Future<bool> DestroyAdmin(BuildContext context) async{
+  Future<bool> destroyAdmin(BuildContext context) async{
     Values values = new Values();
 
     try{
@@ -1029,7 +990,7 @@ class User{
 
   }
   
-  Future<bool> ResetPassword(String mail) async{
+  Future<bool> resetPassword(String mail) async{
     try{
       await FirebaseAuth.instance.sendPasswordResetEmail(email: mail);
     }catch(e){
@@ -1037,7 +998,7 @@ class User{
     }
   }
 
-  Future<bool> UpdateEmail(String password, String newMail) async{
+  Future<bool> updateEmail(String password, String newMail) async{
 
     Values values = new Values();
 
@@ -1065,7 +1026,7 @@ class Announcement{
     this.timestamp = timestamp;
   }
 
-  Future<bool> DeleteAnnouncement() async{
+  Future<bool> deleteAnnouncement() async{
     Values values = new Values();
 
     try{

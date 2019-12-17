@@ -13,7 +13,7 @@ import 'package:intl/intl.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
-LaunchURL(String url) async {
+launchURL(String url) async {
   if (await canLaunch(url)) {
     await launch(url);
   } else {
@@ -21,7 +21,7 @@ LaunchURL(String url) async {
   }
 }
 
-Future<bool> CreateAnnouncement(BuildContext context, String announcementText) async{
+Future<bool> createAnnouncement(BuildContext context, String announcementText) async{
   Values _values = new Values();
 
   await _values.firestoreReference.collection('announcements').add({
@@ -33,7 +33,7 @@ Future<bool> CreateAnnouncement(BuildContext context, String announcementText) a
 
 }
 
-Future<bool> CreateNew(BuildContext context, List<dynamic> _imagesList, String _newText, String _newTitle) async{
+Future<bool> createNew(BuildContext context, List<dynamic> _imagesList, String _newText, String _newTitle) async{
   Values _values = new Values();
   bool _gallery = false;
 
@@ -54,7 +54,7 @@ Future<bool> CreateNew(BuildContext context, List<dynamic> _imagesList, String _
   return true;
 }
 
-Future<List> RetrieveNews(BuildContext context) async{
+Future<List> retrieveNews(BuildContext context) async{
   Values _values = new Values();
   List<New> _list = new List();
   QuerySnapshot _snapshots;
@@ -71,7 +71,7 @@ Future<List> RetrieveNews(BuildContext context) async{
   return _list;
 }
 
-Future<List> RetrieveAnnouncements(BuildContext context) async{
+Future<List> retrieveAnnouncements(BuildContext context) async{
   Values _values = new Values();
   List<Announcement> _list = new List();
   QuerySnapshot _snapshots;
@@ -88,7 +88,7 @@ Future<List> RetrieveAnnouncements(BuildContext context) async{
   return _list;
 }
 
-Future<Map> RetrieveCalendarEvents(BuildContext context) async{
+Future<Map> retrieveCalendarEvents(BuildContext context) async{
   Values values = new Values();
   QuerySnapshot _snapshots;
   List<DocumentSnapshot> _documents;
@@ -127,7 +127,7 @@ Future<Map> RetrieveCalendarEvents(BuildContext context) async{
   return events;
 }
 
-Future<List> RetrieveListEvents(BuildContext context) async{
+Future<List> retrieveListEvents(BuildContext context) async{
   Values values = new Values();
   QuerySnapshot _snapshots;
   List<DocumentSnapshot> _documents;
@@ -167,7 +167,7 @@ Future<List> RetrieveListEvents(BuildContext context) async{
   return _list;
 }
 
-Future<FirebaseUser> AdminLogin(String mail, String password, BuildContext context) async{
+Future<FirebaseUser> adminLogin(String mail, String password, BuildContext context) async{
 
   FirebaseUser user;
 
@@ -262,7 +262,7 @@ Future<FirebaseUser> AdminLogin(String mail, String password, BuildContext conte
 
 }
 
-Future<String> PickImage(Event event, BuildContext context) async {
+Future<String> pickImage(Event event, BuildContext context) async {
   var image = await ImagePicker.pickImage(source: ImageSource.gallery);
 
   String finalURL;
@@ -275,7 +275,7 @@ Future<String> PickImage(Event event, BuildContext context) async {
   try{
     String imageName = randomAlphaNumeric(20);
     imageName = imageName + DateTime.now().toString();
-    finalURL = await event.ChangeImage(image, imageName);
+    finalURL = await event.changeImage(image, imageName);
   }catch(Exception){
     showDialog(
       context: context,
@@ -291,7 +291,7 @@ Future<String> PickImage(Event event, BuildContext context) async {
   return finalURL;
 }
 
-Future<dynamic> SaveNewsImageOnCloud(Asset imageFile) async {
+Future<dynamic> saveNewsImageOnCloud(Asset imageFile) async {
   Values values = new Values();
 
   ByteData _byteImageData = await imageFile.getByteData();
@@ -304,7 +304,7 @@ Future<dynamic> SaveNewsImageOnCloud(Asset imageFile) async {
 
 }
 
-Future<dynamic> DeleteNewsImageOnCloud(List<dynamic> _imagesList) async {
+Future<dynamic> deleteNewsImageOnCloud(List<dynamic> _imagesList) async {
   Values values = new Values();
 
   for(int i = 0; i < _imagesList.length; i++){
@@ -316,7 +316,7 @@ Future<dynamic> DeleteNewsImageOnCloud(List<dynamic> _imagesList) async {
   return true;
 }
 
-Future<bool> DeleteOneNewsImage(String url) async{
+Future<bool> deleteOneNewsImage(String url) async{
   Values values = new Values();
 
   await values.storageReference.getStorage().getReferenceFromUrl(url).then((ref){
@@ -326,7 +326,7 @@ Future<bool> DeleteOneNewsImage(String url) async{
   return true;
 }
 
-String BuildEventDayText(String formattedDate, int mode){
+String buildEventDayText(String formattedDate, int mode){
   String dateText;
 
   String year = formattedDate.substring(0, 4);
@@ -385,7 +385,7 @@ String BuildEventDayText(String formattedDate, int mode){
   return dateText;
 }
 
-String BuildEventTimeText(String unformattedTime){
+String buildEventTimeText(String unformattedTime){
 
   String formattedTime = unformattedTime.substring(11, 16);
 

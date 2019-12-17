@@ -55,9 +55,6 @@ class _HomeScreen extends State<HomeScreen>{
 
     double _screenHeight = MediaQuery.of(context).size.height; //lee el largo del dispositivo
 
-    double _responsiveHeight = _screenHeight / _values.defaultDivisionForResponsiveHeight; //Función para altura responsiva de cada card en la lista
-
-
     return OrientationBuilder(
       builder: (context, orientation){
         return orientation == Orientation.portrait
@@ -102,7 +99,7 @@ class _HomeScreen extends State<HomeScreen>{
                               child: Card(
                                 elevation: _values.cardElevation,
                                 child: Container(
-                                  height: _responsiveHeight / 5,
+                                  height: _screenHeight / 11,
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: <Widget>[
@@ -178,7 +175,7 @@ class _HomeScreen extends State<HomeScreen>{
                             );
                           }
                       ),
-                      SizedBox(height: _responsiveHeight / 10,),
+                      SizedBox(height: _screenHeight / 10,),
                       FlatButton(
                         textColor: _hue.carmesi,
                         child: Row(
@@ -195,7 +192,7 @@ class _HomeScreen extends State<HomeScreen>{
                           ],
                         ),
                         onPressed: (){
-                          LaunchURL(_values.urlWebPage);
+                          launchURL(_values.urlWebPage);
                         },
                       )
                     ],
@@ -246,7 +243,7 @@ class _HomeScreen extends State<HomeScreen>{
                               child: Card(
                                 elevation: _values.cardElevation,
                                 child: Container(
-                                  height: _responsiveHeight / 2.5,
+                                  height: _screenHeight / 5,
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: <Widget>[
@@ -322,7 +319,7 @@ class _HomeScreen extends State<HomeScreen>{
                             );
                           }
                       ),
-                      SizedBox(height: _responsiveHeight / 10,),
+                      SizedBox(height: _screenHeight / 10,),
                       FlatButton(
                         textColor: _hue.carmesi,
                         child: Row(
@@ -339,7 +336,7 @@ class _HomeScreen extends State<HomeScreen>{
                           ],
                         ),
                         onPressed: (){
-                          LaunchURL(_values.urlWebPage);
+                          launchURL(_values.urlWebPage);
                         },
                       )
                     ],
@@ -870,7 +867,7 @@ class _AnnouncementsScreen extends State<AnnouncementsScreen>{
                   context: context,
                   builder: (BuildContext context) => CustomLoadDialog()
               );
-              CreateAnnouncement(context, result).then((result){
+              createAnnouncement(context, result).then((result){
                 Navigator.pop(context);
                   showDialog(
                       context: context,
@@ -990,7 +987,7 @@ class _AnnouncementsScreen extends State<AnnouncementsScreen>{
                             ),
                             tooltip: "Eliminar",
                             onPressed: (){
-                              _list[index].DeleteAnnouncement().then((result){
+                              _list[index].deleteAnnouncement().then((result){
                                 if(result){
                                   _list.removeAt(index);
                                   setState(() {
@@ -1123,7 +1120,7 @@ class _AnnouncementsScreen extends State<AnnouncementsScreen>{
                             ),
                             tooltip: "Eliminar",
                             onPressed: (){
-                              _list[index].DeleteAnnouncement().then((result){
+                              _list[index].deleteAnnouncement().then((result){
                                 if(result){
                                   setState(() {
                                     _list.removeAt(index);
@@ -1265,7 +1262,7 @@ class _AnnouncementsScreen extends State<AnnouncementsScreen>{
                               ),
                               tooltip: "Eliminar",
                               onPressed: (){
-                                _list[index].DeleteAnnouncement().then((result){
+                                _list[index].deleteAnnouncement().then((result){
                                   if(result){
                                     _list.removeAt(index);
                                     setState(() {
@@ -1400,7 +1397,7 @@ class _AnnouncementsScreen extends State<AnnouncementsScreen>{
                               ),
                               tooltip: "Eliminar",
                               onPressed: (){
-                                _list[index].DeleteAnnouncement().then((result){
+                                _list[index].deleteAnnouncement().then((result){
                                   if(result){
                                     setState(() {
                                       _list.removeAt(index);
@@ -1592,7 +1589,7 @@ class _AnnouncementsScreen extends State<AnnouncementsScreen>{
                               ),
                               tooltip: "Eliminar",
                               onPressed: (){
-                                _list[index].DeleteAnnouncement().then((result){
+                                _list[index].deleteAnnouncement().then((result){
                                   if(result){
                                     _list.removeAt(index);
                                     setState(() {
@@ -1783,7 +1780,7 @@ class _AnnouncementsScreen extends State<AnnouncementsScreen>{
                               ),
                               tooltip: "Eliminar",
                               onPressed: (){
-                                _list[index].DeleteAnnouncement().then((result){
+                                _list[index].deleteAnnouncement().then((result){
                                   if(result){
                                     setState(() {
                                       _list.removeAt(index);
@@ -1841,7 +1838,7 @@ class _AnnouncementsScreen extends State<AnnouncementsScreen>{
       _editingMode = false;
       _pastScreenWidth = _screenWidth;
 
-      await RetrieveAnnouncements(context).then((list){
+      await retrieveAnnouncements(context).then((list){
         if(list.isNotEmpty){
           if(widget.adminView == true){
             setState(() {
@@ -1942,7 +1939,7 @@ class _AnnouncementsScreen extends State<AnnouncementsScreen>{
                                       ),
                                       tooltip: "Eliminar",
                                       onPressed: (){
-                                        list[index].DeleteAnnouncement().then((result){
+                                          list[index].deleteAnnouncement().then((result){
                                           if(result){
                                             list.removeAt(index);
                                             setState(() {
@@ -2078,7 +2075,7 @@ class _AnnouncementsScreen extends State<AnnouncementsScreen>{
                                       ),
                                       tooltip: "Eliminar",
                                       onPressed: (){
-                                        list[index].DeleteAnnouncement().then((result){
+                                        list[index].deleteAnnouncement().then((result){
                                           if(result){
                                             setState(() {
                                               list.removeAt(index);
@@ -2400,7 +2397,7 @@ class _EventsScreen extends State<EventsScreen>{
     if(widget.adminView == true){
       _position = Offset(_screenWidth / 1.2, _screenHeight / 1.2);
 
-      await RetrieveCalendarEvents(context).then((map) {
+      await retrieveCalendarEvents(context).then((map) {
         if (!map.containsKey(null)) {
           setState(() {
             _calendarEvents = map;
@@ -2493,7 +2490,7 @@ class _EventsScreen extends State<EventsScreen>{
       });
 
     }else{
-      RetrieveListEvents(context).then((list){
+      retrieveListEvents(context).then((list){
         if(list.isNotEmpty){
           setState(() {
             _screenPortraitContent = Center(
@@ -2502,7 +2499,7 @@ class _EventsScreen extends State<EventsScreen>{
                   shrinkWrap: true,
                   itemCount: list.length,
                   itemBuilder: (BuildContext context, int index){
-                    String _dateText = BuildEventDayText(list[index].date, 0);
+                    String _dateText = buildEventDayText(list[index].date, 0);
                     return GestureDetector(
                       child: Card(
                         child: Container(
@@ -2554,7 +2551,7 @@ class _EventsScreen extends State<EventsScreen>{
                   shrinkWrap: true,
                   itemCount: list.length,
                   itemBuilder: (BuildContext context, int index){
-                    String _dateText = BuildEventDayText(list[index].date, 0);
+                    String _dateText = buildEventDayText(list[index].date, 0);
                     return GestureDetector(
                       child: Card(
                         child: Container(
@@ -2981,9 +2978,9 @@ class _EventDetailsScreen extends State<EventDetailsScreen>{
       widget.event.time = "00:00";
       DateFormat df = new DateFormat('yyyy-MM-dd');
       widget.event.date = df.format(widget.newEventDateTime);
-      _spanishFormattedText = BuildEventDayText(df.format(widget.newEventDateTime), 1);
+      _spanishFormattedText = buildEventDayText(df.format(widget.newEventDateTime), 1);
     }else{
-      _spanishFormattedText = BuildEventDayText(widget.event.date, 1);
+      _spanishFormattedText = buildEventDayText(widget.event.date, 1);
     }
   }
 
@@ -3057,7 +3054,7 @@ class _EventDetailsScreen extends State<EventDetailsScreen>{
                           iconSize: _responsiveHeight / 11,
                           tooltip: _values.tooltipChangeEventImage,
                           onPressed: (){
-                            Future<String> finalURL = PickImage(widget.event, context);
+                            Future<String> finalURL = pickImage(widget.event, context);
                             finalURL.then((val){
                               setState(() {
                                 this.widget.event.image = val;
@@ -3090,7 +3087,7 @@ class _EventDetailsScreen extends State<EventDetailsScreen>{
                   //fillColor: Colors.green
                 ),
                 onEditingComplete: (){
-                  widget.event.UpdateEvent(_titleTextController.text, 'title').then((updatedTitle){
+                  widget.event.updateEvent(_titleTextController.text, 'title').then((updatedTitle){
                     setState(() {
                       widget.event.title = updatedTitle;
                     });
@@ -3123,7 +3120,7 @@ class _EventDetailsScreen extends State<EventDetailsScreen>{
                 ),
                 style: _values.textFieldTextStyle,
                 onEditingComplete: (){
-                  widget.event.UpdateEvent(_placeTextController.text, 'place').then((updatedPlace){
+                  widget.event.updateEvent(_placeTextController.text, 'place').then((updatedPlace){
                     setState(() {
                       widget.event.place = updatedPlace;
                     });
@@ -3158,7 +3155,7 @@ class _EventDetailsScreen extends State<EventDetailsScreen>{
                             },
                             onConfirm: (date) {
                               String format = date.toString().substring(0, 10);
-                              widget.event.UpdateEvent(format, 'date').then((updatedDate){
+                              widget.event.updateEvent(format, 'date').then((updatedDate){
                                 setState(() {
                                   widget.event.date = updatedDate;
                                 });
@@ -3195,8 +3192,8 @@ class _EventDetailsScreen extends State<EventDetailsScreen>{
 
                         },
                         onConfirm: (time){
-                          String newTime = BuildEventTimeText(time.toString());
-                          widget.event.UpdateEvent(newTime, 'time').then((updatedTime){
+                          String newTime = buildEventTimeText(time.toString());
+                          widget.event.updateEvent(newTime, 'time').then((updatedTime){
                             setState(() {
                               widget.event.time = updatedTime;
                             });
@@ -3235,7 +3232,7 @@ class _EventDetailsScreen extends State<EventDetailsScreen>{
                 ),
                 style: _values.textFieldTextStyle,
                 onEditingComplete: (){
-                  widget.event.UpdateEvent(_descriptionTextController.text, 'description').then((updatedDescription){
+                  widget.event.updateEvent(_descriptionTextController.text, 'description').then((updatedDescription){
                     setState(() {
                       widget.event.description = updatedDescription;
                     });
@@ -3273,7 +3270,7 @@ class _EventDetailsScreen extends State<EventDetailsScreen>{
                           iconSize: _responsiveHeight / 5,
                           tooltip: _values.tooltipChangeEventImage,
                           onPressed: (){
-                            Future<String> finalURL = PickImage(widget.event, context);
+                            Future<String> finalURL = pickImage(widget.event, context);
                             finalURL.then((val){
                               setState(() {
                                 this.widget.event.image = val;
@@ -3306,7 +3303,7 @@ class _EventDetailsScreen extends State<EventDetailsScreen>{
                   //fillColor: Colors.green
                 ),
                 onEditingComplete: (){
-                  widget.event.UpdateEvent(_titleTextController.text, 'title').then((updatedTitle){
+                  widget.event.updateEvent(_titleTextController.text, 'title').then((updatedTitle){
                     setState(() {
                       widget.event.title = updatedTitle;
                     });
@@ -3339,7 +3336,7 @@ class _EventDetailsScreen extends State<EventDetailsScreen>{
                 ),
                 style: _values.textFieldTextStyle,
                 onEditingComplete: (){
-                  widget.event.UpdateEvent(_placeTextController.text, 'place').then((updatedPlace){
+                  widget.event.updateEvent(_placeTextController.text, 'place').then((updatedPlace){
                     setState(() {
                       widget.event.place = updatedPlace;
                     });
@@ -3374,7 +3371,7 @@ class _EventDetailsScreen extends State<EventDetailsScreen>{
                             },
                             onConfirm: (date) {
                               String format = date.toString().substring(0, 10);
-                              widget.event.UpdateEvent(format, 'date').then((updatedDate){
+                              widget.event.updateEvent(format, 'date').then((updatedDate){
                                 setState(() {
                                   widget.event.date = updatedDate;
                                 });
@@ -3411,8 +3408,8 @@ class _EventDetailsScreen extends State<EventDetailsScreen>{
 
                         },
                         onConfirm: (time){
-                          String newTime = BuildEventTimeText(time.toString());
-                          widget.event.UpdateEvent(newTime, 'time').then((updatedTime){
+                          String newTime = buildEventTimeText(time.toString());
+                          widget.event.updateEvent(newTime, 'time').then((updatedTime){
                             setState(() {
                               widget.event.time = updatedTime;
                             });
@@ -3451,7 +3448,7 @@ class _EventDetailsScreen extends State<EventDetailsScreen>{
                 ),
                 style: _values.textFieldTextStyle,
                 onEditingComplete: (){
-                  widget.event.UpdateEvent(_descriptionTextController.text, 'description').then((updatedDescription){
+                  widget.event.updateEvent(_descriptionTextController.text, 'description').then((updatedDescription){
                     setState(() {
                       widget.event.description = updatedDescription;
                     });
@@ -3482,7 +3479,7 @@ class _EventDetailsScreen extends State<EventDetailsScreen>{
                   builder: (BuildContext context) => CustomLoadDialog()
                 );
 
-                widget.event.DeleteEvent(context).then((result){
+                widget.event.deleteEvent(context).then((result){
                   if(result == true){
                     Navigator.of(context).pop();
                     Navigator.of(context).pop();
@@ -3650,7 +3647,7 @@ class _EventDetailsScreen extends State<EventDetailsScreen>{
                                 String format = date.toString().substring(0, 10);
                                 setState(() {
                                   widget.event.date = format;
-                                  _spanishFormattedText = BuildEventDayText(widget.event.date, 1);
+                                  _spanishFormattedText = buildEventDayText(widget.event.date, 1);
                                 });
                               },
                               currentTime: widget.newEventDateTime,
@@ -3684,7 +3681,7 @@ class _EventDetailsScreen extends State<EventDetailsScreen>{
 
                           },
                           onConfirm: (time){
-                            String newTime = BuildEventTimeText(time.toString());
+                            String newTime = buildEventTimeText(time.toString());
                             setState(() {
                               widget.event.time = newTime;
                             });
@@ -3878,7 +3875,7 @@ class _EventDetailsScreen extends State<EventDetailsScreen>{
                                   String format = date.toString().substring(0, 10);
                                   setState(() {
                                     widget.event.date = format;
-                                    _spanishFormattedText = BuildEventDayText(widget.event.date, 1);
+                                    _spanishFormattedText = buildEventDayText(widget.event.date, 1);
                                   });
                                 },
                                 currentTime: widget.newEventDateTime,
@@ -3912,7 +3909,7 @@ class _EventDetailsScreen extends State<EventDetailsScreen>{
 
                             },
                             onConfirm: (time){
-                              String newTime = BuildEventTimeText(time.toString());
+                              String newTime = buildEventTimeText(time.toString());
                               setState(() {
                                 widget.event.time = newTime;
                               });
@@ -3982,7 +3979,7 @@ class _EventDetailsScreen extends State<EventDetailsScreen>{
                 builder: (BuildContext context) => CustomLoadDialog()
               );
 
-              widget.event.CreateEvent(context, _imageNewEvent).then((result){
+              widget.event.createEvent(context, _imageNewEvent).then((result){
                 Navigator.of(context).pop();
                 Navigator.of(context).pop();
               });
@@ -4297,7 +4294,7 @@ class _NewsScreen extends State<NewsScreen>{
       _position = Offset(_screenWidth / 1.2, _screenHeight / 1.2);
     }
 
-    await RetrieveNews(context).then((list){
+    await retrieveNews(context).then((list){
       if(list.isNotEmpty){
         if(widget.adminView){
           setState(() {
@@ -4572,7 +4569,7 @@ class _NewDetailsScreen extends State<NewDetailsScreen>{
                   builder: (BuildContext context) => CustomLoadDialog()
               );
 
-              CreateNew(context, _imageUrlList, _textEditingController.text, _titleEditingController.text).then((result){
+              createNew(context, _imageUrlList, _textEditingController.text, _titleEditingController.text).then((result){
                 Navigator.pop(context);
                 Navigator.pop(context);
               });
@@ -4596,7 +4593,7 @@ class _NewDetailsScreen extends State<NewDetailsScreen>{
                     builder: (context) => CustomLoadDialog()
                 );
 
-                DeleteNewsImageOnCloud(_imageUrlList);
+                deleteNewsImageOnCloud(_imageUrlList);
                 widget.notice.destroyNew().then((result){
                   Navigator.pop(context);
                   Navigator.pop(context);
@@ -4627,7 +4624,7 @@ class _NewDetailsScreen extends State<NewDetailsScreen>{
           builder: (BuildContext context) => CustomAlertDialog(description: "Si se va ahora no se guardará la noticia.", acceptButtonText: "Aceptar", cancelButtonText: "Cancelar",)
       ).then((result){
         if(result == true){
-          DeleteNewsImageOnCloud(_imageUrlList);
+          deleteNewsImageOnCloud(_imageUrlList);
           Navigator.pop(context);
           return false;
         }else{
@@ -4833,7 +4830,7 @@ class _NewDetailsScreen extends State<NewDetailsScreen>{
 
                     // The data selected here comes back in the list
                     for ( var imageFile in resultList) {
-                      SaveNewsImageOnCloud(imageFile).then((downloadUrl) {
+                      saveNewsImageOnCloud(imageFile).then((downloadUrl) {
                         // Get the download URL
                         setState(() {
                           _imageUrlList.add(downloadUrl);
@@ -4908,7 +4905,7 @@ class _NewDetailsScreen extends State<NewDetailsScreen>{
                               ),
                               tooltip: "Borrar",
                               onPressed: (){
-                                DeleteOneNewsImage(_imageUrlList[index]);
+                                deleteOneNewsImage(_imageUrlList[index]);
                                 setState(() {
                                   _imageUrlList.removeAt(index);
                                 });
@@ -5051,7 +5048,7 @@ class _NewDetailsScreen extends State<NewDetailsScreen>{
 
                     // The data selected here comes back in the list
                     for ( var imageFile in resultList) {
-                      SaveNewsImageOnCloud(imageFile).then((downloadUrl) {
+                      saveNewsImageOnCloud(imageFile).then((downloadUrl) {
                         // Get the download URL
                         setState(() {
                           _imageUrlList.add(downloadUrl);
@@ -5126,7 +5123,7 @@ class _NewDetailsScreen extends State<NewDetailsScreen>{
                               ),
                               tooltip: "Borrar",
                               onPressed: (){
-                                DeleteOneNewsImage(_imageUrlList[index]);
+                                deleteOneNewsImage(_imageUrlList[index]);
                                 setState(() {
                                   _imageUrlList.removeAt(index);
                                 });
@@ -5492,7 +5489,7 @@ class _LoginScreen extends State<LoginScreen>{
                   builder: (BuildContext context) => CustomLoadDialog()
               );
 
-              AdminLogin(_idTextController.text, _passwordTextController.text, context).then((fireUser) async{
+              adminLogin(_idTextController.text, _passwordTextController.text, context).then((fireUser) async{
                 if(fireUser != null){
                   Navigator.of(context).pop();
                   values.firestoreReference.collection('admins').where('email', isEqualTo: fireUser.email).snapshots().listen((data){
@@ -5821,7 +5818,7 @@ class _AdminScreen extends State<AdminScreen> with SingleTickerProviderStateMixi
                                           builder: (BuildContext context) => CustomLoadDialog()
                                       );
 
-                                      admin.DestroyAdmin(context).then((result){
+                                      admin.destroyAdmin(context).then((result){
                                         if(result){
                                           Navigator.of(context).pop();
                                           showDialog(
@@ -6005,7 +6002,7 @@ class _AdminScreen extends State<AdminScreen> with SingleTickerProviderStateMixi
                                           builder: (BuildContext context) => CustomLoadDialog()
                                       );
 
-                                      admin.DestroyAdmin(context).then((result){
+                                      admin.destroyAdmin(context).then((result){
                                         if(result){
                                           Navigator.of(context).pop();
                                           showDialog(
@@ -6361,7 +6358,7 @@ class _AdminScreen extends State<AdminScreen> with SingleTickerProviderStateMixi
                                                   dialogPurpose: _values.dialogPurposes['Cambiar correo']
                                               )
                                           ).then((pass){
-                                            widget.user.UpdateEmail(pass, _mailUpdateController.text).then((result){
+                                            widget.user.updateEmail(pass, _mailUpdateController.text).then((result){
                                               if(result){
                                                 showDialog(
                                                     context: context,
@@ -6592,7 +6589,7 @@ class _AdminScreen extends State<AdminScreen> with SingleTickerProviderStateMixi
                                                     dialogPurpose: _values.dialogPurposes['Cambiar correo']
                                                 )
                                             ).then((pass){
-                                              widget.user.UpdateEmail(pass, _mailUpdateController.text).then((result){
+                                              widget.user.updateEmail(pass, _mailUpdateController.text).then((result){
                                                 if(result){
                                                   showDialog(
                                                       context: context,

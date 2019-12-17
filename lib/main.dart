@@ -73,12 +73,6 @@ class _SplashScreen extends State<SplashScreen> {
   }
 
   @override
-  void didChangeDependencies() {
-    // TODO: implement didChangeDependencies
-    super.didChangeDependencies();
-  }
-
-  @override
   Widget build(BuildContext context) {
 
     double _screenWidth = MediaQuery.of(context).size.width; //Ancho de pantalla

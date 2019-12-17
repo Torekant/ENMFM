@@ -47,7 +47,7 @@ class Values{
   Alignment centerAlignment = new Alignment(0.0, 0.0);
 
   //urls
-  String urlWebPage = 'http://www.enmfm.edu.mx';
+  String urlWebPage = 'http://www.enmfm.mx';
 
   //amounts
   int numberOfAdminTabs = 1;
