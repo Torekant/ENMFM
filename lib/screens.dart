@@ -2363,7 +2363,7 @@ class _EventsScreen extends State<EventsScreen>{
           Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => EventDetailsScreen(event: new Event(null, null, null, null, null, null, null, null), adminView: true, newEventDateTime: _calendarController.selectedDay,),
+                builder: (context) => EventDetailsScreen(event: new Event(null, null, null, null, null, null, null, null, null), adminView: true, newEventDateTime: _calendarController.selectedDay,),
               )
           );
         },
@@ -2526,8 +2526,21 @@ class _EventsScreen extends State<EventsScreen>{
                                   Text(
                                     _dateText + " a las " + list[index].time + "hrs.",
                                     style: _values.subtitleTextStyle,
-                                  )
+                                  ),
                                 ],
+                              ),
+                              SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                controller: _scrollController,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                  children: <Widget>[
+                                    Text(
+                                      "Subdirección " + list[index].department,
+                                      style: _values.subtitleTextStyle,
+                                    )
+                                  ],
+                                ),
                               )
                             ],
                           ),
@@ -2578,8 +2591,21 @@ class _EventsScreen extends State<EventsScreen>{
                                   Text(
                                     _dateText + " a las " + list[index].time + "hrs.",
                                     style: _values.subtitleTextStyle,
-                                  )
+                                  ),
                                 ],
+                              ),
+                              SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                controller: _scrollController,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                  children: <Widget>[
+                                    Text(
+                                      "Subdirección" + list[index].department,
+                                      style: _values.subtitleTextStyle,
+                                    )
+                                  ],
+                                ),
                               )
                             ],
                           ),
@@ -2920,7 +2946,29 @@ class _EventsScreen extends State<EventsScreen>{
                 )
               ],
             ),
-          body: _screenLandscapeContent
+          body: _screenLandscapeContent,
+          floatingActionButton: Stack(
+            children: <Widget>[
+              Positioned(
+                left: _position.dx,
+                top:  _position.dy,
+                child: Draggable(
+                  feedback: Container(
+                    child: _floatingActionButton,
+                  ),
+                  child: Container(
+                    child: _floatingActionButton,
+                  ),
+                  childWhenDragging: Container(),
+                  onDragEnd: (details){
+                    setState(() {
+                      _position = details.offset;
+                    });
+                  },
+                ),
+              )
+            ],
+          ),
         );
       },
     );
@@ -2960,6 +3008,7 @@ class _EventDetailsScreen extends State<EventDetailsScreen>{
   var _imageNewEvent, _passedDependencies;
   var _formKey;
   Widget _widgetPortraitColumn, _widgetLandscapeColumn;
+  String _departmentSelected;
 
   @override
   void initState() {
@@ -2979,8 +3028,10 @@ class _EventDetailsScreen extends State<EventDetailsScreen>{
       DateFormat df = new DateFormat('yyyy-MM-dd');
       widget.event.date = df.format(widget.newEventDateTime);
       _spanishFormattedText = buildEventDayText(df.format(widget.newEventDateTime), 1);
+      _departmentSelected = _values.departments[0];
     }else{
       _spanishFormattedText = buildEventDayText(widget.event.date, 1);
+      _departmentSelected = widget.event.department;
     }
   }
 
@@ -2991,7 +3042,7 @@ class _EventDetailsScreen extends State<EventDetailsScreen>{
     double _screenWidth = MediaQuery.of(context).size.width; //lee el ancho de dispositivo
     double _screenHeight = MediaQuery.of(context).size.height; //lee el largo del dispositivo
 
-    _position = Offset(_screenWidth / 1.2, _screenHeight / 1.2);
+    _position = Offset(_screenWidth / 1.2, _screenHeight / 1.1);
 
     if(widget.event.image == null){
 
@@ -3126,6 +3177,19 @@ class _EventDetailsScreen extends State<EventDetailsScreen>{
                     });
                   });
                   FocusScope.of(context).requestFocus(FocusNode());
+                },
+              ),
+            ),
+            SizedBox(height: _responsiveHeight / 22,),
+            Container(
+              child: DropdownButton(
+                value: _departmentSelected,
+                icon: Icon(Icons.keyboard_arrow_down),
+                elevation: 5,
+                onChanged: (value){
+                  setState(() {
+                    _departmentSelected = value;
+                  });
                 },
               ),
             ),
@@ -3620,6 +3684,37 @@ class _EventDetailsScreen extends State<EventDetailsScreen>{
                 ),
               ),
               SizedBox(height: _responsiveHeight / 22,),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Text(
+                    "Subdirección ",
+                    style: _values.plainTextStyle,
+                  ),
+                  Expanded(
+                    child: DropdownButton(
+                      isExpanded: true,
+                      value: _departmentSelected,
+                      icon: Icon(Icons.keyboard_arrow_down),
+                      elevation: 5,
+                      onChanged: (value){
+                        widget.event.department = value;
+                        setState(() {
+                          _departmentSelected = value;
+                        });
+                      },
+                      items: _values.departments.map<DropdownMenuItem<String>>((String value){
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(value),
+                        );
+                      }).toList(),
+                    ),
+                  )
+                ],
+              ),
+              SizedBox(height: _responsiveHeight / 22,),
               Container(
                   alignment: Alignment.centerLeft,
                   child: new Row(
@@ -3846,6 +3941,37 @@ class _EventDetailsScreen extends State<EventDetailsScreen>{
                     },
                     style: _values.textFieldTextStyle,
                   ),
+                ),
+                SizedBox(height: _responsiveHeight / 11,),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Text(
+                      "Subdirección ",
+                      style: _values.plainTextStyle,
+                    ),
+                    Expanded(
+                      child: DropdownButton(
+                        isExpanded: true,
+                        value: _departmentSelected,
+                        icon: Icon(Icons.keyboard_arrow_down),
+                        elevation: 5,
+                        onChanged: (value){
+                          widget.event.department = value;
+                          setState(() {
+                            _departmentSelected = value;
+                          });
+                        },
+                        items: _values.departments.map<DropdownMenuItem<String>>((String value){
+                          return DropdownMenuItem<String>(
+                            value: value,
+                            child: Text(value),
+                          );
+                        }).toList(),
+                      ),
+                    )
+                  ],
                 ),
                 SizedBox(height: _responsiveHeight / 11,),
                 Container(

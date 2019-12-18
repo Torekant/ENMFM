@@ -90,6 +90,9 @@ class Values{
 
   //Card defaults
  double cardElevation = 5.0;
+
+ //Dropdown values
+  List<String> departments = ['Indistinta', 'Administrativa', 'Académica', 'de Innovación e Investigación', 'de Gestión Institucional'];
 }
 
 class Hues{

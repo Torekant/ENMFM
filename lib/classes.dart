@@ -534,8 +534,9 @@ class Event{
   String title;
   String description;
   String type;
+  String department;
 
-  Event(String id, String title, String image, String place, String date, String time, String description, String type){
+  Event(String id, String title, String image, String place, String date, String time, String description, String type, String department){
     this.id = id;
     this.title = title;
     this.image = image;
@@ -544,6 +545,7 @@ class Event{
     this.time = time;
     this.description = description;
     this.type = type;
+    this.department = department;
   }
 
   Future<String> changeImage(var image, String newImageName) async{
@@ -619,7 +621,8 @@ class Event{
         'time': this.time,
         'description': this.description,
         'image': this.image,
-        'type': values.eventType['ceremony']
+        'type': values.eventType['ceremony'],
+        'department': this.department
       });
 
       return true;

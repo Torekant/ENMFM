@@ -104,17 +104,17 @@ Future<Map> retrieveCalendarEvents(BuildContext context) async{
   _documents.forEach((event){
 
     if(_lastDateTimeIteration == DateTime.parse(event['date'])){
-      Event dummyEvent = new Event(event.documentID, event['title'], event['image'], event['place'], event['date'], event['time'], event['description'], event['type']);
+      Event dummyEvent = new Event(event.documentID, event['title'], event['image'], event['place'], event['date'], event['time'], event['description'], event['type'], event['department']);
       _listEvent.add(dummyEvent);
     }else{
       if(_listEvent.isEmpty){
-        Event dummyEvent = new Event(event.documentID, event['title'], event['image'], event['place'], event['date'], event['time'], event['description'],  event['type']);
+        Event dummyEvent = new Event(event.documentID, event['title'], event['image'], event['place'], event['date'], event['time'], event['description'],  event['type'], event['department']);
         _listEvent.add(dummyEvent);
         _lastDateTimeIteration = DateTime.parse(event['date']);
       }else{
         events[_lastDateTimeIteration] = _listEvent;
         _listEvent = [];
-        Event dummyEvent = new Event(event.documentID, event['title'], event['image'], event['place'], event['date'], event['time'], event['description'], event['type']);
+        Event dummyEvent = new Event(event.documentID, event['title'], event['image'], event['place'], event['date'], event['time'], event['description'], event['type'], event['department']);
         _listEvent.add(dummyEvent);
         _lastDateTimeIteration = DateTime.parse(event['date']);
       }
@@ -160,7 +160,7 @@ Future<List> retrieveListEvents(BuildContext context) async{
   });
 
   for(int i=0; i < _documents.length; i++){
-    Event _event = new Event(_documents[i].documentID, _documents[i]['title'], _documents[i]['image'], _documents[i]['place'], _documents[i]['date'], _documents[i]['time'], _documents[i]['description'], _documents[i]['type']);
+    Event _event = new Event(_documents[i].documentID, _documents[i]['title'], _documents[i]['image'], _documents[i]['place'], _documents[i]['date'], _documents[i]['time'], _documents[i]['description'], _documents[i]['type'], _documents[i]['department']);
     _list.add(_event);
   }
 
