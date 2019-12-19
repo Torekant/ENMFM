@@ -3007,8 +3007,9 @@ class _EventDetailsScreen extends State<EventDetailsScreen>{
   Offset _position;
   var _imageNewEvent, _passedDependencies;
   var _formKey;
-  Widget _widgetPortraitColumn, _widgetLandscapeColumn;
+  Widget _widgetPortraitColumn;
   String _departmentSelected;
+  Event _eventDetailed;
 
   @override
   void initState() {
@@ -3019,19 +3020,20 @@ class _EventDetailsScreen extends State<EventDetailsScreen>{
     _position = Offset(20.0, 20.0);
     _passedDependencies = false;
     _formKey = GlobalKey<FormState>();
+    _eventDetailed = widget.event;
 
-    if(widget.event.id == null){
-      widget.event.title = "";
-      widget.event.place = "";
-      widget.event.description = "";
-      widget.event.time = "00:00";
+    if(_eventDetailed.id == null){
+      _eventDetailed.title = "";
+      _eventDetailed.place = "";
+      _eventDetailed.description = "";
+      _eventDetailed.time = "00:00";
       DateFormat df = new DateFormat('yyyy-MM-dd');
-      widget.event.date = df.format(widget.newEventDateTime);
+      _eventDetailed.date = df.format(widget.newEventDateTime);
       _spanishFormattedText = buildEventDayText(df.format(widget.newEventDateTime), 1);
       _departmentSelected = _values.departments[0];
     }else{
-      _spanishFormattedText = buildEventDayText(widget.event.date, 1);
-      _departmentSelected = widget.event.department;
+      _spanishFormattedText = buildEventDayText(_eventDetailed.date, 1);
+      _departmentSelected = _eventDetailed.department;
     }
   }
 
@@ -3044,7 +3046,7 @@ class _EventDetailsScreen extends State<EventDetailsScreen>{
 
     _position = Offset(_screenWidth / 1.2, _screenHeight / 1.1);
 
-    if(widget.event.image == null){
+    if(_eventDetailed.image == null){
 
       if(_passedDependencies == false){
         await getImageFileFromAssets("logo_gray.jpg").then((file){
@@ -3072,10 +3074,10 @@ class _EventDetailsScreen extends State<EventDetailsScreen>{
     double _symmetricPadding = (_screenWidth * _values.widthPaddingUnit) / 10; //Función que nos permite hacer un padding responsivo a cualquier resolución en ancho
 
     if(widget.adminView == true){
-      if(widget.event.id != null){
-        TextEditingController _titleTextController = new TextEditingController(text: widget.event.title);
-        TextEditingController _placeTextController = new TextEditingController(text: widget.event.place);
-        TextEditingController _descriptionTextController = new TextEditingController(text: widget.event.description);
+      if(_eventDetailed.id != null){
+        TextEditingController _titleTextController = new TextEditingController(text: _eventDetailed.title);
+        TextEditingController _placeTextController = new TextEditingController(text: _eventDetailed.place);
+        TextEditingController _descriptionTextController = new TextEditingController(text: _eventDetailed.description);
 
 
         _widgetPortraitColumn = Column(
@@ -3086,7 +3088,7 @@ class _EventDetailsScreen extends State<EventDetailsScreen>{
                   children: <Widget>[
                     Parallax.inside(
                         child: CachedNetworkImage(
-                          imageUrl: widget.event.image,
+                          imageUrl: _eventDetailed.image,
                           placeholder: (context, url) => Image.asset(_values.loadingAnimation, fit: BoxFit.fill, width: double.maxFinite, height: _responsiveHeight,),
                           errorWidget: (context,url,error) => new Icon(Icons.error),
                           width: double.maxFinite,
@@ -3105,10 +3107,10 @@ class _EventDetailsScreen extends State<EventDetailsScreen>{
                           iconSize: _responsiveHeight / 11,
                           tooltip: _values.tooltipChangeEventImage,
                           onPressed: (){
-                            Future<String> finalURL = pickImage(widget.event, context);
+                            Future<String> finalURL = pickImage(_eventDetailed, context);
                             finalURL.then((val){
                               setState(() {
-                                this.widget.event.image = val;
+                                this._eventDetailed.image = val;
                               });
                             });
                           }
@@ -3138,9 +3140,9 @@ class _EventDetailsScreen extends State<EventDetailsScreen>{
                   //fillColor: Colors.green
                 ),
                 onEditingComplete: (){
-                  widget.event.updateEvent(_titleTextController.text, 'title').then((updatedTitle){
+                  _eventDetailed.updateEvent(_titleTextController.text, 'title').then((updatedTitle){
                     setState(() {
-                      widget.event.title = updatedTitle;
+                      _eventDetailed.title = updatedTitle;
                     });
                   });
                   FocusScope.of(context).requestFocus(FocusNode());
@@ -3171,9 +3173,9 @@ class _EventDetailsScreen extends State<EventDetailsScreen>{
                 ),
                 style: _values.textFieldTextStyle,
                 onEditingComplete: (){
-                  widget.event.updateEvent(_placeTextController.text, 'place').then((updatedPlace){
+                  _eventDetailed.updateEvent(_placeTextController.text, 'place').then((updatedPlace){
                     setState(() {
-                      widget.event.place = updatedPlace;
+                      _eventDetailed.place = updatedPlace;
                     });
                   });
                   FocusScope.of(context).requestFocus(FocusNode());
@@ -3219,9 +3221,9 @@ class _EventDetailsScreen extends State<EventDetailsScreen>{
                             },
                             onConfirm: (date) {
                               String format = date.toString().substring(0, 10);
-                              widget.event.updateEvent(format, 'date').then((updatedDate){
+                              _eventDetailed.updateEvent(format, 'date').then((updatedDate){
                                 setState(() {
-                                  widget.event.date = updatedDate;
+                                  _eventDetailed.date = updatedDate;
                                 });
                               });
                             },
@@ -3239,7 +3241,7 @@ class _EventDetailsScreen extends State<EventDetailsScreen>{
               child: Row(
                 children: <Widget>[
                   Text(
-                    "Hora: " + widget.event.time,
+                    "Hora: " + _eventDetailed.time,
                     style: _values.subtitleTextStyle,
                   ),
                   IconButton(
@@ -3257,9 +3259,9 @@ class _EventDetailsScreen extends State<EventDetailsScreen>{
                         },
                         onConfirm: (time){
                           String newTime = buildEventTimeText(time.toString());
-                          widget.event.updateEvent(newTime, 'time').then((updatedTime){
+                          _eventDetailed.updateEvent(newTime, 'time').then((updatedTime){
                             setState(() {
-                              widget.event.time = updatedTime;
+                              _eventDetailed.time = updatedTime;
                             });
                           });
                         },
@@ -3296,225 +3298,9 @@ class _EventDetailsScreen extends State<EventDetailsScreen>{
                 ),
                 style: _values.textFieldTextStyle,
                 onEditingComplete: (){
-                  widget.event.updateEvent(_descriptionTextController.text, 'description').then((updatedDescription){
+                  _eventDetailed.updateEvent(_descriptionTextController.text, 'description').then((updatedDescription){
                     setState(() {
-                      widget.event.description = updatedDescription;
-                    });
-                  });
-                  FocusScope.of(context).requestFocus(FocusNode());
-                },
-              ),
-            )
-          ],
-        );
-        _widgetLandscapeColumn = Column(
-          children: <Widget>[
-            Container(
-                alignment: _values.centerAlignment,
-                child: Stack(
-                  children: <Widget>[
-                    Parallax.inside(
-                        child: CachedNetworkImage(
-                          imageUrl: widget.event.image,
-                          placeholder: (context, url) => Image.asset(_values.loadingAnimation, fit: BoxFit.fill, width: double.maxFinite, height: _responsiveHeight,),
-                          errorWidget: (context,url,error) => new Icon(Icons.error),
-                          width: double.maxFinite,
-                          height: _responsiveHeight * 1.1,
-                          fit: BoxFit.cover,
-                        ),
-                        mainAxisExtent: _responsiveHeight / 1.1
-                    ),
-                    Container(
-                      color: _hue.background,
-                      child: IconButton(
-                          icon: Icon(
-                            Icons.cached,
-                            color: _hue.outlines,
-                          ),
-                          iconSize: _responsiveHeight / 5,
-                          tooltip: _values.tooltipChangeEventImage,
-                          onPressed: (){
-                            Future<String> finalURL = pickImage(widget.event, context);
-                            finalURL.then((val){
-                              setState(() {
-                                this.widget.event.image = val;
-                              });
-                            });
-                          }
-                      ),
-                    )
-                  ],
-                )
-            ),
-            SizedBox(height: _responsiveHeight / 11,),
-            Container(
-              child: TextField(
-                controller: _titleTextController,
-                decoration: new InputDecoration(
-                    labelText: "Título",
-                    labelStyle: _values.textFieldTextStyle,
-                    fillColor: Colors.white,
-                    filled: true,
-                    border: new OutlineInputBorder(
-                      borderRadius: new BorderRadius.circular(_values.standardBorderRadius),
-                      borderSide: new BorderSide(
-                      ),
-                    ),
-                    focusedBorder: new OutlineInputBorder(
-                        borderRadius: new BorderRadius.circular(_values.standardBorderRadius),
-                        borderSide: _values.textFieldFocusBorderSide
-                    )
-                  //fillColor: Colors.green
-                ),
-                onEditingComplete: (){
-                  widget.event.updateEvent(_titleTextController.text, 'title').then((updatedTitle){
-                    setState(() {
-                      widget.event.title = updatedTitle;
-                    });
-                  });
-                  FocusScope.of(context).requestFocus(FocusNode());
-                },
-                style: _values.textFieldTextStyle,
-              ),
-            ),
-            SizedBox(height: _responsiveHeight / 11,),
-            Container(
-              alignment: Alignment.centerLeft,
-              child: TextField(
-                controller: _placeTextController,
-                decoration: new InputDecoration(
-                    labelText: "Lugar",
-                    labelStyle: _values.textFieldTextStyle,
-                    fillColor: Colors.white,
-                    filled: true,
-                    border: new OutlineInputBorder(
-                      borderRadius: new BorderRadius.circular(_values.standardBorderRadius),
-                      borderSide: new BorderSide(
-                      ),
-                    ),
-                    focusedBorder: new OutlineInputBorder(
-                        borderRadius: new BorderRadius.circular(_values.standardBorderRadius),
-                        borderSide: _values.textFieldFocusBorderSide
-                    )
-                  //fillColor: Colors.green
-                ),
-                style: _values.textFieldTextStyle,
-                onEditingComplete: (){
-                  widget.event.updateEvent(_placeTextController.text, 'place').then((updatedPlace){
-                    setState(() {
-                      widget.event.place = updatedPlace;
-                    });
-                  });
-                  FocusScope.of(context).requestFocus(FocusNode());
-                },
-              ),
-            ),
-            SizedBox(height: _responsiveHeight / 11,),
-            Container(
-                alignment: Alignment.centerLeft,
-                child: new Row(
-                  children: <Widget>[
-                    Text(
-                      "Día: " + _spanishFormattedText,
-                      style: _values.subtitleTextStyle,
-                    ),
-                    IconButton(
-                      tooltip: "Cambiar fecha",
-                      icon: Icon(
-                        Icons.calendar_today,
-                        color: _hue.outlines,
-                      ),
-                      color: _hue.outlines,
-                      onPressed: (){
-                        DatePicker.showDatePicker(context,
-                            showTitleActions: true,
-                            minTime: DateTime.now(),
-                            maxTime: DateTime.now().add(Duration(days: 500)),
-                            onChanged: (date) {
-
-                            },
-                            onConfirm: (date) {
-                              String format = date.toString().substring(0, 10);
-                              widget.event.updateEvent(format, 'date').then((updatedDate){
-                                setState(() {
-                                  widget.event.date = updatedDate;
-                                });
-                              });
-                            },
-                            currentTime: DateTime.now(),
-                            locale: LocaleType.es
-                        );
-                      },
-                    )
-                  ],
-                )
-            ),
-            SizedBox(height: _responsiveHeight / 11,),
-            Container(
-              alignment: Alignment.centerLeft,
-              child: Row(
-                children: <Widget>[
-                  Text(
-                    "Hora: " + widget.event.time,
-                    style: _values.subtitleTextStyle,
-                  ),
-                  IconButton(
-                    tooltip: "Cambiar hora",
-                    icon: Icon(Icons.access_time),
-                    color: _hue.outlines,
-                    onPressed: (){
-                      DateTime now = DateTime.now();
-
-                      DatePicker.showTimePicker(context,
-                        showTitleActions: true,
-                        currentTime: DateTime(now.hour, now.minute),
-                        onChanged: (time){
-
-                        },
-                        onConfirm: (time){
-                          String newTime = buildEventTimeText(time.toString());
-                          widget.event.updateEvent(newTime, 'time').then((updatedTime){
-                            setState(() {
-                              widget.event.time = updatedTime;
-                            });
-                          });
-                        },
-                        locale: LocaleType.es,
-                      );
-                    },
-                  )
-                ],
-              ),
-            ),
-            SizedBox(height: _responsiveHeight / 11,),
-            Container(
-              alignment: _values.centerAlignment,
-              child: TextField(
-                controller: _descriptionTextController,
-                maxLines: null,
-                keyboardType: TextInputType.text,
-                textInputAction: TextInputAction.done,
-                decoration: new InputDecoration(
-                    labelText: "Descripción",
-                    labelStyle: _values.textFieldTextStyle,
-                    fillColor: Colors.white,
-                    filled: true,
-                    border: new OutlineInputBorder(
-                      borderRadius: new BorderRadius.circular(_values.standardBorderRadius),
-                      borderSide: new BorderSide(
-                      ),
-                    ),
-                    focusedBorder: new OutlineInputBorder(
-                        borderRadius: new BorderRadius.circular(_values.standardBorderRadius),
-                        borderSide: _values.textFieldFocusBorderSide
-                    )
-                  //fillColor: Colors.green
-                ),
-                style: _values.textFieldTextStyle,
-                onEditingComplete: (){
-                  widget.event.updateEvent(_descriptionTextController.text, 'description').then((updatedDescription){
-                    setState(() {
-                      widget.event.description = updatedDescription;
+                      _eventDetailed.description = updatedDescription;
                     });
                   });
                   FocusScope.of(context).requestFocus(FocusNode());
@@ -3543,7 +3329,7 @@ class _EventDetailsScreen extends State<EventDetailsScreen>{
                   builder: (BuildContext context) => CustomLoadDialog()
                 );
 
-                widget.event.deleteEvent(context).then((result){
+                _eventDetailed.deleteEvent(context).then((result){
                   if(result == true){
                     Navigator.of(context).pop();
                     Navigator.of(context).pop();
@@ -3554,9 +3340,9 @@ class _EventDetailsScreen extends State<EventDetailsScreen>{
           }
         );
       }else{
-        TextEditingController _titleTextController = new TextEditingController(text: widget.event.title);
-        TextEditingController _placeTextController = new TextEditingController(text: widget.event.place);
-        TextEditingController _descriptionTextController = new TextEditingController(text: widget.event.description);
+        TextEditingController _titleTextController = new TextEditingController(text: _eventDetailed.title);
+        TextEditingController _placeTextController = new TextEditingController(text: _eventDetailed.place);
+        TextEditingController _descriptionTextController = new TextEditingController(text: _eventDetailed.description);
 
         if(_imageNewEvent == null){
           _imageWidget = new Image.asset(
@@ -3574,59 +3360,56 @@ class _EventDetailsScreen extends State<EventDetailsScreen>{
           );
         }
 
+        if(_eventDetailed.time == null){
+          _eventDetailed.time = "00:00";
+        }
+
         _widgetPortraitColumn = Form(
           key: _formKey,
           child: Column(
             children: <Widget>[
               Container(
-                  alignment: _values.centerAlignment,
-                  child: Stack(
-                    children: <Widget>[
-                      Parallax.inside(
-                          child: _imageWidget,
-                          mainAxisExtent: _responsiveHeight / 1.1
+                alignment: Alignment.center,
+                child: Stack(
+                  children: <Widget>[
+                    Parallax.inside(child: _imageWidget, mainAxisExtent: _responsiveHeight / 1.1),
+                    Container(
+                      color: _hue.background,
+                      child: IconButton(
+                        icon: Icon(Icons.cached, color: _hue.outlines,),
+                        iconSize: _responsiveHeight / 11,
+                        tooltip: _values.tooltipChangeEventImage,
+                        onPressed: () async{
+                          var image = await ImagePicker.pickImage(source: ImageSource.gallery);
+                          setState(() {
+                            _imageNewEvent = image;
+                          });
+                        },
                       ),
-                      Container(
-                        color: _hue.background,
-                        child: IconButton(
-                            icon: Icon(
-                              Icons.cached,
-                              color: _hue.outlines,
-                            ),
-                            iconSize: _responsiveHeight / 11,
-                            tooltip: _values.tooltipChangeEventImage,
-                            onPressed: ()async{
-                              var image = await ImagePicker.pickImage(source: ImageSource.gallery);
-                              setState((){
-                                _imageNewEvent = image;
-                              });
-                            }
-                        ),
-                      )
-                    ],
-                  )
+                    )
+                  ],
+                ),
               ),
               SizedBox(height: _responsiveHeight / 22,),
               Container(
                 child: TextFormField(
                   controller: _titleTextController,
-                  decoration: new InputDecoration(
-                      labelText: "Título",
-                      labelStyle: _values.textFieldTextStyle,
-                      fillColor: Colors.white,
-                      filled: true,
-                      border: new OutlineInputBorder(
-                        borderRadius: new BorderRadius.circular(_values.standardBorderRadius),
-                        borderSide: new BorderSide(
-                        ),
-                      ),
-                      focusedBorder: new OutlineInputBorder(
-                          borderRadius: new BorderRadius.circular(_values.standardBorderRadius),
-                          borderSide: _values.textFieldFocusBorderSide
-                      )
+                  decoration: InputDecoration(
+                    labelText: "Título",
+                    labelStyle: _values.textFieldTextStyle,
+                    fillColor: Colors.white,
+                    filled: true,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(_values.standardBorderRadius),
+                      borderSide: BorderSide()
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(_values.standardBorderRadius),
+                      borderSide: _values.textFieldFocusBorderSide
+                    )
                   ),
-                  validator: (val) {
-                    if(val.length==0) {
+                  validator: (val){
+                    if(val.length == 0){
                       return "Este campo no puede estar vacío.";
                     }else{
                       return null;
@@ -3634,12 +3417,12 @@ class _EventDetailsScreen extends State<EventDetailsScreen>{
                   },
                   onEditingComplete: (){
                     setState(() {
-                      widget.event.title = _titleTextController.text;
+                      _eventDetailed.title = _titleTextController.text;
                     });
                     FocusScope.of(context).requestFocus(FocusNode());
                   },
                   onChanged: (content){
-                    widget.event.title = _titleTextController.text;
+                    _eventDetailed.title = _titleTextController.text;
                   },
                   style: _values.textFieldTextStyle,
                 ),
@@ -3649,23 +3432,22 @@ class _EventDetailsScreen extends State<EventDetailsScreen>{
                 alignment: Alignment.centerLeft,
                 child: TextFormField(
                   controller: _placeTextController,
-                  decoration: new InputDecoration(
-                      labelText: "Lugar",
-                      labelStyle: _values.textFieldTextStyle,
-                      fillColor: Colors.white,
-                      filled: true,
-                      border: new OutlineInputBorder(
-                        borderRadius: new BorderRadius.circular(_values.standardBorderRadius),
-                        borderSide: new BorderSide(
-                        ),
-                      ),
-                      focusedBorder: new OutlineInputBorder(
-                          borderRadius: new BorderRadius.circular(_values.standardBorderRadius),
-                          borderSide: _values.textFieldFocusBorderSide
-                      )
+                  decoration: InputDecoration(
+                    labelText: "Lugar",
+                    labelStyle: _values.textFieldTextStyle,
+                    fillColor: Colors.white,
+                    filled: true,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(_values.standardBorderRadius),
+                      borderSide: BorderSide(),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(_values.standardBorderRadius),
+                      borderSide: _values.textFieldFocusBorderSide
+                    )
                   ),
-                  validator: (val) {
-                    if(val.length==0) {
+                  validator: (val){
+                    if(val.length == 0){
                       return "Este campo no puede estar vacío.";
                     }else{
                       return null;
@@ -3673,12 +3455,12 @@ class _EventDetailsScreen extends State<EventDetailsScreen>{
                   },
                   onEditingComplete: (){
                     setState(() {
-                      widget.event.place = _placeTextController.text;
+                      _eventDetailed.place = _placeTextController.text;
                     });
                     FocusScope.of(context).requestFocus(FocusNode());
                   },
                   onChanged: (content){
-                    widget.event.place = _placeTextController.text;
+                    _eventDetailed.place = _placeTextController.text;
                   },
                   style: _values.textFieldTextStyle,
                 ),
@@ -3689,9 +3471,10 @@ class _EventDetailsScreen extends State<EventDetailsScreen>{
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   Text(
-                    "Subdirección ",
+                    "Subdirección",
                     style: _values.plainTextStyle,
                   ),
+                  SizedBox(width: _screenWidth / 25,),
                   Expanded(
                     child: DropdownButton(
                       isExpanded: true,
@@ -3699,12 +3482,12 @@ class _EventDetailsScreen extends State<EventDetailsScreen>{
                       icon: Icon(Icons.keyboard_arrow_down),
                       elevation: 5,
                       onChanged: (value){
-                        widget.event.department = value;
+                        _eventDetailed.department = value;
                         setState(() {
                           _departmentSelected = value;
                         });
                       },
-                      items: _values.departments.map<DropdownMenuItem<String>>((String value){
+                      items: _values.departments.map((String value){
                         return DropdownMenuItem<String>(
                           value: value,
                           child: Text(value),
@@ -3716,42 +3499,40 @@ class _EventDetailsScreen extends State<EventDetailsScreen>{
               ),
               SizedBox(height: _responsiveHeight / 22,),
               Container(
-                  alignment: Alignment.centerLeft,
-                  child: new Row(
-                    children: <Widget>[
-                      Text(
-                        "Día: " + _spanishFormattedText,
-                        style: _values.subtitleTextStyle,
-                      ),
-                      IconButton(
-                        tooltip: "Cambiar fecha",
-                        icon: Icon(
-                          Icons.calendar_today,
-                          color: _hue.outlines,
-                        ),
+                alignment: Alignment.centerLeft,
+                child: Row(
+                  children: <Widget>[
+                    Text(
+                      "Día: " + _spanishFormattedText,
+                      style: _values.subtitleTextStyle,
+                    ),
+                    IconButton(
+                      tooltip: "Cambiar fecha",
+                      icon: Icon(
+                        Icons.calendar_today,
                         color: _hue.outlines,
-                        onPressed: (){
-                          DatePicker.showDatePicker(context,
-                              showTitleActions: true,
-                              minTime: DateTime.now(),
-                              maxTime: DateTime.now().add(Duration(days: 500)),
-                              onChanged: (date) {
-
-                              },
-                              onConfirm: (date) {
-                                String format = date.toString().substring(0, 10);
-                                setState(() {
-                                  widget.event.date = format;
-                                  _spanishFormattedText = buildEventDayText(widget.event.date, 1);
-                                });
-                              },
-                              currentTime: widget.newEventDateTime,
-                              locale: LocaleType.es
-                          );
-                        },
-                      )
-                    ],
-                  )
+                      ),
+                      color: _hue.outlines,
+                      onPressed: (){
+                        DatePicker.showDatePicker(
+                          context,
+                          showTitleActions: true,
+                          minTime: DateTime.now(),
+                          maxTime: DateTime.now().add(Duration(days: 500)),
+                          currentTime: widget.newEventDateTime,
+                          locale: LocaleType.es,
+                          onConfirm: (date){
+                            String format = date.toString().substring(0, 10);
+                            setState(() {
+                              _eventDetailed.date = format;
+                              _spanishFormattedText = buildEventDayText(_eventDetailed.date, 1);
+                            });
+                          },
+                        );
+                      },
+                    )
+                  ],
+                ),
               ),
               SizedBox(height: _responsiveHeight / 22,),
               Container(
@@ -3759,7 +3540,7 @@ class _EventDetailsScreen extends State<EventDetailsScreen>{
                 child: Row(
                   children: <Widget>[
                     Text(
-                      "Hora: " + widget.event.time,
+                      "Hora: " + _eventDetailed.time.toString(),
                       style: _values.subtitleTextStyle,
                     ),
                     IconButton(
@@ -3769,19 +3550,17 @@ class _EventDetailsScreen extends State<EventDetailsScreen>{
                       onPressed: (){
                         DateTime now = DateTime.now();
 
-                        DatePicker.showTimePicker(context,
-                          showTitleActions: true,
-                          currentTime: DateTime(now.hour, now.minute),
-                          onChanged: (time){
-
-                          },
-                          onConfirm: (time){
-                            String newTime = buildEventTimeText(time.toString());
-                            setState(() {
-                              widget.event.time = newTime;
-                            });
-                          },
-                          locale: LocaleType.es,
+                        DatePicker.showTimePicker(
+                            context,
+                            showTitleActions: true,
+                            currentTime: DateTime(now.hour, now.minute),
+                            locale: LocaleType.es,
+                            onConfirm: (time){
+                              String newTime = buildEventTimeText(time.toString());
+                              setState(() {
+                                _eventDetailed.time = newTime;
+                              });
+                            }
                         );
                       },
                     )
@@ -3820,277 +3599,18 @@ class _EventDetailsScreen extends State<EventDetailsScreen>{
                   },
                   onEditingComplete: (){
                     setState(() {
-                      widget.event.description = _descriptionTextController.text;
+                      _eventDetailed.description = _descriptionTextController.text;
                     });
                     FocusScope.of(context).requestFocus(FocusNode());
                   },
                   onChanged: (content){
-                    widget.event.description = _descriptionTextController.text;
+                    _eventDetailed.description = _descriptionTextController.text;
                   },
                   style: _values.textFieldTextStyle,
                 ),
               )
             ],
-          )
-        );
-        _widgetLandscapeColumn = Form(
-            key: _formKey,
-            child: Column(
-              children: <Widget>[
-                Container(
-                    alignment: _values.centerAlignment,
-                    child: Stack(
-                      children: <Widget>[
-                        Parallax.inside(
-                            child: _imageWidget,
-                            mainAxisExtent: _responsiveHeight / 1.1
-                        ),
-                        Container(
-                          color: _hue.background,
-                          child: IconButton(
-                              icon: Icon(
-                                Icons.cached,
-                                color: _hue.outlines,
-                              ),
-                              iconSize: _responsiveHeight / 5,
-                              tooltip: _values.tooltipChangeEventImage,
-                              onPressed: ()async{
-                                var image = await ImagePicker.pickImage(source: ImageSource.gallery);
-                                setState((){
-                                  _imageNewEvent = image;
-                                });
-                              }
-                          ),
-                        )
-                      ],
-                    )
-                ),
-                SizedBox(height: _responsiveHeight / 11,),
-                Container(
-                  child: TextFormField(
-                    controller: _titleTextController,
-                    decoration: new InputDecoration(
-                        labelText: "Título",
-                        labelStyle: _values.textFieldTextStyle,
-                        fillColor: Colors.white,
-                        filled: true,
-                        border: new OutlineInputBorder(
-                          borderRadius: new BorderRadius.circular(_values.standardBorderRadius),
-                          borderSide: new BorderSide(
-                          ),
-                        ),
-                        focusedBorder: new OutlineInputBorder(
-                            borderRadius: new BorderRadius.circular(_values.standardBorderRadius),
-                            borderSide: _values.textFieldFocusBorderSide
-                        )
-                    ),
-                    validator: (val) {
-                      if(val.length==0) {
-                        return "Este campo no puede estar vacío.";
-                      }else{
-                        return null;
-                      }
-                    },
-                    onEditingComplete: (){
-                      setState(() {
-                        widget.event.title = _titleTextController.text;
-                      });
-                      FocusScope.of(context).requestFocus(FocusNode());
-                    },
-                    onChanged: (content){
-                      widget.event.title = _titleTextController.text;
-                    },
-                    style: _values.textFieldTextStyle,
-                  ),
-                ),
-                SizedBox(height: _responsiveHeight / 11,),
-                Container(
-                  alignment: Alignment.centerLeft,
-                  child: TextFormField(
-                    controller: _placeTextController,
-                    decoration: new InputDecoration(
-                        labelText: "Lugar",
-                        labelStyle: _values.textFieldTextStyle,
-                        fillColor: Colors.white,
-                        filled: true,
-                        border: new OutlineInputBorder(
-                          borderRadius: new BorderRadius.circular(_values.standardBorderRadius),
-                          borderSide: new BorderSide(
-                          ),
-                        ),
-                        focusedBorder: new OutlineInputBorder(
-                            borderRadius: new BorderRadius.circular(_values.standardBorderRadius),
-                            borderSide: _values.textFieldFocusBorderSide
-                        )
-                    ),
-                    validator: (val) {
-                      if(val.length==0) {
-                        return "Este campo no puede estar vacío.";
-                      }else{
-                        return null;
-                      }
-                    },
-                    onEditingComplete: (){
-                      setState(() {
-                        widget.event.place = _placeTextController.text;
-                      });
-                      FocusScope.of(context).requestFocus(FocusNode());
-                    },
-                    onChanged: (content){
-                      widget.event.place = _placeTextController.text;
-                    },
-                    style: _values.textFieldTextStyle,
-                  ),
-                ),
-                SizedBox(height: _responsiveHeight / 11,),
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Text(
-                      "Subdirección ",
-                      style: _values.plainTextStyle,
-                    ),
-                    Expanded(
-                      child: DropdownButton(
-                        isExpanded: true,
-                        value: _departmentSelected,
-                        icon: Icon(Icons.keyboard_arrow_down),
-                        elevation: 5,
-                        onChanged: (value){
-                          widget.event.department = value;
-                          setState(() {
-                            _departmentSelected = value;
-                          });
-                        },
-                        items: _values.departments.map<DropdownMenuItem<String>>((String value){
-                          return DropdownMenuItem<String>(
-                            value: value,
-                            child: Text(value),
-                          );
-                        }).toList(),
-                      ),
-                    )
-                  ],
-                ),
-                SizedBox(height: _responsiveHeight / 11,),
-                Container(
-                    alignment: Alignment.centerLeft,
-                    child: new Row(
-                      children: <Widget>[
-                        Text(
-                          "Día: " + _spanishFormattedText,
-                          style: _values.subtitleTextStyle,
-                        ),
-                        IconButton(
-                          tooltip: "Cambiar fecha",
-                          icon: Icon(
-                            Icons.calendar_today,
-                            color: _hue.outlines,
-                          ),
-                          color: _hue.outlines,
-                          onPressed: (){
-                            DatePicker.showDatePicker(context,
-                                showTitleActions: true,
-                                minTime: DateTime.now(),
-                                maxTime: DateTime.now().add(Duration(days: 500)),
-                                onChanged: (date) {
-
-                                },
-                                onConfirm: (date) {
-                                  String format = date.toString().substring(0, 10);
-                                  setState(() {
-                                    widget.event.date = format;
-                                    _spanishFormattedText = buildEventDayText(widget.event.date, 1);
-                                  });
-                                },
-                                currentTime: widget.newEventDateTime,
-                                locale: LocaleType.es
-                            );
-                          },
-                        )
-                      ],
-                    )
-                ),
-                SizedBox(height: _responsiveHeight / 11,),
-                Container(
-                  alignment: Alignment.centerLeft,
-                  child: Row(
-                    children: <Widget>[
-                      Text(
-                        "Hora: " + widget.event.time,
-                        style: _values.subtitleTextStyle,
-                      ),
-                      IconButton(
-                        tooltip: "Cambiar hora",
-                        icon: Icon(Icons.access_time),
-                        color: _hue.outlines,
-                        onPressed: (){
-                          DateTime now = DateTime.now();
-
-                          DatePicker.showTimePicker(context,
-                            showTitleActions: true,
-                            currentTime: DateTime(now.hour, now.minute),
-                            onChanged: (time){
-
-                            },
-                            onConfirm: (time){
-                              String newTime = buildEventTimeText(time.toString());
-                              setState(() {
-                                widget.event.time = newTime;
-                              });
-                            },
-                            locale: LocaleType.es,
-                          );
-                        },
-                      )
-                    ],
-                  ),
-                ),
-                SizedBox(height: _responsiveHeight / 11,),
-                Container(
-                  alignment: _values.centerAlignment,
-                  child: TextFormField(
-                    controller: _descriptionTextController,
-                    maxLines: null,
-                    keyboardType: TextInputType.text,
-                    textInputAction: TextInputAction.done,
-                    decoration: new InputDecoration(
-                        labelText: "Descripción",
-                        labelStyle: _values.textFieldTextStyle,
-                        fillColor: Colors.white,
-                        filled: true,
-                        border: new OutlineInputBorder(
-                          borderRadius: new BorderRadius.circular(_values.standardBorderRadius),
-                          borderSide: new BorderSide(
-                          ),
-                        ),
-                        focusedBorder: new OutlineInputBorder(
-                            borderRadius: new BorderRadius.circular(_values.standardBorderRadius),
-                            borderSide: _values.textFieldFocusBorderSide
-                        )
-                    ),
-                    validator: (val) {
-                      if(val.length==0) {
-                        return "Este campo no puede estar vacío.";
-                      }else{
-                        return null;
-                      }
-                    },
-                    onEditingComplete: (){
-                      setState(() {
-                        widget.event.description = _descriptionTextController.text;
-                      });
-                      FocusScope.of(context).requestFocus(FocusNode());
-                    },
-                    onChanged: (content){
-                      widget.event.description = _descriptionTextController.text;
-                    },
-                    style: _values.textFieldTextStyle,
-                  ),
-                )
-              ],
-            )
+          ),
         );
 
         _floatingButton = new FloatingActionButton(
@@ -4105,7 +3625,7 @@ class _EventDetailsScreen extends State<EventDetailsScreen>{
                 builder: (BuildContext context) => CustomLoadDialog()
               );
 
-              widget.event.createEvent(context, _imageNewEvent).then((result){
+              _eventDetailed.createEvent(context, _imageNewEvent).then((result){
                 Navigator.of(context).pop();
                 Navigator.of(context).pop();
               });
@@ -4124,7 +3644,7 @@ class _EventDetailsScreen extends State<EventDetailsScreen>{
                     width: double.maxFinite,
                     height: _responsiveHeight * 1,
                     fit: BoxFit.cover,
-                    imageUrl: widget.event.image,
+                    imageUrl: _eventDetailed.image,
                     placeholder: (context, url) => Image.asset(_values.loadingAnimation, fit: BoxFit.fill, width: double.maxFinite, height: _responsiveHeight,),
                     errorWidget: (context,url,error) => new Center(
                       child: Icon(Icons.error),
@@ -4136,7 +3656,7 @@ class _EventDetailsScreen extends State<EventDetailsScreen>{
           SizedBox(height: _responsiveHeight / 22,),
           Container(
             child: Text(
-              widget.event.title,
+              _eventDetailed.title,
               style: _values.titleTextStyle,
             ),
           ),
@@ -4150,7 +3670,7 @@ class _EventDetailsScreen extends State<EventDetailsScreen>{
           Container(
             alignment: Alignment.centerLeft,
             child: Text(
-              "Lugar: " + widget.event.place,
+              "Lugar: " + _eventDetailed.place,
               style: _values.subtitleTextStyle,
             ),
           ),
@@ -4166,7 +3686,7 @@ class _EventDetailsScreen extends State<EventDetailsScreen>{
           Container(
             alignment: Alignment.centerLeft,
             child: Text(
-              "Hora: " + widget.event.time,
+              "Hora: " + _eventDetailed.time,
               style: _values.subtitleTextStyle,
             ),
           ),
@@ -4180,81 +3700,7 @@ class _EventDetailsScreen extends State<EventDetailsScreen>{
           Container(
             alignment: _values.centerAlignment,
             child: Text(
-              widget.event.description,
-              style: _values.contentTextStyle,
-            ),
-          )
-        ],
-      );
-      _widgetLandscapeColumn = Column(
-        children: <Widget>[
-          SizedBox(height: _responsiveHeight / 12,),
-          Container(
-              alignment: _values.centerAlignment,
-              child: Stack(
-                children: <Widget>[
-                  Parallax.inside(
-                      child: CachedNetworkImage(
-                        imageUrl: widget.event.image,
-                        placeholder: (context, url) => Image.asset(_values.loadingAnimation, fit: BoxFit.fill, width: double.maxFinite, height: _responsiveHeight,),
-                        errorWidget: (context,url,error) => new Icon(Icons.error),
-                        width: double.maxFinite,
-                        height: _responsiveHeight * 1.1,
-                        fit: BoxFit.cover,
-                      ),
-                      mainAxisExtent: _responsiveHeight / 1.1
-                  ),
-                ],
-              )
-          ),
-          SizedBox(height: _responsiveHeight / 11,),
-          Container(
-            child: Text(
-              widget.event.title,
-              style: _values.titleTextStyle,
-            ),
-          ),
-          SizedBox(height: _responsiveHeight / 11,),
-          Container(
-            color: _hue.outlines,
-            padding: EdgeInsets.fromLTRB(_symmetricPadding * 15, 1.0, _symmetricPadding * 15, 1.0),
-            child: SizedBox(height: _responsiveHeight / 100,),
-          ),
-          SizedBox(height: _responsiveHeight / 11,),
-          Container(
-            alignment: Alignment.centerLeft,
-            child: Text(
-              "Lugar: " + widget.event.place,
-              style: _values.subtitleTextStyle,
-            ),
-          ),
-          SizedBox(height: _responsiveHeight / 11,),
-          Container(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                "Día: " + _spanishFormattedText,
-                style: _values.subtitleTextStyle,
-              )
-          ),
-          SizedBox(height: _responsiveHeight / 11,),
-          Container(
-            alignment: Alignment.centerLeft,
-            child: Text(
-              "Hora: " + widget.event.time,
-              style: _values.subtitleTextStyle,
-            ),
-          ),
-          SizedBox(height: _responsiveHeight / 11,),
-          Container(
-            color: _hue.outlines,
-            padding: EdgeInsets.fromLTRB(_symmetricPadding * 15, 1.0, _symmetricPadding * 15, 1.0),
-            child: SizedBox(height: _responsiveHeight / 100,),
-          ),
-          SizedBox(height: _responsiveHeight / 11,),
-          Container(
-            alignment: _values.centerAlignment,
-            child: Text(
-              widget.event.description,
+              _eventDetailed.description,
               style: _values.contentTextStyle,
             ),
           )
@@ -4262,86 +3708,42 @@ class _EventDetailsScreen extends State<EventDetailsScreen>{
       );
     }
 
-    return OrientationBuilder(
-      builder: (context, orientation){
-        return orientation == Orientation.portrait
-            ?
-        Scaffold(
-            backgroundColor: _hue.background,
-            appBar: AppBar(
-              backgroundColor: _hue.carmesi,
-              title: Text("Evento"),
-            ),
-            floatingActionButton: Stack(
-              children: <Widget>[
-                Positioned(
-                  left: _position.dx,
-                  top:  _position.dy,
-                  child: Draggable(
-                    feedback: Container(
-                      child: _floatingButton,
-                    ),
-                    child: Container(
-                      child: _floatingButton,
-                    ),
-                    childWhenDragging: Container(),
-                    onDragEnd: (details){
-                      setState(() {
-                        _position = details.offset;
-                      });
-                    },
-                  ),
-                )
-              ],
-            ),
-            body: SingleChildScrollView(
-              padding: EdgeInsets.symmetric(horizontal: _symmetricPadding),
-              controller: _scrollController,
-              child: ConstrainedBox(
-                constraints: BoxConstraints(),
-                child: _widgetPortraitColumn,
+    return Scaffold(
+        backgroundColor: _hue.background,
+        appBar: AppBar(
+          backgroundColor: _hue.carmesi,
+          title: Text("Evento"),
+        ),
+        floatingActionButton: Stack(
+          children: <Widget>[
+            Positioned(
+              left: _position.dx,
+              top:  _position.dy,
+              child: Draggable(
+                feedback: Container(
+                  child: _floatingButton,
+                ),
+                child: Container(
+                  child: _floatingButton,
+                ),
+                childWhenDragging: Container(),
+                onDragEnd: (details){
+                  setState(() {
+                    _position = details.offset;
+                  });
+                },
               ),
             )
+          ],
+        ),
+        body: SingleChildScrollView(
+          padding: EdgeInsets.symmetric(horizontal: _symmetricPadding),
+          controller: _scrollController,
+          child: ConstrainedBox(
+            constraints: BoxConstraints(),
+            child: _widgetPortraitColumn,
+          ),
         )
-            :
-        Scaffold(
-            backgroundColor: _hue.background,
-            appBar: AppBar(
-              backgroundColor: _hue.carmesi,
-              title: Text("Evento"),
-            ),
-            floatingActionButton: Stack(
-              children: <Widget>[
-                Positioned(
-                  left: _position.dx,
-                  top:  _position.dy,
-                  child: Draggable(
-                    feedback: Container(
-                      child: _floatingButton,
-                    ),
-                    child: Container(
-                      child: _floatingButton,
-                    ),
-                    childWhenDragging: Container(),
-                    onDragEnd: (details){
-                      setState(() {
-                        _position = details.offset;
-                      });
-                    },
-                  ),
-                )
-              ],
-            ),
-            body: SingleChildScrollView(
-              padding: EdgeInsets.symmetric(horizontal: _symmetricPadding),
-              controller: _scrollController,
-              child: ConstrainedBox(
-                constraints: BoxConstraints(),
-                child: _widgetLandscapeColumn,
-              ),
-            )
-        );
-      },
     );
   }
 
