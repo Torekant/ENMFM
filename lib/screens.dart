@@ -9,7 +9,6 @@ import 'package:flutter_parallax/flutter_parallax.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'functions.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
@@ -3003,7 +3002,7 @@ class _EventDetailsScreen extends State<EventDetailsScreen>{
 
   ScrollController _scrollController;
   String _spanishFormattedText;
-  Widget _floatingButton, _imageWidget;
+  Widget _floatingButton;
   Offset _position;
   var _imageNewEvent, _passedDependencies;
   var _formKey;
@@ -3086,16 +3085,23 @@ class _EventDetailsScreen extends State<EventDetailsScreen>{
                 alignment: _values.centerAlignment,
                 child: Stack(
                   children: <Widget>[
-                    Parallax.inside(
+                    GestureDetector(
+                      child: Center(
                         child: CachedNetworkImage(
                           imageUrl: _eventDetailed.image,
-                          placeholder: (context, url) => Image.asset(_values.loadingAnimation, fit: BoxFit.fill, width: double.maxFinite, height: _responsiveHeight,),
+                          placeholder: (context, url) => Image.asset(_values.loadingAnimation, fit: BoxFit.fill, width: double.maxFinite, height: _screenHeight / 3,),
                           errorWidget: (context,url,error) => new Icon(Icons.error),
                           width: double.maxFinite,
-                          height: _responsiveHeight * 1.1,
+                          height: _screenHeight / 3,
                           fit: BoxFit.cover,
                         ),
-                        mainAxisExtent: _responsiveHeight / 1.1
+                      ),
+                      onTap: (){
+                        showDialog(
+                            context: context,
+                            builder: (BuildContext context) => ExpandedImageDialog(url: _eventDetailed.image,)
+                        );
+                      },
                     ),
                     Container(
                       color: _hue.background,
@@ -3109,9 +3115,11 @@ class _EventDetailsScreen extends State<EventDetailsScreen>{
                           onPressed: (){
                             Future<String> finalURL = pickImage(_eventDetailed, context);
                             finalURL.then((val){
-                              setState(() {
-                                this._eventDetailed.image = val;
-                              });
+                              if(val != null){
+                                setState(() {
+                                  _eventDetailed.image = val;
+                                });
+                              }
                             });
                           }
                       ),
@@ -3183,17 +3191,38 @@ class _EventDetailsScreen extends State<EventDetailsScreen>{
               ),
             ),
             SizedBox(height: _responsiveHeight / 22,),
-            Container(
-              child: DropdownButton(
-                value: _departmentSelected,
-                icon: Icon(Icons.keyboard_arrow_down),
-                elevation: 5,
-                onChanged: (value){
-                  setState(() {
-                    _departmentSelected = value;
-                  });
-                },
-              ),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Text(
+                  "Subdirección",
+                  style: _values.plainTextStyle,
+                ),
+                SizedBox(width: _screenWidth / 25,),
+                Expanded(
+                  child: DropdownButton(
+                    isExpanded: true,
+                    value: _departmentSelected,
+                    icon: Icon(Icons.keyboard_arrow_down),
+                    elevation: 5,
+                    onChanged: (value){
+                      _eventDetailed.updateEvent(value, 'department').then((returned){
+                        _eventDetailed.department = returned;
+                        setState(() {
+                          _departmentSelected = returned;
+                        });
+                      });
+                    },
+                    items: _values.departments.map((String value){
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
+                  ),
+                )
+              ],
             ),
             SizedBox(height: _responsiveHeight / 22,),
             Container(
@@ -3344,24 +3373,8 @@ class _EventDetailsScreen extends State<EventDetailsScreen>{
         TextEditingController _placeTextController = new TextEditingController(text: _eventDetailed.place);
         TextEditingController _descriptionTextController = new TextEditingController(text: _eventDetailed.description);
 
-        if(_imageNewEvent == null){
-          _imageWidget = new Image.asset(
-            _values.defaultPlace,
-            fit: BoxFit.cover,
-            width: double.maxFinite,
-            height: _responsiveHeight * 1.1,
-          );
-        }else{
-          _imageWidget = new Image.file(
-            _imageNewEvent,
-            fit: BoxFit.cover,
-            width: double.maxFinite,
-            height: _responsiveHeight * 1.1,
-          );
-        }
-
-        if(_eventDetailed.time == null){
-          _eventDetailed.time = "00:00";
+        if(_eventDetailed.image == null){
+          _eventDetailed.image = _values.grayLogo;
         }
 
         _widgetPortraitColumn = Form(
@@ -3372,7 +3385,24 @@ class _EventDetailsScreen extends State<EventDetailsScreen>{
                 alignment: Alignment.center,
                 child: Stack(
                   children: <Widget>[
-                    Parallax.inside(child: _imageWidget, mainAxisExtent: _responsiveHeight / 1.1),
+                    GestureDetector(
+                      child: Center(
+                        child: CachedNetworkImage(
+                          imageUrl: _eventDetailed.image,
+                          placeholder: (context, url) => Image.asset(_values.loadingAnimation, fit: BoxFit.fill, width: double.maxFinite, height: _screenHeight / 3,),
+                          errorWidget: (context,url,error) => new Icon(Icons.error),
+                          width: double.maxFinite,
+                          height: _screenHeight / 3,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                      onTap: (){
+                        showDialog(
+                            context: context,
+                            builder: (BuildContext context) => ExpandedImageDialog(url: _eventDetailed.image,)
+                        );
+                      },
+                    ),
                     Container(
                       color: _hue.background,
                       child: IconButton(
@@ -3380,9 +3410,13 @@ class _EventDetailsScreen extends State<EventDetailsScreen>{
                         iconSize: _responsiveHeight / 11,
                         tooltip: _values.tooltipChangeEventImage,
                         onPressed: () async{
-                          var image = await ImagePicker.pickImage(source: ImageSource.gallery);
-                          setState(() {
-                            _imageNewEvent = image;
+                          Future<String> finalURL = pickImage(_eventDetailed, context);
+                          finalURL.then((val){
+                            if(val != null){
+                              setState(() {
+                                _eventDetailed.image = val;
+                              });
+                            }
                           });
                         },
                       ),
@@ -3639,18 +3673,23 @@ class _EventDetailsScreen extends State<EventDetailsScreen>{
         children: <Widget>[
           Container(
               alignment: _values.centerAlignment,
-              child: Parallax.inside(
+              child: GestureDetector(
+                child: Center(
                   child: CachedNetworkImage(
-                    width: double.maxFinite,
-                    height: _responsiveHeight * 1,
-                    fit: BoxFit.cover,
                     imageUrl: _eventDetailed.image,
-                    placeholder: (context, url) => Image.asset(_values.loadingAnimation, fit: BoxFit.fill, width: double.maxFinite, height: _responsiveHeight,),
-                    errorWidget: (context,url,error) => new Center(
-                      child: Icon(Icons.error),
-                    ),
+                    placeholder: (context, url) => Image.asset(_values.loadingAnimation, fit: BoxFit.fill, width: double.maxFinite, height: _screenHeight / 3,),
+                    errorWidget: (context,url,error) => new Icon(Icons.error),
+                    width: double.maxFinite,
+                    height: _screenHeight / 3,
+                    fit: BoxFit.cover,
                   ),
-                  mainAxisExtent: _responsiveHeight / 1
+                ),
+                onTap: (){
+                  showDialog(
+                      context: context,
+                      builder: (BuildContext context) => ExpandedImageDialog(url: _eventDetailed.image,)
+                  );
+                },
               )
           ),
           SizedBox(height: _responsiveHeight / 22,),

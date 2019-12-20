@@ -265,27 +265,29 @@ Future<FirebaseUser> adminLogin(String mail, String password, BuildContext conte
 Future<String> pickImage(Event event, BuildContext context) async {
   var image = await ImagePicker.pickImage(source: ImageSource.gallery);
 
-  String finalURL;
+  String finalURL = event.image;
 
-  showDialog(
-    context: context,
-    builder: (BuildContext context) => CustomLoadDialog()
-  );
-
-  try{
-    String imageName = randomAlphaNumeric(20);
-    imageName = imageName + DateTime.now().toString();
-    finalURL = await event.changeImage(image, imageName);
-  }catch(Exception){
+  if(image != null){
     showDialog(
-      context: context,
-      builder: (BuildContext context) => CustomDialog(
-        description: "Hubo un problema con la conexión: " + Exception.toString(),
-        acceptButtonText: "Aceptar",
-      )
+        context: context,
+        builder: (BuildContext context) => CustomLoadDialog()
     );
-  }finally{
-    Navigator.of(context).pop();
+
+    try{
+      String imageName = randomAlphaNumeric(20);
+      imageName = imageName + DateTime.now().toString();
+      finalURL = await event.changeImage(image, imageName);
+    }catch(Exception){
+      showDialog(
+          context: context,
+          builder: (BuildContext context) => CustomDialog(
+            description: "Hubo un problema con la conexión: " + Exception.toString(),
+            acceptButtonText: "Aceptar",
+          )
+      );
+    }finally{
+      Navigator.of(context).pop();
+    }
   }
 
   return finalURL;

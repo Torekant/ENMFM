@@ -72,6 +72,9 @@ class Values{
   String screenOnWork = assetsPath + "on_work_enmfm.jpg";
   String noContentFound = assetsPath + "no_content.png";
 
+  //default image url
+  String grayLogo = "https://firebasestorage.googleapis.com/v0/b/enmfm-test.appspot.com/o/logo_gray.jpg?alt=media&token=5d89d53f-a01c-41d9-bb9a-5ba06c9dcc96";
+
   //responsive
   double defaultDivisionForResponsiveHeight = 2.2;
   double defaultDivisionForResponsiveWidth = 2.2;

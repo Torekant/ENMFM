@@ -596,6 +596,10 @@ class Event{
         await values.firestoreReference.collection('events').document(this.id).updateData({'description': data});
         return data;
         break;
+      case 'department':
+        await values.firestoreReference.collection('events').document(this.id).updateData({'department': data});
+        return data;
+        break;
     }
 
   }
