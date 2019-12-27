@@ -73,7 +73,7 @@ class Values{
   String noContentFound = assetsPath + "no_content.png";
 
   //default image url
-  String grayLogo = "https://firebasestorage.googleapis.com/v0/b/enmfm-test.appspot.com/o/logo_gray.jpg?alt=media&token=5d89d53f-a01c-41d9-bb9a-5ba06c9dcc96";
+  String grayLogo = "https://firebasestorage.googleapis.com/v0/b/enmfm-test.appspot.com/o/logo_gray.jpg?alt=media&token=d6527f68-2f0f-4df5-827a-56cfbf4ae8ea";
 
   //responsive
   double defaultDivisionForResponsiveHeight = 2.2;
@@ -96,6 +96,7 @@ class Values{
 
  //Dropdown values
   List<String> departments = ['Indistinta', 'Administrativa', 'Académica', 'de Innovación e Investigación', 'de Gestión Institucional'];
+  List<String> speedDialLabels = ['Administrativa', 'Académica', 'Innovación e Investigación', 'Gestión Institucional'];
 }
 
 class Hues{

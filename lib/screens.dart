@@ -14,6 +14,7 @@ import 'package:table_calendar/table_calendar.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
 import 'package:back_button_interceptor/back_button_interceptor.dart';
 import 'package:expandable/expandable.dart';
+import 'package:unicorndial/unicorndial.dart';
 
 class HomeScreen extends StatefulWidget {
   HomeScreen({Key key}) : super(key: key);
@@ -157,7 +158,7 @@ class _HomeScreen extends State<HomeScreen>{
                                     Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                            builder: (context) => EventsScreen(adminView: false,)
+                                            builder: (context) => EventsScreen(adminView: false, speedDialOrientation: UnicornOrientation.VERTICAL,)
                                         )
                                     );
                                     break;
@@ -301,7 +302,7 @@ class _HomeScreen extends State<HomeScreen>{
                                     Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                            builder: (context) => EventsScreen(adminView: false,)
+                                            builder: (context) => EventsScreen(adminView: false, speedDialOrientation: UnicornOrientation.HORIZONTAL,)
                                         )
                                     );
                                     break;
@@ -2318,9 +2319,10 @@ class _AnnouncementsScreen extends State<AnnouncementsScreen>{
 }
 
 class EventsScreen extends StatefulWidget {
-  EventsScreen({Key key, this.adminView}) : super(key: key);
+  EventsScreen({Key key, this.adminView, this.speedDialOrientation}) : super(key: key);
 
   final bool adminView;
+  final int speedDialOrientation;
 
 
   @override
@@ -2339,8 +2341,10 @@ class _EventsScreen extends State<EventsScreen>{
   Map<DateTime, List<Event>> _calendarEvents;
   ListView _eventListView;
 
-  FloatingActionButton _floatingActionButton;
-  Offset _position;
+  Widget _floatingActionButton;
+  List _eventList;
+  bool _eventsRetrieved;
+  int _speedDialOrientation;
 
   @override
   void initState() {
@@ -2349,6 +2353,7 @@ class _EventsScreen extends State<EventsScreen>{
     _values  = new Values();
     _hue = new Hues();
     _scrollController = new ScrollController();
+    _eventsRetrieved = false;
 
     if(widget.adminView == true){
       _calendarController = CalendarController();
@@ -2378,10 +2383,926 @@ class _EventsScreen extends State<EventsScreen>{
             _values.loadingAnimation
         ),
       );
-      _floatingActionButton = null;
-      _position = Offset(0.0, 0.0);
+      _eventList = new List();
+      _speedDialOrientation = widget.speedDialOrientation;
+      _floatingActionButton = UnicornDialer(
+          backgroundColor: Color.fromRGBO(255, 255, 255, 0.6),
+          parentButtonBackground: _hue.ocean,
+          orientation: _speedDialOrientation,
+          parentButton: Icon(Icons.add),
+          childButtons: [
+            UnicornButton(
+              hasLabel: true,
+              labelText: "Todos",
+              currentButton: FloatingActionButton(
+                backgroundColor: _hue.ocean,
+                heroTag: "Todos",
+                mini: true,
+                child: Icon(Icons.list),
+                onPressed: (){
+                  print("pressed button");
+                },
+              ),
+            ),
+            UnicornButton(
+              hasLabel: true,
+              labelText: _values.speedDialLabels[0],
+              currentButton: FloatingActionButton(
+                backgroundColor: _hue.ocean,
+                heroTag: _values.speedDialLabels[0],
+                mini: true,
+                child: Icon(Icons.insert_drive_file),
+                onPressed: (){
+                  print("pressed button");
+                },
+              ),
+            ),
+            UnicornButton(
+              hasLabel: true,
+              labelText: _values.speedDialLabels[1],
+              currentButton: FloatingActionButton(
+                backgroundColor: _hue.ocean,
+                heroTag: _values.speedDialLabels[1],
+                mini: true,
+                child: Icon(Icons.school),
+                onPressed: (){
+                  print("pressed button");
+                },
+              ),
+            ),
+            UnicornButton(
+              hasLabel: true,
+              labelText: _values.speedDialLabels[2],
+              currentButton: FloatingActionButton(
+                backgroundColor: _hue.ocean,
+                heroTag: _values.speedDialLabels[2],
+                mini: true,
+                child: Icon(Icons.laptop),
+                onPressed: (){
+                  print("pressed button");
+                },
+              ),
+            ),
+            UnicornButton(
+              hasLabel: true,
+              labelText: _values.speedDialLabels[3],
+              currentButton: FloatingActionButton(
+                backgroundColor: _hue.ocean,
+                heroTag: _values.speedDialLabels[3],
+                mini: true,
+                child: Icon(Icons.settings),
+                onPressed: (){
+                  print("pressed button");
+                },
+              ),
+            )
+          ]);
     }
 
+  }
+
+  void filterEvents(String _filter){
+    double _screenHeight = MediaQuery.of(context).size.height; //lee el largo del dispositivo
+    double _responsiveHeight = _screenHeight / _values.defaultDivisionForResponsiveHeight; //Función para altura responsiva de cada card en la lista
+
+    switch(_filter){
+      case 'todos':
+        setState(() {
+          _screenPortraitContent = Center(
+            child: ListView.builder(
+                controller: _scrollController,
+                shrinkWrap: true,
+                itemCount: _eventList.length,
+                itemBuilder: (BuildContext context, int index){
+                  String _dateText = buildEventDayText(_eventList[index].date, 0);
+                  return GestureDetector(
+                    child: Card(
+                      child: Container(
+                        //height: _responsiveHeight * 1,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: <Widget>[
+                            Parallax.inside(
+                                child: CachedNetworkImage(
+                                  width: double.maxFinite,
+                                  height: _responsiveHeight * 1,
+                                  fit: BoxFit.cover,
+                                  imageUrl: _eventList[index].image,
+                                  placeholder: (context, url) => Image.asset(_values.loadingAnimation, fit: BoxFit.fill, width: double.maxFinite, height: _responsiveHeight,),
+                                  errorWidget: (context,url,error) => new Center(
+                                    child: Icon(Icons.error),
+                                  ),
+                                ),
+                                mainAxisExtent: _responsiveHeight / 1
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: <Widget>[
+                                Text(
+                                  _dateText + " a las " + _eventList[index].time + "hrs.",
+                                  style: _values.subtitleTextStyle,
+                                ),
+                              ],
+                            ),
+                            SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              controller: _scrollController,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                children: <Widget>[
+                                  Text(
+                                    "Subdirección " + _eventList[index].department,
+                                    style: _values.subtitleTextStyle,
+                                  )
+                                ],
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
+                    onTap: (){
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => EventDetailsScreen(event: _eventList[index], adminView: false,)
+                          )
+                      );
+                    },
+                  );
+                }
+            ),
+          );
+          _screenLandscapeContent = Center(
+            child: ListView.builder(
+                controller: _scrollController,
+                shrinkWrap: true,
+                itemCount: _eventList.length,
+                itemBuilder: (BuildContext context, int index){
+                  String _dateText = buildEventDayText(_eventList[index].date, 0);
+                  return GestureDetector(
+                    child: Card(
+                      child: Container(
+                        //height: _responsiveHeight * 1,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: <Widget>[
+                            Parallax.inside(
+                                child: CachedNetworkImage(
+                                  width: double.maxFinite,
+                                  height: _responsiveHeight * 1,
+                                  fit: BoxFit.cover,
+                                  imageUrl: _eventList[index].image,
+                                  placeholder: (context, url) => Image.asset(_values.loadingAnimation, fit: BoxFit.fill, width: double.maxFinite, height: _responsiveHeight,),
+                                  errorWidget: (context,url,error) => new Center(
+                                    child: Icon(Icons.error),
+                                  ),
+                                ),
+                                mainAxisExtent: _responsiveHeight / 1
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: <Widget>[
+                                Text(
+                                  _dateText + " a las " + _eventList[index].time + "hrs.",
+                                  style: _values.subtitleTextStyle,
+                                ),
+                              ],
+                            ),
+                            SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              controller: _scrollController,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                children: <Widget>[
+                                  Text(
+                                    "Subdirección" + _eventList[index].department,
+                                    style: _values.subtitleTextStyle,
+                                  )
+                                ],
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
+                    onTap: (){
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => EventDetailsScreen(event: _eventList[index], adminView: false,)
+                          )
+                      );
+                    },
+                  );
+                }
+            ),
+          );
+        });
+        break;
+      case 'Gestión Institucional':
+        setState(() {
+          _screenPortraitContent = Center(
+            child: ListView.builder(
+                controller: _scrollController,
+                shrinkWrap: true,
+                itemCount: _eventList.length,
+                itemBuilder: (BuildContext context, int index){
+                  if(_eventList[index].department == _values.departments[4]){
+                    String _dateText = buildEventDayText(_eventList[index].date, 0);
+                    return GestureDetector(
+                      child: Card(
+                        child: Container(
+                          //height: _responsiveHeight * 1,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: <Widget>[
+                              Parallax.inside(
+                                  child: CachedNetworkImage(
+                                    width: double.maxFinite,
+                                    height: _responsiveHeight * 1,
+                                    fit: BoxFit.cover,
+                                    imageUrl: _eventList[index].image,
+                                    placeholder: (context, url) => Image.asset(_values.loadingAnimation, fit: BoxFit.fill, width: double.maxFinite, height: _responsiveHeight,),
+                                    errorWidget: (context,url,error) => new Center(
+                                      child: Icon(Icons.error),
+                                    ),
+                                  ),
+                                  mainAxisExtent: _responsiveHeight / 1
+                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                children: <Widget>[
+                                  Text(
+                                    _dateText + " a las " + _eventList[index].time + "hrs.",
+                                    style: _values.subtitleTextStyle,
+                                  ),
+                                ],
+                              ),
+                              SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                controller: _scrollController,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                  children: <Widget>[
+                                    Text(
+                                      "Subdirección " + _eventList[index].department,
+                                      style: _values.subtitleTextStyle,
+                                    )
+                                  ],
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                      onTap: (){
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => EventDetailsScreen(event: _eventList[index], adminView: false,)
+                            )
+                        );
+                      },
+                    );
+                  }else{
+                    return null;
+                  }
+                }
+            ),
+          );
+          _screenLandscapeContent = Center(
+            child: ListView.builder(
+                controller: _scrollController,
+                shrinkWrap: true,
+                itemCount: _eventList.length,
+                itemBuilder: (BuildContext context, int index){
+                  if(_eventList[index].department == _values.departments[4]){
+                    String _dateText = buildEventDayText(_eventList[index].date, 0);
+                    return GestureDetector(
+                      child: Card(
+                        child: Container(
+                          //height: _responsiveHeight * 1,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: <Widget>[
+                              Parallax.inside(
+                                  child: CachedNetworkImage(
+                                    width: double.maxFinite,
+                                    height: _responsiveHeight * 1,
+                                    fit: BoxFit.cover,
+                                    imageUrl: _eventList[index].image,
+                                    placeholder: (context, url) => Image.asset(_values.loadingAnimation, fit: BoxFit.fill, width: double.maxFinite, height: _responsiveHeight,),
+                                    errorWidget: (context,url,error) => new Center(
+                                      child: Icon(Icons.error),
+                                    ),
+                                  ),
+                                  mainAxisExtent: _responsiveHeight / 1
+                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                children: <Widget>[
+                                  Text(
+                                    _dateText + " a las " + _eventList[index].time + "hrs.",
+                                    style: _values.subtitleTextStyle,
+                                  ),
+                                ],
+                              ),
+                              SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                controller: _scrollController,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                  children: <Widget>[
+                                    Text(
+                                      "Subdirección" + _eventList[index].department,
+                                      style: _values.subtitleTextStyle,
+                                    )
+                                  ],
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                      onTap: (){
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => EventDetailsScreen(event: _eventList[index], adminView: false,)
+                            )
+                        );
+                      },
+                    );
+                  }else{
+                    return null;
+                  }
+                }
+            ),
+          );
+        });
+        break;
+      case 'Innovación e Investigación':
+        setState(() {
+          _screenPortraitContent = Center(
+            child: ListView.builder(
+                controller: _scrollController,
+                shrinkWrap: true,
+                itemCount: _eventList.length,
+                itemBuilder: (BuildContext context, int index){
+                  if(_eventList[index].department == _values.departments[3]){
+                    String _dateText = buildEventDayText(_eventList[index].date, 0);
+                    return GestureDetector(
+                      child: Card(
+                        child: Container(
+                          //height: _responsiveHeight * 1,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: <Widget>[
+                              Parallax.inside(
+                                  child: CachedNetworkImage(
+                                    width: double.maxFinite,
+                                    height: _responsiveHeight * 1,
+                                    fit: BoxFit.cover,
+                                    imageUrl: _eventList[index].image,
+                                    placeholder: (context, url) => Image.asset(_values.loadingAnimation, fit: BoxFit.fill, width: double.maxFinite, height: _responsiveHeight,),
+                                    errorWidget: (context,url,error) => new Center(
+                                      child: Icon(Icons.error),
+                                    ),
+                                  ),
+                                  mainAxisExtent: _responsiveHeight / 1
+                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                children: <Widget>[
+                                  Text(
+                                    _dateText + " a las " + _eventList[index].time + "hrs.",
+                                    style: _values.subtitleTextStyle,
+                                  ),
+                                ],
+                              ),
+                              SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                controller: _scrollController,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                  children: <Widget>[
+                                    Text(
+                                      "Subdirección " + _eventList[index].department,
+                                      style: _values.subtitleTextStyle,
+                                    )
+                                  ],
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                      onTap: (){
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => EventDetailsScreen(event: _eventList[index], adminView: false,)
+                            )
+                        );
+                      },
+                    );
+                  }else{
+                    return null;
+                  }
+                }
+            ),
+          );
+          _screenLandscapeContent = Center(
+            child: ListView.builder(
+                controller: _scrollController,
+                shrinkWrap: true,
+                itemCount: _eventList.length,
+                itemBuilder: (BuildContext context, int index){
+                  if(_eventList[index].department == _values.departments[3]){
+                    String _dateText = buildEventDayText(_eventList[index].date, 0);
+                    return GestureDetector(
+                      child: Card(
+                        child: Container(
+                          //height: _responsiveHeight * 1,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: <Widget>[
+                              Parallax.inside(
+                                  child: CachedNetworkImage(
+                                    width: double.maxFinite,
+                                    height: _responsiveHeight * 1,
+                                    fit: BoxFit.cover,
+                                    imageUrl: _eventList[index].image,
+                                    placeholder: (context, url) => Image.asset(_values.loadingAnimation, fit: BoxFit.fill, width: double.maxFinite, height: _responsiveHeight,),
+                                    errorWidget: (context,url,error) => new Center(
+                                      child: Icon(Icons.error),
+                                    ),
+                                  ),
+                                  mainAxisExtent: _responsiveHeight / 1
+                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                children: <Widget>[
+                                  Text(
+                                    _dateText + " a las " + _eventList[index].time + "hrs.",
+                                    style: _values.subtitleTextStyle,
+                                  ),
+                                ],
+                              ),
+                              SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                controller: _scrollController,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                  children: <Widget>[
+                                    Text(
+                                      "Subdirección" + _eventList[index].department,
+                                      style: _values.subtitleTextStyle,
+                                    )
+                                  ],
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                      onTap: (){
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => EventDetailsScreen(event: _eventList[index], adminView: false,)
+                            )
+                        );
+                      },
+                    );
+                  }else{
+                    return null;
+                  }
+                }
+            ),
+          );
+        });
+        break;
+      case 'Académica':
+        setState(() {
+          _screenPortraitContent = Center(
+            child: ListView.builder(
+                controller: _scrollController,
+                shrinkWrap: true,
+                itemCount: _eventList.length,
+                itemBuilder: (BuildContext context, int index){
+                  if(_eventList[index].department == _values.departments[2]){
+                    String _dateText = buildEventDayText(_eventList[index].date, 0);
+                    return GestureDetector(
+                      child: Card(
+                        child: Container(
+                          //height: _responsiveHeight * 1,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: <Widget>[
+                              Parallax.inside(
+                                  child: CachedNetworkImage(
+                                    width: double.maxFinite,
+                                    height: _responsiveHeight * 1,
+                                    fit: BoxFit.cover,
+                                    imageUrl: _eventList[index].image,
+                                    placeholder: (context, url) => Image.asset(_values.loadingAnimation, fit: BoxFit.fill, width: double.maxFinite, height: _responsiveHeight,),
+                                    errorWidget: (context,url,error) => new Center(
+                                      child: Icon(Icons.error),
+                                    ),
+                                  ),
+                                  mainAxisExtent: _responsiveHeight / 1
+                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                children: <Widget>[
+                                  Text(
+                                    _dateText + " a las " + _eventList[index].time + "hrs.",
+                                    style: _values.subtitleTextStyle,
+                                  ),
+                                ],
+                              ),
+                              SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                controller: _scrollController,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                  children: <Widget>[
+                                    Text(
+                                      "Subdirección " + _eventList[index].department,
+                                      style: _values.subtitleTextStyle,
+                                    )
+                                  ],
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                      onTap: (){
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => EventDetailsScreen(event: _eventList[index], adminView: false,)
+                            )
+                        );
+                      },
+                    );
+                  }else{
+                    return null;
+                  }
+                }
+            ),
+          );
+          _screenLandscapeContent = Center(
+            child: ListView.builder(
+                controller: _scrollController,
+                shrinkWrap: true,
+                itemCount: _eventList.length,
+                itemBuilder: (BuildContext context, int index){
+                  if(_eventList[index].department == _values.departments[2]){
+                    String _dateText = buildEventDayText(_eventList[index].date, 0);
+                    return GestureDetector(
+                      child: Card(
+                        child: Container(
+                          //height: _responsiveHeight * 1,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: <Widget>[
+                              Parallax.inside(
+                                  child: CachedNetworkImage(
+                                    width: double.maxFinite,
+                                    height: _responsiveHeight * 1,
+                                    fit: BoxFit.cover,
+                                    imageUrl: _eventList[index].image,
+                                    placeholder: (context, url) => Image.asset(_values.loadingAnimation, fit: BoxFit.fill, width: double.maxFinite, height: _responsiveHeight,),
+                                    errorWidget: (context,url,error) => new Center(
+                                      child: Icon(Icons.error),
+                                    ),
+                                  ),
+                                  mainAxisExtent: _responsiveHeight / 1
+                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                children: <Widget>[
+                                  Text(
+                                    _dateText + " a las " + _eventList[index].time + "hrs.",
+                                    style: _values.subtitleTextStyle,
+                                  ),
+                                ],
+                              ),
+                              SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                controller: _scrollController,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                  children: <Widget>[
+                                    Text(
+                                      "Subdirección" + _eventList[index].department,
+                                      style: _values.subtitleTextStyle,
+                                    )
+                                  ],
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                      onTap: (){
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => EventDetailsScreen(event: _eventList[index], adminView: false,)
+                            )
+                        );
+                      },
+                    );
+                  }else{
+                    return null;
+                  }
+                }
+            ),
+          );
+        });
+        break;
+      case 'Administrativa':
+        setState(() {
+          _screenPortraitContent = Center(
+            child: ListView.builder(
+                controller: _scrollController,
+                shrinkWrap: true,
+                itemCount: _eventList.length,
+                itemBuilder: (BuildContext context, int index){
+                  if(_eventList[index].department == _values.departments[1]){
+                    String _dateText = buildEventDayText(_eventList[index].date, 0);
+                    return GestureDetector(
+                      child: Card(
+                        child: Container(
+                          //height: _responsiveHeight * 1,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: <Widget>[
+                              Parallax.inside(
+                                  child: CachedNetworkImage(
+                                    width: double.maxFinite,
+                                    height: _responsiveHeight * 1,
+                                    fit: BoxFit.cover,
+                                    imageUrl: _eventList[index].image,
+                                    placeholder: (context, url) => Image.asset(_values.loadingAnimation, fit: BoxFit.fill, width: double.maxFinite, height: _responsiveHeight,),
+                                    errorWidget: (context,url,error) => new Center(
+                                      child: Icon(Icons.error),
+                                    ),
+                                  ),
+                                  mainAxisExtent: _responsiveHeight / 1
+                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                children: <Widget>[
+                                  Text(
+                                    _dateText + " a las " + _eventList[index].time + "hrs.",
+                                    style: _values.subtitleTextStyle,
+                                  ),
+                                ],
+                              ),
+                              SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                controller: _scrollController,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                  children: <Widget>[
+                                    Text(
+                                      "Subdirección " + _eventList[index].department,
+                                      style: _values.subtitleTextStyle,
+                                    )
+                                  ],
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                      onTap: (){
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => EventDetailsScreen(event: _eventList[index], adminView: false,)
+                            )
+                        );
+                      },
+                    );
+                  }else{
+                    return null;
+                  }
+                }
+            ),
+          );
+          _screenLandscapeContent = Center(
+            child: ListView.builder(
+                controller: _scrollController,
+                shrinkWrap: true,
+                itemCount: _eventList.length,
+                itemBuilder: (BuildContext context, int index){
+                  if(_eventList[index].department == _values.departments[1]){
+                    String _dateText = buildEventDayText(_eventList[index].date, 0);
+                    return GestureDetector(
+                      child: Card(
+                        child: Container(
+                          //height: _responsiveHeight * 1,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: <Widget>[
+                              Parallax.inside(
+                                  child: CachedNetworkImage(
+                                    width: double.maxFinite,
+                                    height: _responsiveHeight * 1,
+                                    fit: BoxFit.cover,
+                                    imageUrl: _eventList[index].image,
+                                    placeholder: (context, url) => Image.asset(_values.loadingAnimation, fit: BoxFit.fill, width: double.maxFinite, height: _responsiveHeight,),
+                                    errorWidget: (context,url,error) => new Center(
+                                      child: Icon(Icons.error),
+                                    ),
+                                  ),
+                                  mainAxisExtent: _responsiveHeight / 1
+                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                children: <Widget>[
+                                  Text(
+                                    _dateText + " a las " + _eventList[index].time + "hrs.",
+                                    style: _values.subtitleTextStyle,
+                                  ),
+                                ],
+                              ),
+                              SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                controller: _scrollController,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                  children: <Widget>[
+                                    Text(
+                                      "Subdirección" + _eventList[index].department,
+                                      style: _values.subtitleTextStyle,
+                                    )
+                                  ],
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                      onTap: (){
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => EventDetailsScreen(event: _eventList[index], adminView: false,)
+                            )
+                        );
+                      },
+                    );
+                  }else{
+                    return null;
+                  }
+                }
+            ),
+          );
+        });
+        break;
+      default:
+        setState(() {
+          _screenPortraitContent = Center(
+            child: ListView.builder(
+                controller: _scrollController,
+                shrinkWrap: true,
+                itemCount: _eventList.length,
+                itemBuilder: (BuildContext context, int index){
+                  String _dateText = buildEventDayText(_eventList[index].date, 0);
+                  return GestureDetector(
+                    child: Card(
+                      child: Container(
+                        //height: _responsiveHeight * 1,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: <Widget>[
+                            Parallax.inside(
+                                child: CachedNetworkImage(
+                                  width: double.maxFinite,
+                                  height: _responsiveHeight * 1,
+                                  fit: BoxFit.cover,
+                                  imageUrl: _eventList[index].image,
+                                  placeholder: (context, url) => Image.asset(_values.loadingAnimation, fit: BoxFit.fill, width: double.maxFinite, height: _responsiveHeight,),
+                                  errorWidget: (context,url,error) => new Center(
+                                    child: Icon(Icons.error),
+                                  ),
+                                ),
+                                mainAxisExtent: _responsiveHeight / 1
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: <Widget>[
+                                Text(
+                                  _dateText + " a las " + _eventList[index].time + "hrs.",
+                                  style: _values.subtitleTextStyle,
+                                ),
+                              ],
+                            ),
+                            SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              controller: _scrollController,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                children: <Widget>[
+                                  Text(
+                                    "Subdirección " + _eventList[index].department,
+                                    style: _values.subtitleTextStyle,
+                                  )
+                                ],
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
+                    onTap: (){
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => EventDetailsScreen(event: _eventList[index], adminView: false,)
+                          )
+                      );
+                    },
+                  );
+                }
+            ),
+          );
+          _screenLandscapeContent = Center(
+            child: ListView.builder(
+                controller: _scrollController,
+                shrinkWrap: true,
+                itemCount: _eventList.length,
+                itemBuilder: (BuildContext context, int index){
+                  String _dateText = buildEventDayText(_eventList[index].date, 0);
+                  return GestureDetector(
+                    child: Card(
+                      child: Container(
+                        //height: _responsiveHeight * 1,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: <Widget>[
+                            Parallax.inside(
+                                child: CachedNetworkImage(
+                                  width: double.maxFinite,
+                                  height: _responsiveHeight * 1,
+                                  fit: BoxFit.cover,
+                                  imageUrl: _eventList[index].image,
+                                  placeholder: (context, url) => Image.asset(_values.loadingAnimation, fit: BoxFit.fill, width: double.maxFinite, height: _responsiveHeight,),
+                                  errorWidget: (context,url,error) => new Center(
+                                    child: Icon(Icons.error),
+                                  ),
+                                ),
+                                mainAxisExtent: _responsiveHeight / 1
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: <Widget>[
+                                Text(
+                                  _dateText + " a las " + _eventList[index].time + "hrs.",
+                                  style: _values.subtitleTextStyle,
+                                ),
+                              ],
+                            ),
+                            SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              controller: _scrollController,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                children: <Widget>[
+                                  Text(
+                                    "Subdirección" + _eventList[index].department,
+                                    style: _values.subtitleTextStyle,
+                                  )
+                                ],
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
+                    onTap: (){
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => EventDetailsScreen(event: _eventList[index], adminView: false,)
+                          )
+                      );
+                    },
+                  );
+                }
+            ),
+          );
+        });
+        break;
+    }
   }
 
   @override
@@ -2389,12 +3310,10 @@ class _EventsScreen extends State<EventsScreen>{
     // TODO: implement didChangeDependencies
     super.didChangeDependencies();
     double _screenHeight = MediaQuery.of(context).size.height; //lee el largo del dispositivo
-    double _screenWidth = MediaQuery.of(context).size.width; //lee el ancho de dispositivo
 
     double _responsiveHeight = _screenHeight / _values.defaultDivisionForResponsiveHeight; //Función para altura responsiva de cada card en la lista
 
     if(widget.adminView == true){
-      _position = Offset(_screenWidth / 1.2, _screenHeight / 1.2);
 
       await retrieveCalendarEvents(context).then((map) {
         if (!map.containsKey(null)) {
@@ -2489,155 +3408,159 @@ class _EventsScreen extends State<EventsScreen>{
       });
 
     }else{
-      retrieveListEvents(context).then((list){
-        if(list.isNotEmpty){
-          setState(() {
-            _screenPortraitContent = Center(
-              child: ListView.builder(
-                  controller: _scrollController,
-                  shrinkWrap: true,
-                  itemCount: list.length,
-                  itemBuilder: (BuildContext context, int index){
-                    String _dateText = buildEventDayText(list[index].date, 0);
-                    return GestureDetector(
-                      child: Card(
-                        child: Container(
-                          //height: _responsiveHeight * 1,
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: <Widget>[
-                              Parallax.inside(
-                                  child: CachedNetworkImage(
-                                    width: double.maxFinite,
-                                    height: _responsiveHeight * 1,
-                                    fit: BoxFit.cover,
-                                    imageUrl: list[index].image,
-                                    placeholder: (context, url) => Image.asset(_values.loadingAnimation, fit: BoxFit.fill, width: double.maxFinite, height: _responsiveHeight,),
-                                    errorWidget: (context,url,error) => new Center(
-                                      child: Icon(Icons.error),
+      if(_eventsRetrieved == false){
+        retrieveListEvents(context).then((list){
+          _eventList = list;
+          if(list.isNotEmpty){
+            setState(() {
+              _screenPortraitContent = Center(
+                child: ListView.builder(
+                    controller: _scrollController,
+                    shrinkWrap: true,
+                    itemCount: _eventList.length,
+                    itemBuilder: (BuildContext context, int index){
+                      String _dateText = buildEventDayText(_eventList[index].date, 0);
+                      return GestureDetector(
+                        child: Card(
+                          child: Container(
+                            //height: _responsiveHeight * 1,
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: <Widget>[
+                                Parallax.inside(
+                                    child: CachedNetworkImage(
+                                      width: double.maxFinite,
+                                      height: _responsiveHeight * 1,
+                                      fit: BoxFit.cover,
+                                      imageUrl: _eventList[index].image,
+                                      placeholder: (context, url) => Image.asset(_values.loadingAnimation, fit: BoxFit.fill, width: double.maxFinite, height: _responsiveHeight,),
+                                      errorWidget: (context,url,error) => new Center(
+                                        child: Icon(Icons.error),
+                                      ),
                                     ),
-                                  ),
-                                  mainAxisExtent: _responsiveHeight / 1
-                              ),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                children: <Widget>[
-                                  Text(
-                                    _dateText + " a las " + list[index].time + "hrs.",
-                                    style: _values.subtitleTextStyle,
-                                  ),
-                                ],
-                              ),
-                              SingleChildScrollView(
-                                scrollDirection: Axis.horizontal,
-                                controller: _scrollController,
-                                child: Row(
+                                    mainAxisExtent: _responsiveHeight / 1
+                                ),
+                                Row(
                                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                   children: <Widget>[
                                     Text(
-                                      "Subdirección " + list[index].department,
+                                      _dateText + " a las " + _eventList[index].time + "hrs.",
                                       style: _values.subtitleTextStyle,
-                                    )
+                                    ),
                                   ],
                                 ),
-                              )
-                            ],
+                                SingleChildScrollView(
+                                  scrollDirection: Axis.horizontal,
+                                  controller: _scrollController,
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                    children: <Widget>[
+                                      Text(
+                                        "Subdirección " + _eventList[index].department,
+                                        style: _values.subtitleTextStyle,
+                                      )
+                                    ],
+                                  ),
+                                )
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-                      onTap: (){
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => EventDetailsScreen(event: list[index], adminView: false,)
-                            )
-                        );
-                      },
-                    );
-                  }
-              ),
-            );
-            _screenLandscapeContent = Center(
-              child: ListView.builder(
-                  controller: _scrollController,
-                  shrinkWrap: true,
-                  itemCount: list.length,
-                  itemBuilder: (BuildContext context, int index){
-                    String _dateText = buildEventDayText(list[index].date, 0);
-                    return GestureDetector(
-                      child: Card(
-                        child: Container(
-                          //height: _responsiveHeight * 1,
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: <Widget>[
-                              Parallax.inside(
-                                  child: CachedNetworkImage(
-                                    width: double.maxFinite,
-                                    height: _responsiveHeight * 1,
-                                    fit: BoxFit.cover,
-                                    imageUrl: list[index].image,
-                                    placeholder: (context, url) => Image.asset(_values.loadingAnimation, fit: BoxFit.fill, width: double.maxFinite, height: _responsiveHeight,),
-                                    errorWidget: (context,url,error) => new Center(
-                                      child: Icon(Icons.error),
+                        onTap: (){
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => EventDetailsScreen(event: _eventList[index], adminView: false,)
+                              )
+                          );
+                        },
+                      );
+                    }
+                ),
+              );
+              _screenLandscapeContent = Center(
+                child: ListView.builder(
+                    controller: _scrollController,
+                    shrinkWrap: true,
+                    itemCount: _eventList.length,
+                    itemBuilder: (BuildContext context, int index){
+                      String _dateText = buildEventDayText(_eventList[index].date, 0);
+                      return GestureDetector(
+                        child: Card(
+                          child: Container(
+                            //height: _responsiveHeight * 1,
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: <Widget>[
+                                Parallax.inside(
+                                    child: CachedNetworkImage(
+                                      width: double.maxFinite,
+                                      height: _responsiveHeight * 1,
+                                      fit: BoxFit.cover,
+                                      imageUrl: _eventList[index].image,
+                                      placeholder: (context, url) => Image.asset(_values.loadingAnimation, fit: BoxFit.fill, width: double.maxFinite, height: _responsiveHeight,),
+                                      errorWidget: (context,url,error) => new Center(
+                                        child: Icon(Icons.error),
+                                      ),
                                     ),
-                                  ),
-                                  mainAxisExtent: _responsiveHeight / 1
-                              ),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                children: <Widget>[
-                                  Text(
-                                    _dateText + " a las " + list[index].time + "hrs.",
-                                    style: _values.subtitleTextStyle,
-                                  ),
-                                ],
-                              ),
-                              SingleChildScrollView(
-                                scrollDirection: Axis.horizontal,
-                                controller: _scrollController,
-                                child: Row(
+                                    mainAxisExtent: _responsiveHeight / 1
+                                ),
+                                Row(
                                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                   children: <Widget>[
                                     Text(
-                                      "Subdirección" + list[index].department,
+                                      _dateText + " a las " + _eventList[index].time + "hrs.",
                                       style: _values.subtitleTextStyle,
-                                    )
+                                    ),
                                   ],
                                 ),
-                              )
-                            ],
+                                SingleChildScrollView(
+                                  scrollDirection: Axis.horizontal,
+                                  controller: _scrollController,
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                    children: <Widget>[
+                                      Text(
+                                        "Subdirección" + _eventList[index].department,
+                                        style: _values.subtitleTextStyle,
+                                      )
+                                    ],
+                                  ),
+                                )
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-                      onTap: (){
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => EventDetailsScreen(event: list[index], adminView: false,)
-                            )
-                        );
-                      },
-                    );
-                  }
-              ),
-            );
-          });
-        }else{
-          setState(() {
-            _screenPortraitContent = Center(
-              child: Image.asset(
-                  _values.noContentFound
-              ),
-            );
-            _screenLandscapeContent = Center(
-              child: Image.asset(
-                  _values.noContentFound
-              ),
-            );
-          });
-        }
-      });
+                        onTap: (){
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => EventDetailsScreen(event: _eventList[index], adminView: false,)
+                              )
+                          );
+                        },
+                      );
+                    }
+                ),
+              );
+            });
+          }else{
+            setState(() {
+              _screenPortraitContent = Center(
+                child: Image.asset(
+                    _values.noContentFound
+                ),
+              );
+              _screenLandscapeContent = Center(
+                child: Image.asset(
+                    _values.noContentFound
+                ),
+              );
+            });
+          }
+        });
+        _eventsRetrieved = true;
+      }
     }
   }
 
@@ -2896,28 +3819,7 @@ class _EventsScreen extends State<EventsScreen>{
               ],
             ),
           body: _screenPortraitContent,
-          floatingActionButton: Stack(
-            children: <Widget>[
-              Positioned(
-                left: _position.dx,
-                top:  _position.dy,
-                child: Draggable(
-                  feedback: Container(
-                    child: _floatingActionButton,
-                  ),
-                  child: Container(
-                    child: _floatingActionButton,
-                  ),
-                  childWhenDragging: Container(),
-                  onDragEnd: (details){
-                    setState(() {
-                      _position = details.offset;
-                    });
-                  },
-                ),
-              )
-            ],
-          ),
+          floatingActionButton: _floatingActionButton,
         )
             :
         Scaffold(
@@ -2946,28 +3848,7 @@ class _EventsScreen extends State<EventsScreen>{
               ],
             ),
           body: _screenLandscapeContent,
-          floatingActionButton: Stack(
-            children: <Widget>[
-              Positioned(
-                left: _position.dx,
-                top:  _position.dy,
-                child: Draggable(
-                  feedback: Container(
-                    child: _floatingActionButton,
-                  ),
-                  child: Container(
-                    child: _floatingActionButton,
-                  ),
-                  childWhenDragging: Container(),
-                  onDragEnd: (details){
-                    setState(() {
-                      _position = details.offset;
-                    });
-                  },
-                ),
-              )
-            ],
-          ),
+          floatingActionButton: _floatingActionButton,
         );
       },
     );
