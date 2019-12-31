@@ -158,7 +158,7 @@ class _HomeScreen extends State<HomeScreen>{
                                     Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                            builder: (context) => EventsScreen(adminView: false, speedDialOrientation: UnicornOrientation.VERTICAL,)
+                                            builder: (context) => EventsScreen(adminView: false)
                                         )
                                     );
                                     break;
@@ -302,7 +302,7 @@ class _HomeScreen extends State<HomeScreen>{
                                     Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                            builder: (context) => EventsScreen(adminView: false, speedDialOrientation: UnicornOrientation.HORIZONTAL,)
+                                            builder: (context) => EventsScreen(adminView: false)
                                         )
                                     );
                                     break;
@@ -2319,11 +2319,9 @@ class _AnnouncementsScreen extends State<AnnouncementsScreen>{
 }
 
 class EventsScreen extends StatefulWidget {
-  EventsScreen({Key key, this.adminView, this.speedDialOrientation}) : super(key: key);
+  EventsScreen({Key key, this.adminView}) : super(key: key);
 
   final bool adminView;
-  final int speedDialOrientation;
-
 
   @override
   _EventsScreen createState() => _EventsScreen();
@@ -2344,7 +2342,6 @@ class _EventsScreen extends State<EventsScreen>{
   Widget _floatingActionButton;
   List _eventList;
   bool _eventsRetrieved;
-  int _speedDialOrientation;
 
   @override
   void initState() {
@@ -2384,11 +2381,10 @@ class _EventsScreen extends State<EventsScreen>{
         ),
       );
       _eventList = new List();
-      _speedDialOrientation = widget.speedDialOrientation;
       _floatingActionButton = UnicornDialer(
           backgroundColor: Color.fromRGBO(255, 255, 255, 0.6),
           parentButtonBackground: _hue.ocean,
-          orientation: _speedDialOrientation,
+          orientation: UnicornOrientation.VERTICAL,
           parentButton: Icon(Icons.add),
           childButtons: [
             UnicornButton(
@@ -2400,7 +2396,7 @@ class _EventsScreen extends State<EventsScreen>{
                 mini: true,
                 child: Icon(Icons.list),
                 onPressed: (){
-                  print("pressed button");
+                  filterEvents('todos');
                 },
               ),
             ),
@@ -2413,7 +2409,7 @@ class _EventsScreen extends State<EventsScreen>{
                 mini: true,
                 child: Icon(Icons.insert_drive_file),
                 onPressed: (){
-                  print("pressed button");
+                  filterEvents('Administrativa');
                 },
               ),
             ),
@@ -2426,7 +2422,7 @@ class _EventsScreen extends State<EventsScreen>{
                 mini: true,
                 child: Icon(Icons.school),
                 onPressed: (){
-                  print("pressed button");
+                  filterEvents('Académica');
                 },
               ),
             ),
@@ -2439,7 +2435,7 @@ class _EventsScreen extends State<EventsScreen>{
                 mini: true,
                 child: Icon(Icons.laptop),
                 onPressed: (){
-                  print("pressed button");
+                  filterEvents('Innovación e Investigación');
                 },
               ),
             ),
@@ -2452,7 +2448,7 @@ class _EventsScreen extends State<EventsScreen>{
                 mini: true,
                 child: Icon(Icons.settings),
                 onPressed: (){
-                  print("pressed button");
+                  filterEvents('Gestión Institucional');
                 },
               ),
             )
@@ -2666,7 +2662,7 @@ class _EventsScreen extends State<EventsScreen>{
                       },
                     );
                   }else{
-                    return null;
+                    return Container();
                   }
                 }
             ),
@@ -2735,7 +2731,7 @@ class _EventsScreen extends State<EventsScreen>{
                       },
                     );
                   }else{
-                    return null;
+                    return Container();
                   }
                 }
             ),
@@ -2808,7 +2804,7 @@ class _EventsScreen extends State<EventsScreen>{
                       },
                     );
                   }else{
-                    return null;
+                    return Container();
                   }
                 }
             ),
@@ -2877,7 +2873,7 @@ class _EventsScreen extends State<EventsScreen>{
                       },
                     );
                   }else{
-                    return null;
+                    return Container();
                   }
                 }
             ),
@@ -2950,7 +2946,7 @@ class _EventsScreen extends State<EventsScreen>{
                       },
                     );
                   }else{
-                    return null;
+                    return Container();
                   }
                 }
             ),
@@ -3019,7 +3015,7 @@ class _EventsScreen extends State<EventsScreen>{
                       },
                     );
                   }else{
-                    return null;
+                    return Container();
                   }
                 }
             ),
@@ -3092,7 +3088,7 @@ class _EventsScreen extends State<EventsScreen>{
                       },
                     );
                   }else{
-                    return null;
+                    return Container();
                   }
                 }
             ),
@@ -3161,7 +3157,7 @@ class _EventsScreen extends State<EventsScreen>{
                       },
                     );
                   }else{
-                    return null;
+                    return Container();
                   }
                 }
             ),
@@ -3309,6 +3305,7 @@ class _EventsScreen extends State<EventsScreen>{
   void didChangeDependencies() async{
     // TODO: implement didChangeDependencies
     super.didChangeDependencies();
+
     double _screenHeight = MediaQuery.of(context).size.height; //lee el largo del dispositivo
 
     double _responsiveHeight = _screenHeight / _values.defaultDivisionForResponsiveHeight; //Función para altura responsiva de cada card en la lista
@@ -3910,6 +3907,7 @@ class _EventDetailsScreen extends State<EventDetailsScreen>{
       DateFormat df = new DateFormat('yyyy-MM-dd');
       _eventDetailed.date = df.format(widget.newEventDateTime);
       _spanishFormattedText = buildEventDayText(df.format(widget.newEventDateTime), 1);
+      _eventDetailed.department = _values.departments[0];
       _departmentSelected = _values.departments[0];
     }else{
       _spanishFormattedText = buildEventDayText(_eventDetailed.date, 1);
