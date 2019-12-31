@@ -2604,7 +2604,7 @@ class _EventsScreen extends State<EventsScreen>{
                 shrinkWrap: true,
                 itemCount: _eventList.length,
                 itemBuilder: (BuildContext context, int index){
-                  if(_eventList[index].department == _values.departments[4]){
+                  if(_eventList[index].department == _values.departments[4] || _eventList[index].department == _values.departments[0]){
                     String _dateText = buildEventDayText(_eventList[index].date, 0);
                     return GestureDetector(
                       child: Card(
@@ -2673,7 +2673,7 @@ class _EventsScreen extends State<EventsScreen>{
                 shrinkWrap: true,
                 itemCount: _eventList.length,
                 itemBuilder: (BuildContext context, int index){
-                  if(_eventList[index].department == _values.departments[4]){
+                  if(_eventList[index].department == _values.departments[4] || _eventList[index].department == _values.departments[0]){
                     String _dateText = buildEventDayText(_eventList[index].date, 0);
                     return GestureDetector(
                       child: Card(
@@ -2746,7 +2746,7 @@ class _EventsScreen extends State<EventsScreen>{
                 shrinkWrap: true,
                 itemCount: _eventList.length,
                 itemBuilder: (BuildContext context, int index){
-                  if(_eventList[index].department == _values.departments[3]){
+                  if(_eventList[index].department == _values.departments[3] || _eventList[index].department == _values.departments[0]){
                     String _dateText = buildEventDayText(_eventList[index].date, 0);
                     return GestureDetector(
                       child: Card(
@@ -2815,7 +2815,7 @@ class _EventsScreen extends State<EventsScreen>{
                 shrinkWrap: true,
                 itemCount: _eventList.length,
                 itemBuilder: (BuildContext context, int index){
-                  if(_eventList[index].department == _values.departments[3]){
+                  if(_eventList[index].department == _values.departments[3] || _eventList[index].department == _values.departments[0]){
                     String _dateText = buildEventDayText(_eventList[index].date, 0);
                     return GestureDetector(
                       child: Card(
@@ -2888,7 +2888,7 @@ class _EventsScreen extends State<EventsScreen>{
                 shrinkWrap: true,
                 itemCount: _eventList.length,
                 itemBuilder: (BuildContext context, int index){
-                  if(_eventList[index].department == _values.departments[2]){
+                  if(_eventList[index].department == _values.departments[2] || _eventList[index].department == _values.departments[0]){
                     String _dateText = buildEventDayText(_eventList[index].date, 0);
                     return GestureDetector(
                       child: Card(
@@ -2957,7 +2957,7 @@ class _EventsScreen extends State<EventsScreen>{
                 shrinkWrap: true,
                 itemCount: _eventList.length,
                 itemBuilder: (BuildContext context, int index){
-                  if(_eventList[index].department == _values.departments[2]){
+                  if(_eventList[index].department == _values.departments[2] || _eventList[index].department == _values.departments[0]){
                     String _dateText = buildEventDayText(_eventList[index].date, 0);
                     return GestureDetector(
                       child: Card(
@@ -3030,7 +3030,7 @@ class _EventsScreen extends State<EventsScreen>{
                 shrinkWrap: true,
                 itemCount: _eventList.length,
                 itemBuilder: (BuildContext context, int index){
-                  if(_eventList[index].department == _values.departments[1]){
+                  if(_eventList[index].department == _values.departments[1] || _eventList[index].department == _values.departments[0]){
                     String _dateText = buildEventDayText(_eventList[index].date, 0);
                     return GestureDetector(
                       child: Card(
@@ -3099,7 +3099,7 @@ class _EventsScreen extends State<EventsScreen>{
                 shrinkWrap: true,
                 itemCount: _eventList.length,
                 itemBuilder: (BuildContext context, int index){
-                  if(_eventList[index].department == _values.departments[1]){
+                  if(_eventList[index].department == _values.departments[1] || _eventList[index].department == _values.departments[0]){
                     String _dateText = buildEventDayText(_eventList[index].date, 0);
                     return GestureDetector(
                       child: Card(
