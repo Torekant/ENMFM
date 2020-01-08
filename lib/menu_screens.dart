@@ -2,31 +2,15 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'login_screen.dart';
-import 'news_screen.dart';
-import 'events_screen.dart';
-import 'announcements_screen.dart';
-import 'grades_screen.dart';
-import 'administration_screen.dart';
-import 'agenda_screen.dart';
-import 'schedule_screen.dart';
 import 'values.dart';
 import 'dart:async';
 import 'classes.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'functions.dart';
+import 'widgets.dart';
 
 class HomeScreen extends StatefulWidget {
   HomeScreen({Key key}) : super(key: key);
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
 
   @override
   _HomeScreen createState() => _HomeScreen();
@@ -52,7 +36,8 @@ class _HomeScreen extends State<HomeScreen>{
   @override
   Widget build(BuildContext context) {
 
-    double _screenHeight = MediaQuery.of(context).size.height; //lee el largo del dispositivo
+    double _screenHeight = MediaQuery.of(context).size.height;
+    double _screenWidth = MediaQuery.of(context).size.width;//lee el largo del dispositivo
 
     return OrientationBuilder(
       builder: (context, orientation){
@@ -94,87 +79,21 @@ class _HomeScreen extends State<HomeScreen>{
                           shrinkWrap: true,
                           itemCount: _values.menuOptions.length,
                           itemBuilder: (BuildContext context, int index){
-                            return GestureDetector(
-                              child: Card(
-                                elevation: _values.cardElevation,
-                                child: Container(
-                                  height: _screenHeight / 11,
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: <Widget>[
-                                      Text(
-                                        _values.menuOptions[index],
-                                        style: _values.titleTextStyle,
-                                      ),
-                                      Icon(Icons.arrow_forward_ios)
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              onTap: (){
-                                switch(index){
-                                  case 0:
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) => ScheduleScreen()
-                                        )
-                                    );
-                                    break;
-                                  case 1:
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) => AgendaScreen()
-                                        )
-                                    );
-                                    break;
-                                  case 2:
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) => AdministrationScreen()
-                                        )
-                                    );
-                                    break;
-                                  case 3:
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) => GradesScreen()
-                                        )
-                                    );
-                                    break;
-                                  case 4:
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) => AnnouncementsScreen(adminView: false,)
-                                        )
-                                    );
-                                    break;
-                                  case 5:
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) => EventsScreen(adminView: false)
-                                        )
-                                    );
-                                    break;
-                                  case 6:
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) => NewsScreen(adminView: false,)
-                                        )
-                                    );
-                                    break;
-                                }
-                              },
+                            return OptionTile(
+                              cardElevation: _values.cardElevation,
+                              height: _screenHeight / 11,
+                              alignment: MainAxisAlignment.spaceBetween,
+                              text: _values.menuOptions[index],
+                              textStyle: _values.titleTextStyle,
+                              icon: Icon(Icons.arrow_forward_ios),
+                              index: index,
+                              horizontalPadding: _screenWidth / 30,
+                              verticalPadding: 0.0,
+                              admin: false,
                             );
                           }
                       ),
-                      SizedBox(height: _screenHeight / 10,),
+                      SizedBox(height: _screenHeight / 18,),
                       FlatButton(
                         textColor: _hue.carmesi,
                         child: Row(
@@ -238,83 +157,17 @@ class _HomeScreen extends State<HomeScreen>{
                           shrinkWrap: true,
                           itemCount: _values.menuOptions.length,
                           itemBuilder: (BuildContext context, int index){
-                            return GestureDetector(
-                              child: Card(
-                                elevation: _values.cardElevation,
-                                child: Container(
-                                  height: _screenHeight / 5,
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: <Widget>[
-                                      Text(
-                                        _values.menuOptions[index],
-                                        style: _values.titleTextStyle,
-                                      ),
-                                      Icon(Icons.arrow_forward_ios)
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              onTap: (){
-                                switch(index){
-                                  case 0:
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) => ScheduleScreen()
-                                        )
-                                    );
-                                    break;
-                                  case 1:
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) => AgendaScreen()
-                                        )
-                                    );
-                                    break;
-                                  case 2:
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) => AdministrationScreen()
-                                        )
-                                    );
-                                    break;
-                                  case 3:
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) => GradesScreen()
-                                        )
-                                    );
-                                    break;
-                                  case 4:
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) => AnnouncementsScreen(adminView: false,)
-                                        )
-                                    );
-                                    break;
-                                  case 5:
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) => EventsScreen(adminView: false)
-                                        )
-                                    );
-                                    break;
-                                  case 6:
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) => NewsScreen(adminView: false,)
-                                        )
-                                    );
-                                    break;
-                                }
-                              },
+                            return OptionTile(
+                              cardElevation: _values.cardElevation,
+                              height: _screenHeight / 5,
+                              alignment: MainAxisAlignment.spaceBetween,
+                              text: _values.menuOptions[index],
+                              textStyle: _values.titleTextStyle,
+                              icon: Icon(Icons.arrow_forward_ios),
+                              index: index,
+                              horizontalPadding: _screenWidth / 30,
+                              verticalPadding: 0.0,
+                              admin: false,
                             );
                           }
                       ),
@@ -438,7 +291,7 @@ class _AdminScreen extends State<AdminScreen> with SingleTickerProviderStateMixi
   @override
   Widget build(BuildContext context) {
     double _screenHeight = MediaQuery.of(context).size.height; //lee el largo del dispositivo
-    double _responsiveHeight = _screenHeight / _values.defaultDivisionForResponsiveHeight; //Función para altura responsiva de cada card en la lista
+    double _screenWidth = MediaQuery.of(context).size.width;//lee el largo del dispositivo
 
     List<Widget> _portraitScreenWidgets = List(), _landscapeScreenWidgets = List();
 
@@ -461,83 +314,17 @@ class _AdminScreen extends State<AdminScreen> with SingleTickerProviderStateMixi
                       shrinkWrap: true,
                       itemCount: _values.menuOptions.length,
                       itemBuilder: (BuildContext context, int index){
-                        return GestureDetector(
-                          child: Card(
-                            elevation: _values.cardElevation,
-                            child: Container(
-                              height: _responsiveHeight / 5,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: <Widget>[
-                                  Text(
-                                    _values.menuOptions[index],
-                                    style: _values.titleTextStyle,
-                                  ),
-                                  Icon(Icons.arrow_forward_ios)
-                                ],
-                              ),
-                            ),
-                          ),
-                          onTap: (){
-                            switch(index){
-                              case 0:
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => ScheduleScreen()
-                                    )
-                                );
-                                break;
-                              case 1:
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => AgendaScreen()
-                                    )
-                                );
-                                break;
-                              case 2:
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => AdministrationScreen()
-                                    )
-                                );
-                                break;
-                              case 3:
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => GradesScreen()
-                                    )
-                                );
-                                break;
-                              case 4:
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => AnnouncementsScreen(adminView: true,)
-                                    )
-                                );
-                                break;
-                              case 5:
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => EventsScreen(adminView: true,)
-                                    )
-                                );
-                                break;
-                              case 6:
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => NewsScreen(adminView: true,)
-                                    )
-                                );
-                                break;
-                            }
-                          },
+                        return OptionTile(
+                          cardElevation: _values.cardElevation,
+                          height: _screenHeight / 11,
+                          alignment: MainAxisAlignment.spaceBetween,
+                          text: _values.menuOptions[index],
+                          textStyle: _values.titleTextStyle,
+                          icon: Icon(Icons.arrow_forward_ios),
+                          index: index,
+                          horizontalPadding: _screenWidth / 30,
+                          verticalPadding: 0.0,
+                          admin: true,
                         );
                       }
                   ),
@@ -645,83 +432,17 @@ class _AdminScreen extends State<AdminScreen> with SingleTickerProviderStateMixi
                       shrinkWrap: true,
                       itemCount: _values.menuOptions.length,
                       itemBuilder: (BuildContext context, int index){
-                        return GestureDetector(
-                          child: Card(
-                            elevation: _values.cardElevation,
-                            child: Container(
-                              height: _responsiveHeight / 2.5,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: <Widget>[
-                                  Text(
-                                    _values.menuOptions[index],
-                                    style: _values.titleTextStyle,
-                                  ),
-                                  Icon(Icons.arrow_forward_ios)
-                                ],
-                              ),
-                            ),
-                          ),
-                          onTap: (){
-                            switch(index){
-                              case 0:
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => ScheduleScreen()
-                                    )
-                                );
-                                break;
-                              case 1:
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => AgendaScreen()
-                                    )
-                                );
-                                break;
-                              case 2:
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => AdministrationScreen()
-                                    )
-                                );
-                                break;
-                              case 3:
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => GradesScreen()
-                                    )
-                                );
-                                break;
-                              case 4:
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => AnnouncementsScreen(adminView: true,)
-                                    )
-                                );
-                                break;
-                              case 5:
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => EventsScreen(adminView: true,)
-                                    )
-                                );
-                                break;
-                              case 6:
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => NewsScreen(adminView: true,)
-                                    )
-                                );
-                                break;
-                            }
-                          },
+                        return OptionTile(
+                          cardElevation: _values.cardElevation,
+                          height: _screenHeight / 5,
+                          alignment: MainAxisAlignment.spaceBetween,
+                          text: _values.menuOptions[index],
+                          textStyle: _values.titleTextStyle,
+                          icon: Icon(Icons.arrow_forward_ios),
+                          index: index,
+                          horizontalPadding: _screenWidth / 30,
+                          verticalPadding: 0.0,
+                          admin: true,
                         );
                       }
                   ),
@@ -835,83 +556,17 @@ class _AdminScreen extends State<AdminScreen> with SingleTickerProviderStateMixi
                       shrinkWrap: true,
                       itemCount: _values.menuOptions.length,
                       itemBuilder: (BuildContext context, int index){
-                        return GestureDetector(
-                          child: Card(
-                            elevation: _values.cardElevation,
-                            child: Container(
-                              height: _responsiveHeight / 5,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: <Widget>[
-                                  Text(
-                                    _values.menuOptions[index],
-                                    style: _values.titleTextStyle,
-                                  ),
-                                  Icon(Icons.arrow_forward_ios)
-                                ],
-                              ),
-                            ),
-                          ),
-                          onTap: (){
-                            switch(index){
-                              case 0:
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => ScheduleScreen()
-                                    )
-                                );
-                                break;
-                              case 1:
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => AgendaScreen()
-                                    )
-                                );
-                                break;
-                              case 2:
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => AdministrationScreen()
-                                    )
-                                );
-                                break;
-                              case 3:
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => GradesScreen()
-                                    )
-                                );
-                                break;
-                              case 4:
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => AnnouncementsScreen(adminView: true,)
-                                    )
-                                );
-                                break;
-                              case 5:
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => EventsScreen(adminView: true,)
-                                    )
-                                );
-                                break;
-                              case 6:
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => NewsScreen(adminView: true,)
-                                    )
-                                );
-                                break;
-                            }
-                          },
+                        return OptionTile(
+                          cardElevation: _values.cardElevation,
+                          height: _screenHeight / 11,
+                          alignment: MainAxisAlignment.spaceBetween,
+                          text: _values.menuOptions[index],
+                          textStyle: _values.titleTextStyle,
+                          icon: Icon(Icons.arrow_forward_ios),
+                          index: index,
+                          horizontalPadding: _screenWidth / 30,
+                          verticalPadding: 0.0,
+                          admin: true,
                         );
                       }
                   ),
@@ -935,83 +590,17 @@ class _AdminScreen extends State<AdminScreen> with SingleTickerProviderStateMixi
                       shrinkWrap: true,
                       itemCount: _values.menuOptions.length,
                       itemBuilder: (BuildContext context, int index){
-                        return GestureDetector(
-                          child: Card(
-                            elevation: _values.cardElevation,
-                            child: Container(
-                              height: _responsiveHeight / 2.5,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: <Widget>[
-                                  Text(
-                                    _values.menuOptions[index],
-                                    style: _values.titleTextStyle,
-                                  ),
-                                  Icon(Icons.arrow_forward_ios)
-                                ],
-                              ),
-                            ),
-                          ),
-                          onTap: (){
-                            switch(index){
-                              case 0:
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => ScheduleScreen()
-                                    )
-                                );
-                                break;
-                              case 1:
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => AgendaScreen()
-                                    )
-                                );
-                                break;
-                              case 2:
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => AdministrationScreen()
-                                    )
-                                );
-                                break;
-                              case 3:
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => GradesScreen()
-                                    )
-                                );
-                                break;
-                              case 4:
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => AnnouncementsScreen(adminView: true,)
-                                    )
-                                );
-                                break;
-                              case 5:
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => EventsScreen(adminView: true,)
-                                    )
-                                );
-                                break;
-                              case 6:
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => NewsScreen(adminView: true,)
-                                    )
-                                );
-                                break;
-                            }
-                          },
+                        return OptionTile(
+                          cardElevation: _values.cardElevation,
+                          height: _screenHeight / 5,
+                          alignment: MainAxisAlignment.spaceBetween,
+                          text: _values.menuOptions[index],
+                          textStyle: _values.titleTextStyle,
+                          icon: Icon(Icons.arrow_forward_ios),
+                          index: index,
+                          horizontalPadding: _screenWidth / 30,
+                          verticalPadding: 0.0,
+                          admin: true,
                         );
                       }
                   ),
