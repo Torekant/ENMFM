@@ -995,6 +995,95 @@ class _EventsScreen extends State<EventsScreen>{
     }
   }
 
+  void readReturnedFromDetails(String _result, List _eventList, int _index, DateTime _date){
+    if(_result == 'deleted'){
+      _eventList.removeAt(_index);
+      setState(() {
+        _calendarEvents[_date] = _eventList;
+
+        _calendarEvents.forEach((dateTime, eventList) {
+            eventList.sort((a, b) => a.time.compareTo(b.time));
+
+            _eventListView = ListView.builder(
+                scrollDirection: Axis.vertical,
+                controller: _scrollController,
+                shrinkWrap: true,
+                itemCount: eventList.length,
+                itemBuilder: (context, index) {
+                  Event ds = eventList[index];
+
+                  Icon _eventIcon;
+
+                  switch (ds.type) {
+                    case 'ceremonia':
+                      _eventIcon = new Icon(
+                          Icons.event,
+                          size: _values.toolbarIconSize,
+                          color: _hue.outlines
+                      );
+                      break;
+                    case 'exámen':
+                      _eventIcon = new Icon(
+                          Icons.description,
+                          size: _values.toolbarIconSize,
+                          color: _hue.outlines
+                      );
+                      break;
+                    case 'entrega':
+                      _eventIcon = new Icon(
+                          Icons.assignment_turned_in,
+                          size: _values.toolbarIconSize,
+                          color: _hue.outlines
+                      );
+                      break;
+                    default:
+                      _eventIcon = new Icon(
+                          Icons.event,
+                          size: _values.toolbarIconSize,
+                          color: _hue.outlines
+                      );
+                      break;
+                  }
+
+                  return new Container(
+                    color: _hue.outlines,
+                    padding: EdgeInsets.fromLTRB(0.0, 3.0, 0.0, 0.0),
+                    child: Container(
+                      color: _hue.background,
+                      child: ListTile(
+                        title: Container(
+                          alignment: Alignment.centerLeft,
+                          child: Text(ds.title),
+                        ),
+                        subtitle: Container(
+                          alignment: Alignment.centerLeft,
+                          child: Text(ds.type + ' - ' + ds.time + 'hrs.'),
+                        ),
+                        trailing: _eventIcon,
+                        onTap: () async{
+                          if (ds.type == _values.eventType['ceremony']) {
+                            final result = await Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        EventDetailsScreen(
+                                          event: ds, adminView: true,)
+                                )
+                            );
+
+                            readReturnedFromDetails(result, eventList, index, dateTime);
+                          }
+                        },
+                      ),
+                    ),
+                  );
+                }
+            );
+        });
+      });
+    }
+  }
+
   @override
   void didChangeDependencies() async{
     // TODO: implement didChangeDependencies
@@ -1074,9 +1163,9 @@ class _EventsScreen extends State<EventsScreen>{
                                 child: Text(ds.type + ' - ' + ds.time + 'hrs.'),
                               ),
                               trailing: _eventIcon,
-                              onTap: () {
+                              onTap: () async{
                                 if (ds.type == _values.eventType['ceremony']) {
-                                  Navigator.push(
+                                  final result = await Navigator.push(
                                       context,
                                       MaterialPageRoute(
                                           builder: (context) =>
@@ -1084,6 +1173,8 @@ class _EventsScreen extends State<EventsScreen>{
                                                 event: ds, adminView: true,)
                                       )
                                   );
+
+                                  readReturnedFromDetails(result, eventList, index, dateTime);
                                 }
                               },
                             ),
@@ -1344,14 +1435,18 @@ class _EventsScreen extends State<EventsScreen>{
                               child: Text(ds.type + ' - ' + ds.time + 'hrs.'),
                             ),
                             trailing: _eventIcon,
-                            onTap: (){
-                              if(ds.type == _values.eventType['ceremony']){
-                                Navigator.push(
+                            onTap: () async{
+                              if (ds.type == _values.eventType['ceremony']) {
+                                final result = await Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) => EventDetailsScreen(event: ds, adminView: true,)
+                                        builder: (context) =>
+                                            EventDetailsScreen(
+                                              event: ds, adminView: true,)
                                     )
                                 );
+
+                                readReturnedFromDetails(result, events, index, day);
                               }
                             },
                           ),
@@ -1934,7 +2029,7 @@ class _EventDetailsScreen extends State<EventDetailsScreen>{
                   _eventDetailed.deleteEvent(context).then((result){
                     if(result == true){
                       Navigator.of(context).pop();
-                      Navigator.of(context).pop();
+                      Navigator.of(context).pop('deleted');
                     }
                   });
                 }
