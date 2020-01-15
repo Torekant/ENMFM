@@ -40,8 +40,22 @@ class _NewsScreen extends State<NewsScreen>{
           _values.loadingAnimation
       ),
     );
+  }
 
-    if(widget.adminView == true){
+  @override
+  void didChangeDependencies() async{
+    // TODO: implement didChangeDependencies
+    super.didChangeDependencies();
+
+    final NewsScreen args = ModalRoute.of(context).settings.arguments;
+
+    double _screenWidth = MediaQuery.of(context).size.width; //lee el ancho de dispositivo
+    double _screenHeight = MediaQuery.of(context).size.height; //lee el largo del dispositivo
+    //double _symmetricPadding; //padding lateral de la pantalla
+
+    //_symmetricPadding =  (_screenWidth * values.widthPaddingUnit) / 10; //Función que nos permite hacer un padding responsivo a cualquier resolución en ancho
+
+    if(args.adminView == true){
       _floatingActionButton = FloatingActionButton(
         tooltip: "Crear noticia",
         backgroundColor: _hue.ocean,
@@ -59,25 +73,14 @@ class _NewsScreen extends State<NewsScreen>{
       _position = Offset(0.0, 0.0);
       _floatingActionButton = null;
     }
-  }
 
-  @override
-  void didChangeDependencies() async{
-    // TODO: implement didChangeDependencies
-    super.didChangeDependencies();
-    double _screenWidth = MediaQuery.of(context).size.width; //lee el ancho de dispositivo
-    double _screenHeight = MediaQuery.of(context).size.height; //lee el largo del dispositivo
-    //double _symmetricPadding; //padding lateral de la pantalla
-
-    //_symmetricPadding =  (_screenWidth * values.widthPaddingUnit) / 10; //Función que nos permite hacer un padding responsivo a cualquier resolución en ancho
-
-    if(widget.adminView == true){
+    if(args.adminView == true){
       _position = Offset(_screenWidth / 1.2, _screenHeight / 1.2);
     }
 
     await retrieveNews(context).then((list){
       if(list.isNotEmpty){
-        if(widget.adminView){
+        if(args.adminView){
           setState(() {
             _finalScreen = SingleChildScrollView(
               padding: EdgeInsets.symmetric(horizontal: _screenWidth / _values.defaultSymmetricPadding),
@@ -120,7 +123,7 @@ class _NewsScreen extends State<NewsScreen>{
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (BuildContext context) => NewDetailsScreen(adminView: widget.adminView, notice: list[index],)
+                                          builder: (BuildContext context) => NewDetailsScreen(adminView: args.adminView, notice: list[index],)
                                       )
                                   );
                                 },
@@ -164,7 +167,7 @@ class _NewsScreen extends State<NewsScreen>{
                           Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (BuildContext context) => NewDetailsScreen(adminView: widget.adminView, notice: list[index],)
+                                  builder: (BuildContext context) => NewDetailsScreen(adminView: args.adminView, notice: list[index],)
                               )
                           );
                         },

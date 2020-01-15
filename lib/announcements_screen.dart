@@ -50,45 +50,6 @@ class _AnnouncementsScreen extends State<AnnouncementsScreen>{
     _editingMode = false;
     _pastScreenWidth = 0;
     _formKey = GlobalKey<FormState>();
-
-    if(widget.adminView == true){
-      _floatingActionButton = FloatingActionButton(
-        tooltip: "Crear aviso",
-        backgroundColor: _hue.ocean,
-        child: Icon(Icons.add),
-        onPressed: (){
-          showDialog(
-              context: context,
-              builder: (BuildContext context) => CustomFormDialog(
-                description: "Escriba el nuevo aviso.",
-                acceptButtonText: "Publicar",
-                cancelButtonText: "Cancelar",
-                dialogPurpose: _values.dialogPurposes["Crear aviso"],
-              )
-          ).then((result){
-            if(result != false){
-              showDialog(
-                  context: context,
-                  builder: (BuildContext context) => CustomLoadDialog()
-              );
-              createAnnouncement(context, result).then((result){
-                Navigator.pop(context);
-                showDialog(
-                    context: context,
-                    builder: (BuildContext context) => CustomDialog(
-                      description: "El aviso de ha publicado con éxito.",
-                      acceptButtonText: "Genial",
-                    )
-                );
-              });
-            }
-          });
-        },
-      );
-    }else{
-      _position = Offset(0.0, 0.0);
-      _floatingActionButton = null;
-    }
   }
 
   void updateListView(int _orientationMode, List _list){
@@ -1029,11 +990,51 @@ class _AnnouncementsScreen extends State<AnnouncementsScreen>{
   void didChangeDependencies() async{
     // TODO: implement didChangeDependencies
     super.didChangeDependencies();
+    final AnnouncementsScreen args = ModalRoute.of(context).settings.arguments;
 
     double _screenWidth = MediaQuery.of(context).size.width; //lee el ancho de dispositivo
     double _screenHeight = MediaQuery.of(context).size.height; //lee el largo del dispositivo
 
-    if(widget.adminView == true){
+    if(args.adminView == true){
+      _floatingActionButton = FloatingActionButton(
+        tooltip: "Crear aviso",
+        backgroundColor: _hue.ocean,
+        child: Icon(Icons.add),
+        onPressed: (){
+          showDialog(
+              context: context,
+              builder: (BuildContext context) => CustomFormDialog(
+                description: "Escriba el nuevo aviso.",
+                acceptButtonText: "Publicar",
+                cancelButtonText: "Cancelar",
+                dialogPurpose: _values.dialogPurposes["Crear aviso"],
+              )
+          ).then((result){
+            if(result != false){
+              showDialog(
+                  context: context,
+                  builder: (BuildContext context) => CustomLoadDialog()
+              );
+              createAnnouncement(context, result).then((result){
+                Navigator.pop(context);
+                showDialog(
+                    context: context,
+                    builder: (BuildContext context) => CustomDialog(
+                      description: "El aviso de ha publicado con éxito.",
+                      acceptButtonText: "Genial",
+                    )
+                );
+              });
+            }
+          });
+        },
+      );
+    }else{
+      _position = Offset(0.0, 0.0);
+      _floatingActionButton = null;
+    }
+
+    if(args.adminView == true){
       _position = Offset(_screenWidth / 1.2, _screenHeight / 1.2);
     }
 
@@ -1044,7 +1045,7 @@ class _AnnouncementsScreen extends State<AnnouncementsScreen>{
 
       await retrieveAnnouncements(context).then((list){
         if(list.isNotEmpty){
-          if(widget.adminView == true){
+          if(args.adminView == true){
             setState(() {
               _finalPortraitScreen = Column(
                 mainAxisSize: MainAxisSize.min,

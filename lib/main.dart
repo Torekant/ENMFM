@@ -1,3 +1,6 @@
+import 'package:enmfm/announcements_screen.dart';
+import 'package:enmfm/events_screen.dart';
+import 'package:enmfm/news_screen.dart';
 import 'package:flutter/material.dart';
 import 'values.dart';
 import 'dart:async';
@@ -8,9 +11,21 @@ void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
+
   @override
   Widget build(BuildContext context) {
+    Values _values = new Values();
+
     return MaterialApp(
+      routes: <String, WidgetBuilder>{
+        _values.routeNames['user_home']: (context) => HomeScreen(),
+        _values.routeNames['admin_home']: (context) => AdminScreen(),
+        _values.routeNames['announcements']: (context) => AnnouncementsScreen(),
+        _values.routeNames['events']: (context) => EventsScreen(),
+        _values.routeNames['event_details']: (context) => EventDetailsScreen(),
+        _values.routeNames['news']: (context) => NewsScreen(),
+        _values.routeNames['new_details']: (context) => NewDetailsScreen()
+      },
       localizationsDelegates: [
         // ... app-specific localization delegate[s] here
         GlobalMaterialLocalizations.delegate,
@@ -51,23 +66,21 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreen extends State<SplashScreen> {
 
-  static Values values;
+  static Values _values;
   static Hues hue;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    values = new Values();
+    _values = new Values();
     hue  = new Hues();
 
     //Inicio de timer para esperar a pasar a la pantalla principal
-    Timer(Duration(seconds: values.defaultTimer), () {
-      Navigator.pushReplacement(
+    Timer(Duration(seconds: _values.defaultTimer), () {
+      Navigator.pushNamed(
           context,
-          MaterialPageRoute(
-            builder: (context) => HomeScreen(),
-          )
+          _values.routeNames['user_home'],
       );
     });
   }
@@ -87,7 +100,7 @@ class _SplashScreen extends State<SplashScreen> {
             alignment: Alignment.center,
             padding: EdgeInsets.symmetric(horizontal: _screenWidth / 10),
             child: Image.asset(
-              values.logoColored,
+              _values.logoColored,
               fit: BoxFit.contain,
             ),
           ),

@@ -10,7 +10,9 @@ import 'functions.dart';
 import 'widgets.dart';
 
 class HomeScreen extends StatefulWidget {
-  HomeScreen({Key key}) : super(key: key);
+  HomeScreen({Key key, this.test}) : super(key: key);
+
+  final String test;
 
   @override
   _HomeScreen createState() => _HomeScreen();

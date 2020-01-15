@@ -56,6 +56,15 @@ class Values{
   Map<String, int> dialogPurposes = {"Crear administrador": 0, "Recuperar contraseña": 1, "Cambiar correo": 2, "Crear aviso": 3};
   Map<String, String> eventType = {'ceremony': 'ceremonia', 'exam': 'exámen', 'delivery': 'entrega'};
   var menuOptions = ['Horario', 'Agenda', 'Administración', 'Calificaciones', 'Avisos', 'Eventos',  'Noticias'];
+  Map<String, String> routeNames = {
+    'user_home': '/home',
+    'admin_home': '/admin',
+    'announcements': '/announcements',
+    'events': '/events',
+    'event_details': '/eventDetails',
+    'news': '/news',
+    'new_details': '/newDetails'
+  };
 
   //timer
   int defaultTimer = 3;

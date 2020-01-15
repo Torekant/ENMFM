@@ -45,110 +45,6 @@ class _EventsScreen extends State<EventsScreen>{
     _hue = new Hues();
     _scrollController = new ScrollController();
     _eventsRetrieved = false;
-
-    if(widget.adminView == true){
-      _calendarController = CalendarController();
-      _calendarEvents = Map();
-      _eventListView = ListView(shrinkWrap: true,);
-      _floatingActionButton = FloatingActionButton(
-        tooltip: "Crear evento",
-        backgroundColor: _hue.ocean,
-        child: Icon(Icons.add),
-        onPressed: (){
-          Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                builder: (context) => EventDetailsScreen(event: new Event(null, null, null, null, null, null, null, null, null), adminView: true, newEventDateTime: _calendarController.selectedDay,),
-              )
-          );
-        },
-      );
-    }else{
-      _screenPortraitContent = Center(
-        child: Image.asset(
-            _values.loadingAnimation
-        ),
-      );
-      _screenLandscapeContent = Center(
-        child: Image.asset(
-            _values.loadingAnimation
-        ),
-      );
-      _eventList = new List();
-      _floatingActionButton = UnicornDialer(
-          backgroundColor: Color.fromRGBO(255, 255, 255, 0.6),
-          parentButtonBackground: _hue.ocean,
-          orientation: UnicornOrientation.VERTICAL,
-          parentButton: Icon(Icons.add),
-          childButtons: [
-            UnicornButton(
-              hasLabel: true,
-              labelText: "Todos",
-              currentButton: FloatingActionButton(
-                backgroundColor: _hue.ocean,
-                heroTag: "Todos",
-                mini: true,
-                child: Icon(Icons.list),
-                onPressed: (){
-                  filterEvents('todos');
-                },
-              ),
-            ),
-            UnicornButton(
-              hasLabel: true,
-              labelText: _values.speedDialLabels[0],
-              currentButton: FloatingActionButton(
-                backgroundColor: _hue.ocean,
-                heroTag: _values.speedDialLabels[0],
-                mini: true,
-                child: Icon(Icons.insert_drive_file),
-                onPressed: (){
-                  filterEvents('Administrativa');
-                },
-              ),
-            ),
-            UnicornButton(
-              hasLabel: true,
-              labelText: _values.speedDialLabels[1],
-              currentButton: FloatingActionButton(
-                backgroundColor: _hue.ocean,
-                heroTag: _values.speedDialLabels[1],
-                mini: true,
-                child: Icon(Icons.school),
-                onPressed: (){
-                  filterEvents('Académica');
-                },
-              ),
-            ),
-            UnicornButton(
-              hasLabel: true,
-              labelText: _values.speedDialLabels[2],
-              currentButton: FloatingActionButton(
-                backgroundColor: _hue.ocean,
-                heroTag: _values.speedDialLabels[2],
-                mini: true,
-                child: Icon(Icons.laptop),
-                onPressed: (){
-                  filterEvents('Innovación e Investigación');
-                },
-              ),
-            ),
-            UnicornButton(
-              hasLabel: true,
-              labelText: _values.speedDialLabels[3],
-              currentButton: FloatingActionButton(
-                backgroundColor: _hue.ocean,
-                heroTag: _values.speedDialLabels[3],
-                mini: true,
-                child: Icon(Icons.settings),
-                onPressed: (){
-                  filterEvents('Gestión Institucional');
-                },
-              ),
-            )
-          ]);
-    }
-
   }
 
   void filterEvents(String _filter){
@@ -1000,11 +896,116 @@ class _EventsScreen extends State<EventsScreen>{
     // TODO: implement didChangeDependencies
     super.didChangeDependencies();
 
+    final EventsScreen args = ModalRoute.of(context).settings.arguments;
+
     double _screenHeight = MediaQuery.of(context).size.height; //lee el largo del dispositivo
 
     double _responsiveHeight = _screenHeight / _values.defaultDivisionForResponsiveHeight; //Función para altura responsiva de cada card en la lista
 
-    if(widget.adminView == true){
+    if(args.adminView == true){
+      _calendarController = CalendarController();
+      _calendarEvents = Map();
+      _eventListView = ListView(shrinkWrap: true,);
+      _floatingActionButton = FloatingActionButton(
+        tooltip: "Crear evento",
+        backgroundColor: _hue.ocean,
+        child: Icon(Icons.add),
+        onPressed: (){
+          Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => EventDetailsScreen(event: new Event(null, null, null, null, null, null, null, null, null), adminView: true, newEventDateTime: _calendarController.selectedDay,),
+              )
+          );
+        },
+      );
+    }else{
+      _screenPortraitContent = Center(
+        child: Image.asset(
+            _values.loadingAnimation
+        ),
+      );
+      _screenLandscapeContent = Center(
+        child: Image.asset(
+            _values.loadingAnimation
+        ),
+      );
+      _eventList = new List();
+      _floatingActionButton = UnicornDialer(
+          backgroundColor: Color.fromRGBO(255, 255, 255, 0.6),
+          parentButtonBackground: _hue.ocean,
+          orientation: UnicornOrientation.VERTICAL,
+          parentButton: Icon(Icons.add),
+          childButtons: [
+            UnicornButton(
+              hasLabel: true,
+              labelText: "Todos",
+              currentButton: FloatingActionButton(
+                backgroundColor: _hue.ocean,
+                heroTag: "Todos",
+                mini: true,
+                child: Icon(Icons.list),
+                onPressed: (){
+                  filterEvents('todos');
+                },
+              ),
+            ),
+            UnicornButton(
+              hasLabel: true,
+              labelText: _values.speedDialLabels[0],
+              currentButton: FloatingActionButton(
+                backgroundColor: _hue.ocean,
+                heroTag: _values.speedDialLabels[0],
+                mini: true,
+                child: Icon(Icons.insert_drive_file),
+                onPressed: (){
+                  filterEvents('Administrativa');
+                },
+              ),
+            ),
+            UnicornButton(
+              hasLabel: true,
+              labelText: _values.speedDialLabels[1],
+              currentButton: FloatingActionButton(
+                backgroundColor: _hue.ocean,
+                heroTag: _values.speedDialLabels[1],
+                mini: true,
+                child: Icon(Icons.school),
+                onPressed: (){
+                  filterEvents('Académica');
+                },
+              ),
+            ),
+            UnicornButton(
+              hasLabel: true,
+              labelText: _values.speedDialLabels[2],
+              currentButton: FloatingActionButton(
+                backgroundColor: _hue.ocean,
+                heroTag: _values.speedDialLabels[2],
+                mini: true,
+                child: Icon(Icons.laptop),
+                onPressed: (){
+                  filterEvents('Innovación e Investigación');
+                },
+              ),
+            ),
+            UnicornButton(
+              hasLabel: true,
+              labelText: _values.speedDialLabels[3],
+              currentButton: FloatingActionButton(
+                backgroundColor: _hue.ocean,
+                heroTag: _values.speedDialLabels[3],
+                mini: true,
+                child: Icon(Icons.settings),
+                onPressed: (){
+                  filterEvents('Gestión Institucional');
+                },
+              ),
+            )
+          ]);
+    }
+
+    if(args.adminView == true){
 
       await retrieveCalendarEvents(context).then((map) {
         if (!map.containsKey(null)) {
@@ -1258,7 +1259,9 @@ class _EventsScreen extends State<EventsScreen>{
   @override
   Widget build(BuildContext context) {
 
-    if(widget.adminView == true){
+    final EventsScreen args = ModalRoute.of(context).settings.arguments;
+
+    if(args.adminView == true){
       _screenPortraitContent = Column(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
@@ -1549,8 +1552,10 @@ class _EventsScreen extends State<EventsScreen>{
 
   @override
   void dispose() {
+    final EventsScreen args = ModalRoute.of(context).settings.arguments;
+
     _scrollController.dispose();
-    if(widget.adminView == true){
+    if(args.adminView == true){
       _calendarController.dispose();
     }
     super.dispose();

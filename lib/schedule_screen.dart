@@ -4,7 +4,9 @@ import 'package:flutter/widgets.dart';
 import 'values.dart';
 
 class ScheduleScreen extends StatefulWidget {
-  ScheduleScreen({Key key}) : super(key: key);
+  ScheduleScreen({Key key, this.test}) : super(key: key);
+
+  final String test;
 
   @override
   _ScheduleScreen createState() => _ScheduleScreen();
@@ -30,9 +32,7 @@ class _ScheduleScreen extends State<ScheduleScreen>{
 
     double _screenWidth = MediaQuery.of(context).size.width; //lee el ancho de dispositivo
     double _screenHeight = MediaQuery.of(context).size.height; //lee el largo del dispositivo
-    //double _symmetricPadding; //padding lateral de la pantalla
 
-    //_symmetricPadding =  (_screenWidth * values.widthPaddingUnit) / 10; //Función que nos permite hacer un padding responsivo a cualquier resolución en ancho
     double _responsiveHeight = _screenHeight / _values.defaultDivisionForResponsiveHeight; //Función para altura responsiva de cada card en la lista
     double _responsiveWidth = _screenWidth / _values.defaultDivisionForResponsiveWidth; //Función para altura responsiva de cada card en la lista
 

@@ -6,6 +6,7 @@ import 'grades_screen.dart';
 import 'announcements_screen.dart';
 import 'events_screen.dart';
 import 'news_screen.dart';
+import 'values.dart';
 
 class OptionTile extends StatefulWidget{
   OptionTile({
@@ -38,6 +39,8 @@ class OptionTile extends StatefulWidget{
 }
 
 class _OptionTile extends State<OptionTile>{
+
+  Values _values = new Values();
 
   @override
   Widget build(BuildContext context) {
@@ -97,26 +100,29 @@ class _OptionTile extends State<OptionTile>{
             );
             break;
           case 4:
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => AnnouncementsScreen(adminView: widget.admin,)
-                )
+            Navigator.pushNamed(
+              context,
+              _values.routeNames['announcements'],
+              arguments: AnnouncementsScreen(
+                adminView: widget.admin,
+              )
             );
             break;
           case 5:
-            Navigator.push(
+            Navigator.pushNamed(
                 context,
-                MaterialPageRoute(
-                    builder: (context) => EventsScreen(adminView: widget.admin)
+                _values.routeNames['events'],
+                arguments: EventsScreen(
+                  adminView: widget.admin,
                 )
             );
             break;
           case 6:
-            Navigator.push(
+            Navigator.pushNamed(
                 context,
-                MaterialPageRoute(
-                    builder: (context) => NewsScreen(adminView: widget.admin,)
+                _values.routeNames['news'],
+                arguments: NewsScreen(
+                  adminView: widget.admin,
                 )
             );
             break;
