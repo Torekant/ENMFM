@@ -133,13 +133,13 @@ class _LoginScreen extends State<LoginScreen>{
                   values.firestoreReference.collection('admins').where('email', isEqualTo: fireUser.email).snapshots().listen((data){
 
                     User user = new User(fireUser.uid, data.documents[0].documentID, data.documents[0]['nickname'], data.documents[0]['email'], data.documents[0]['admin'], data.documents[0]['masterAdmin']);
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => AdminScreen(user: user,),
-                        )
+                    Navigator.pushReplacementNamed(
+                      context,
+                      values.routeNames['admin_home'],
+                      arguments: AdminScreen(
+                        user: user,
+                      )
                     );
-
                   });
                 }
               });

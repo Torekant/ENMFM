@@ -58,6 +58,7 @@ class Values{
   var menuOptions = ['Horario', 'Agenda', 'Administración', 'Calificaciones', 'Avisos', 'Eventos',  'Noticias'];
   Map<String, String> routeNames = {
     'user_home': '/home',
+    'login': '/login',
     'admin_home': '/admin',
     'announcements': '/announcements',
     'events': '/events',

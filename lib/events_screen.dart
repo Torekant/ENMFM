@@ -4,13 +4,13 @@ import 'package:flutter/widgets.dart';
 import 'values.dart';
 import 'classes.dart';
 import 'functions.dart';
-import 'login_screen.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:unicorndial/unicorndial.dart';
 import 'package:flutter_parallax/flutter_parallax.dart';
 import 'package:intl/intl.dart';
+import 'package:back_button_interceptor/back_button_interceptor.dart';
 
 class EventsScreen extends StatefulWidget {
   EventsScreen({Key key, this.adminView}) : super(key: key);
@@ -37,6 +37,8 @@ class _EventsScreen extends State<EventsScreen>{
   List _eventList;
   bool _eventsRetrieved;
 
+  EventsScreen args;
+
   @override
   void initState() {
     // TODO: implement initState
@@ -44,7 +46,14 @@ class _EventsScreen extends State<EventsScreen>{
     _values  = new Values();
     _hue = new Hues();
     _scrollController = new ScrollController();
+    _calendarController = CalendarController();
     _eventsRetrieved = false;
+    BackButtonInterceptor.add(backPressInterceptor);
+  }
+
+  bool backPressInterceptor(bool stopDefaultButtonEvent) {
+    Navigator.pop(context); // Do some stuff.
+    return true;
   }
 
   void filterEvents(String _filter){
@@ -108,10 +117,12 @@ class _EventsScreen extends State<EventsScreen>{
                       ),
                     ),
                     onTap: (){
-                      Navigator.push(
+                      Navigator.pushNamed(
                           context,
-                          MaterialPageRoute(
-                              builder: (context) => EventDetailsScreen(event: _eventList[index], adminView: false,)
+                          _values.routeNames['event_details'],
+                          arguments: EventDetailsScreen(
+                            event: _eventList[index],
+                            adminView: false,
                           )
                       );
                     },
@@ -173,10 +184,12 @@ class _EventsScreen extends State<EventsScreen>{
                       ),
                     ),
                     onTap: (){
-                      Navigator.push(
+                      Navigator.pushNamed(
                           context,
-                          MaterialPageRoute(
-                              builder: (context) => EventDetailsScreen(event: _eventList[index], adminView: false,)
+                          _values.routeNames['event_details'],
+                          arguments: EventDetailsScreen(
+                            event: _eventList[index],
+                            adminView: false,
                           )
                       );
                     },
@@ -243,10 +256,12 @@ class _EventsScreen extends State<EventsScreen>{
                         ),
                       ),
                       onTap: (){
-                        Navigator.push(
+                        Navigator.pushNamed(
                             context,
-                            MaterialPageRoute(
-                                builder: (context) => EventDetailsScreen(event: _eventList[index], adminView: false,)
+                            _values.routeNames['event_details'],
+                            arguments: EventDetailsScreen(
+                              event: _eventList[index],
+                              adminView: false,
                             )
                         );
                       },
@@ -312,10 +327,12 @@ class _EventsScreen extends State<EventsScreen>{
                         ),
                       ),
                       onTap: (){
-                        Navigator.push(
+                        Navigator.pushNamed(
                             context,
-                            MaterialPageRoute(
-                                builder: (context) => EventDetailsScreen(event: _eventList[index], adminView: false,)
+                            _values.routeNames['event_details'],
+                            arguments: EventDetailsScreen(
+                              event: _eventList[index],
+                              adminView: false,
                             )
                         );
                       },
@@ -385,10 +402,12 @@ class _EventsScreen extends State<EventsScreen>{
                         ),
                       ),
                       onTap: (){
-                        Navigator.push(
+                        Navigator.pushNamed(
                             context,
-                            MaterialPageRoute(
-                                builder: (context) => EventDetailsScreen(event: _eventList[index], adminView: false,)
+                            _values.routeNames['event_details'],
+                            arguments: EventDetailsScreen(
+                              event: _eventList[index],
+                              adminView: false,
                             )
                         );
                       },
@@ -454,10 +473,12 @@ class _EventsScreen extends State<EventsScreen>{
                         ),
                       ),
                       onTap: (){
-                        Navigator.push(
+                        Navigator.pushNamed(
                             context,
-                            MaterialPageRoute(
-                                builder: (context) => EventDetailsScreen(event: _eventList[index], adminView: false,)
+                            _values.routeNames['event_details'],
+                            arguments: EventDetailsScreen(
+                              event: _eventList[index],
+                              adminView: false,
                             )
                         );
                       },
@@ -527,10 +548,12 @@ class _EventsScreen extends State<EventsScreen>{
                         ),
                       ),
                       onTap: (){
-                        Navigator.push(
+                        Navigator.pushNamed(
                             context,
-                            MaterialPageRoute(
-                                builder: (context) => EventDetailsScreen(event: _eventList[index], adminView: false,)
+                            _values.routeNames['event_details'],
+                            arguments: EventDetailsScreen(
+                              event: _eventList[index],
+                              adminView: false,
                             )
                         );
                       },
@@ -596,10 +619,12 @@ class _EventsScreen extends State<EventsScreen>{
                         ),
                       ),
                       onTap: (){
-                        Navigator.push(
+                        Navigator.pushNamed(
                             context,
-                            MaterialPageRoute(
-                                builder: (context) => EventDetailsScreen(event: _eventList[index], adminView: false,)
+                            _values.routeNames['event_details'],
+                            arguments: EventDetailsScreen(
+                              event: _eventList[index],
+                              adminView: false,
                             )
                         );
                       },
@@ -669,10 +694,12 @@ class _EventsScreen extends State<EventsScreen>{
                         ),
                       ),
                       onTap: (){
-                        Navigator.push(
+                        Navigator.pushNamed(
                             context,
-                            MaterialPageRoute(
-                                builder: (context) => EventDetailsScreen(event: _eventList[index], adminView: false,)
+                            _values.routeNames['event_details'],
+                            arguments: EventDetailsScreen(
+                              event: _eventList[index],
+                              adminView: false,
                             )
                         );
                       },
@@ -738,10 +765,12 @@ class _EventsScreen extends State<EventsScreen>{
                         ),
                       ),
                       onTap: (){
-                        Navigator.push(
+                        Navigator.pushNamed(
                             context,
-                            MaterialPageRoute(
-                                builder: (context) => EventDetailsScreen(event: _eventList[index], adminView: false,)
+                            _values.routeNames['event_details'],
+                            arguments: EventDetailsScreen(
+                              event: _eventList[index],
+                              adminView: false,
                             )
                         );
                       },
@@ -810,10 +839,12 @@ class _EventsScreen extends State<EventsScreen>{
                       ),
                     ),
                     onTap: (){
-                      Navigator.push(
+                      Navigator.pushNamed(
                           context,
-                          MaterialPageRoute(
-                              builder: (context) => EventDetailsScreen(event: _eventList[index], adminView: false,)
+                          _values.routeNames['event_details'],
+                          arguments: EventDetailsScreen(
+                            event: _eventList[index],
+                            adminView: false,
                           )
                       );
                     },
@@ -875,10 +906,12 @@ class _EventsScreen extends State<EventsScreen>{
                       ),
                     ),
                     onTap: (){
-                      Navigator.push(
+                      Navigator.pushNamed(
                           context,
-                          MaterialPageRoute(
-                              builder: (context) => EventDetailsScreen(event: _eventList[index], adminView: false,)
+                          _values.routeNames['event_details'],
+                          arguments: EventDetailsScreen(
+                            event: _eventList[index],
+                            adminView: false,
                           )
                       );
                     },
@@ -896,14 +929,13 @@ class _EventsScreen extends State<EventsScreen>{
     // TODO: implement didChangeDependencies
     super.didChangeDependencies();
 
-    final EventsScreen args = ModalRoute.of(context).settings.arguments;
-
     double _screenHeight = MediaQuery.of(context).size.height; //lee el largo del dispositivo
 
     double _responsiveHeight = _screenHeight / _values.defaultDivisionForResponsiveHeight; //Función para altura responsiva de cada card en la lista
 
+    args = ModalRoute.of(context).settings.arguments;
+
     if(args.adminView == true){
-      _calendarController = CalendarController();
       _calendarEvents = Map();
       _eventListView = ListView(shrinkWrap: true,);
       _floatingActionButton = FloatingActionButton(
@@ -911,11 +943,14 @@ class _EventsScreen extends State<EventsScreen>{
         backgroundColor: _hue.ocean,
         child: Icon(Icons.add),
         onPressed: (){
-          Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                builder: (context) => EventDetailsScreen(event: new Event(null, null, null, null, null, null, null, null, null), adminView: true, newEventDateTime: _calendarController.selectedDay,),
-              )
+          Navigator.pushReplacementNamed(
+            context,
+            _values.routeNames['event_details'],
+            arguments: EventDetailsScreen(
+              event: new Event(null, null, null, null, null, null, null, null, null),
+              adminView: true,
+              newEventDateTime: _calendarController.selectedDay,
+            )
           );
         },
       );
@@ -1077,12 +1112,12 @@ class _EventsScreen extends State<EventsScreen>{
                               trailing: _eventIcon,
                               onTap: () {
                                 if (ds.type == _values.eventType['ceremony']) {
-                                  Navigator.pushReplacement(
+                                  Navigator.pushReplacementNamed(
                                       context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              EventDetailsScreen(
-                                                event: ds, adminView: true,)
+                                      _values.routeNames['event_details'],
+                                      arguments: EventDetailsScreen(
+                                        event: ds,
+                                        adminView: true,
                                       )
                                   );
                                 }
@@ -1159,11 +1194,13 @@ class _EventsScreen extends State<EventsScreen>{
                           ),
                         ),
                         onTap: (){
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => EventDetailsScreen(event: _eventList[index], adminView: false,)
-                              )
+                          Navigator.pushNamed(
+                            context,
+                            _values.routeNames['event_details'],
+                            arguments: EventDetailsScreen(
+                              event: _eventList[index],
+                              adminView: false,
+                            )
                           );
                         },
                       );
@@ -1224,10 +1261,12 @@ class _EventsScreen extends State<EventsScreen>{
                           ),
                         ),
                         onTap: (){
-                          Navigator.pushReplacement(
+                          Navigator.pushNamed(
                               context,
-                              MaterialPageRoute(
-                                  builder: (context) => EventDetailsScreen(event: _eventList[index], adminView: false,)
+                              _values.routeNames['event_details'],
+                              arguments: EventDetailsScreen(
+                                event: _eventList[index],
+                                adminView: false,
                               )
                           );
                         },
@@ -1259,8 +1298,6 @@ class _EventsScreen extends State<EventsScreen>{
   @override
   Widget build(BuildContext context) {
 
-    final EventsScreen args = ModalRoute.of(context).settings.arguments;
-
     if(args.adminView == true){
       _screenPortraitContent = Column(
         mainAxisSize: MainAxisSize.min,
@@ -1283,10 +1320,10 @@ class _EventsScreen extends State<EventsScreen>{
               weekendStyle: _values.calendarWeekendDayTextStyle,
             ),
             headerStyle: HeaderStyle(
-                centerHeaderTitle: true,
-                formatButtonShowsNext: false,
-                titleTextStyle: _values.contentTextStyle,
-                formatButtonVisible: false
+              centerHeaderTitle: true,
+              formatButtonShowsNext: false,
+              titleTextStyle: _values.contentTextStyle,
+              formatButtonVisible: false
             ),
             onDaySelected: (day, events){
               events.sort((a, b) => a.time.compareTo(b.time));
@@ -1349,13 +1386,13 @@ class _EventsScreen extends State<EventsScreen>{
                             trailing: _eventIcon,
                             onTap: () {
                               if (ds.type == _values.eventType['ceremony']) {
-                               Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            EventDetailsScreen(
-                                              event: ds, adminView: true,)
-                                    )
+                                Navigator.pushReplacementNamed(
+                                  context,
+                                  _values.routeNames['event_details'],
+                                  arguments: EventDetailsScreen(
+                                    event: ds,
+                                    adminView: true,
+                                  )
                                 );
                               }
                             },
@@ -1461,10 +1498,12 @@ class _EventsScreen extends State<EventsScreen>{
                               trailing: _eventIcon,
                               onTap: (){
                                 if(ds.type == _values.eventType['ceremony']){
-                                  Navigator.pushReplacement(
+                                  Navigator.pushReplacementNamed(
                                       context,
-                                      MaterialPageRoute(
-                                          builder: (context) => EventDetailsScreen(event: ds, adminView: true,)
+                                      _values.routeNames['event_details'],
+                                      arguments: EventDetailsScreen(
+                                        event: ds,
+                                        adminView: true,
                                       )
                                   );
                                 }
@@ -1485,76 +1524,86 @@ class _EventsScreen extends State<EventsScreen>{
       );
     }
 
-    return OrientationBuilder(
-      builder: (context, orientation){
-        return orientation == Orientation.portrait
-            ?
-        Scaffold(
-          appBar: AppBar(
-            backgroundColor: _hue.carmesi,
-            title: Text("Eventos"),
-            actions: <Widget>[
-              IconButton(
-                icon: Icon(
-                  Icons.assignment_ind,
-                  size: _values.toolbarIconSize,
-                ),
-                tooltip: 'Administrar',
+    return WillPopScope(
+      child: OrientationBuilder(
+        builder: (context, orientation){
+          return orientation == Orientation.portrait
+              ?
+          Scaffold(
+            appBar: AppBar(
+              backgroundColor: _hue.carmesi,
+              title: Text("Eventos"),
+              leading: IconButton(
+                icon: Icon(Icons.arrow_back),
                 onPressed: (){
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => LoginScreen(),
-                      )
-                  );
+                  Navigator.pop(context);
                 },
               ),
-              Container(
-                width: _values.containerWidth,
-              )
-            ],
-          ),
-          body: _screenPortraitContent,
-          floatingActionButton: _floatingActionButton,
-        )
-            :
-        Scaffold(
-          appBar: AppBar(
-            backgroundColor: _hue.carmesi,
-            title: Text("Eventos"),
-            actions: <Widget>[
-              IconButton(
-                icon: Icon(
-                  Icons.assignment_ind,
-                  size: _values.toolbarIconSize,
-                ),
-                tooltip: 'Administrar',
-                onPressed: (){
-                  Navigator.push(
+              actions: <Widget>[
+                IconButton(
+                  icon: Icon(
+                    Icons.assignment_ind,
+                    size: _values.toolbarIconSize,
+                  ),
+                  tooltip: 'Administrar',
+                  onPressed: (){
+                    Navigator.pushNamed(
                       context,
-                      MaterialPageRoute(
-                        builder: (context) => LoginScreen(),
-                      )
-                  );
+                      _values.routeNames['login']
+                    );
+                  },
+                ),
+                Container(
+                  width: _values.containerWidth,
+                )
+              ],
+            ),
+            body: _screenPortraitContent,
+            floatingActionButton: _floatingActionButton,
+          )
+              :
+          Scaffold(
+            appBar: AppBar(
+              backgroundColor: _hue.carmesi,
+              title: Text("Eventos"),
+              leading: IconButton(
+                icon: Icon(Icons.arrow_back),
+                onPressed: (){
+                  Navigator.pop(context);
                 },
               ),
-              Container(
-                width: _values.containerWidth,
-              )
-            ],
-          ),
-          body: _screenLandscapeContent,
-          floatingActionButton: _floatingActionButton,
-        );
-      },
+              actions: <Widget>[
+                IconButton(
+                  icon: Icon(
+                    Icons.assignment_ind,
+                    size: _values.toolbarIconSize,
+                  ),
+                  tooltip: 'Administrar',
+                  onPressed: (){
+                    Navigator.pushNamed(
+                        context,
+                        _values.routeNames['login']
+                    );
+                  },
+                ),
+                Container(
+                  width: _values.containerWidth,
+                )
+              ],
+            ),
+            body: _screenLandscapeContent,
+            floatingActionButton: _floatingActionButton,
+          );
+        },
+      ),
+      onWillPop: () => Future.value(false),
     );
   }
 
   @override
   void dispose() {
-    final EventsScreen args = ModalRoute.of(context).settings.arguments;
-
     _scrollController.dispose();
+    BackButtonInterceptor.remove(backPressInterceptor);
     if(args.adminView == true){
       _calendarController.dispose();
     }
@@ -1589,6 +1638,8 @@ class _EventDetailsScreen extends State<EventDetailsScreen>{
   String _departmentSelected;
   Event _eventDetailed;
 
+  EventDetailsScreen args;
+
   @override
   void initState() {
     super.initState();
@@ -1598,22 +1649,22 @@ class _EventDetailsScreen extends State<EventDetailsScreen>{
     _position = Offset(20.0, 20.0);
     _passedDependencies = false;
     _formKey = GlobalKey<FormState>();
-    _eventDetailed = widget.event;
+    BackButtonInterceptor.add(backPressInterceptor);
+  }
 
-    if(_eventDetailed.id == null){
-      _eventDetailed.title = "";
-      _eventDetailed.place = "";
-      _eventDetailed.description = "";
-      _eventDetailed.time = "00:00";
-      DateFormat df = new DateFormat('yyyy-MM-dd');
-      _eventDetailed.date = df.format(widget.newEventDateTime);
-      _spanishFormattedText = buildEventDayText(df.format(widget.newEventDateTime), 1);
-      _eventDetailed.department = _values.departments[0];
-      _departmentSelected = _values.departments[0];
+  bool backPressInterceptor(bool stopDefaultButtonEvent) {
+    if(args.adminView){
+      Navigator.pushReplacementNamed(
+          context,
+          _values.routeNames['events'],
+          arguments: EventsScreen(
+            adminView: args.adminView,
+          )
+      );
     }else{
-      _spanishFormattedText = buildEventDayText(_eventDetailed.date, 1);
-      _departmentSelected = _eventDetailed.department;
-    }
+      Navigator.pop(context);
+    }// Do some stuff.
+    return true;
   }
 
   @override
@@ -1622,6 +1673,22 @@ class _EventDetailsScreen extends State<EventDetailsScreen>{
 
     double _screenWidth = MediaQuery.of(context).size.width; //lee el ancho de dispositivo
     double _screenHeight = MediaQuery.of(context).size.height; //lee el largo del dispositivo
+
+    args = ModalRoute.of(context).settings.arguments;
+
+    _eventDetailed = args.event;
+
+    if(_eventDetailed.id == null){
+      _eventDetailed.title = "";
+      _eventDetailed.place = "";
+      _eventDetailed.description = "";
+      _eventDetailed.time = "00:00";
+      _eventDetailed.department = _values.departments[0];
+      _departmentSelected = _values.departments[0];
+    }else{
+      _spanishFormattedText = buildEventDayText(_eventDetailed.date, 1);
+      _departmentSelected = _eventDetailed.department;
+    }
 
     _position = Offset(_screenWidth / 1.2, _screenHeight / 1.1);
 
@@ -1652,12 +1719,11 @@ class _EventDetailsScreen extends State<EventDetailsScreen>{
     // TODO: implement build
     double _symmetricPadding = (_screenWidth * _values.widthPaddingUnit) / 10; //Función que nos permite hacer un padding responsivo a cualquier resolución en ancho
 
-    if(widget.adminView == true){
+    if(args.adminView == true){
       if(_eventDetailed.id != null){
         TextEditingController _titleTextController = new TextEditingController(text: _eventDetailed.title);
         TextEditingController _placeTextController = new TextEditingController(text: _eventDetailed.place);
         TextEditingController _descriptionTextController = new TextEditingController(text: _eventDetailed.description);
-
 
         _widgetPortraitColumn = Column(
           children: <Widget>[
@@ -1810,7 +1876,7 @@ class _EventDetailsScreen extends State<EventDetailsScreen>{
                 child: new Row(
                   children: <Widget>[
                     Text(
-                      "Día: " + _spanishFormattedText,
+                      "Día: " + _eventDetailed.date,
                       style: _values.subtitleTextStyle,
                     ),
                     IconButton(
@@ -1940,10 +2006,11 @@ class _EventDetailsScreen extends State<EventDetailsScreen>{
 
                   _eventDetailed.deleteEvent(context).then((result){
                     if(result == true){
-                      Navigator.pushReplacement(
+                      Navigator.pushReplacementNamed(
                           context,
-                          MaterialPageRoute(
-                            builder: (context) => EventsScreen(adminView: widget.adminView,)
+                          _values.routeNames['events'],
+                          arguments: EventsScreen(
+                            adminView: args.adminView,
                           )
                       );
                     }
@@ -1956,6 +2023,10 @@ class _EventDetailsScreen extends State<EventDetailsScreen>{
         TextEditingController _titleTextController = new TextEditingController(text: _eventDetailed.title);
         TextEditingController _placeTextController = new TextEditingController(text: _eventDetailed.place);
         TextEditingController _descriptionTextController = new TextEditingController(text: _eventDetailed.description);
+
+        DateFormat df = new DateFormat('yyyy-MM-dd');
+        _eventDetailed.date = df.format(args.newEventDateTime);
+        _spanishFormattedText = buildEventDayText(df.format(args.newEventDateTime), 1);
 
         if(_eventDetailed.image == null){
           _eventDetailed.image = _values.grayLogo;
@@ -2137,7 +2208,7 @@ class _EventDetailsScreen extends State<EventDetailsScreen>{
                           showTitleActions: true,
                           minTime: DateTime.now(),
                           maxTime: DateTime.now().add(Duration(days: 500)),
-                          currentTime: widget.newEventDateTime,
+                          currentTime: args.newEventDateTime,
                           locale: LocaleType.es,
                           onConfirm: (date){
                             String format = date.toString().substring(0, 10);
@@ -2243,11 +2314,16 @@ class _EventDetailsScreen extends State<EventDetailsScreen>{
                     builder: (BuildContext context) => CustomLoadDialog()
                 );
 
+                print("Título en botón" + " " + _eventDetailed.title);
+                print("Lugar en botón" + " " + _eventDetailed.place);
+                print("Descripción en botón" + " " + _eventDetailed.description);
+
                 _eventDetailed.createEvent(context, _imageNewEvent).then((result){
-                  Navigator.pushReplacement(
+                  Navigator.pushReplacementNamed(
                       context,
-                      MaterialPageRoute(
-                          builder: (context) => EventsScreen(adminView: widget.adminView,)
+                      _values.routeNames['events'],
+                      arguments: EventsScreen(
+                        adminView: args.adminView,
                       )
                   );
                 });
@@ -2341,6 +2417,22 @@ class _EventDetailsScreen extends State<EventDetailsScreen>{
           appBar: AppBar(
             backgroundColor: _hue.carmesi,
             title: Text("Evento"),
+            leading: IconButton(
+              icon: Icon(Icons.arrow_back),
+              onPressed: (){
+                if(args.adminView){
+                  Navigator.pushReplacementNamed(
+                      context,
+                      _values.routeNames['events'],
+                      arguments: EventsScreen(
+                        adminView: args.adminView,
+                      )
+                  );
+                }else{
+                  Navigator.pop(context);
+                }
+              },
+            ),
           ),
           floatingActionButton: Stack(
             children: <Widget>[
@@ -2373,14 +2465,7 @@ class _EventDetailsScreen extends State<EventDetailsScreen>{
             ),
           )
       ),
-      onWillPop: (){
-        return Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => EventsScreen(adminView: widget.adminView,)
-            )
-        );
-      },
+      onWillPop: () => Future.value(false),
     );
   }
 
@@ -2388,6 +2473,7 @@ class _EventDetailsScreen extends State<EventDetailsScreen>{
   void dispose() {
     // TODO: implement dispose
     _scrollController.dispose();
+    BackButtonInterceptor.remove(backPressInterceptor);
     super.dispose();
   }
 

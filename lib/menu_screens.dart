@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'login_screen.dart';
 import 'values.dart';
 import 'dart:async';
 import 'classes.dart';
@@ -41,165 +40,164 @@ class _HomeScreen extends State<HomeScreen>{
     double _screenHeight = MediaQuery.of(context).size.height;
     double _screenWidth = MediaQuery.of(context).size.width;//lee el largo del dispositivo
 
-    return OrientationBuilder(
-      builder: (context, orientation){
-        return orientation == Orientation.portrait
-            ?
-        Scaffold(
-            appBar: AppBar(
-              backgroundColor: _hue.carmesi,
-              title: Text("Inicio"),
-              actions: <Widget>[
-                IconButton(
-                  icon: Icon(
-                    Icons.assignment_ind,
-                    size: _values.toolbarIconSize,
-                  ),
-                  tooltip: 'Administrar',
-                  onPressed: (){
-                    Navigator.push(
+    return WillPopScope(
+      child: OrientationBuilder(
+        builder: (context, orientation){
+          return orientation == Orientation.portrait
+              ?
+          Scaffold(
+              appBar: AppBar(
+                backgroundColor: _hue.carmesi,
+                title: Text("Inicio"),
+                actions: <Widget>[
+                  IconButton(
+                    icon: Icon(
+                      Icons.assignment_ind,
+                      size: _values.toolbarIconSize,
+                    ),
+                    tooltip: 'Administrar',
+                    onPressed: (){
+                      Navigator.pushNamed(
                         context,
-                        MaterialPageRoute(
-                          builder: (context) => LoginScreen(),
-                        )
-                    );
-                  },
-                ),
-                Container(
-                  width: _values.containerWidth,
-                )
-              ],
-            ),
-            body: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                Expanded(
-                  child: Column(
-                    children: <Widget>[
-                      ListView.builder(
-                          controller: _scrollController,
-                          shrinkWrap: true,
-                          itemCount: _values.menuOptions.length,
-                          itemBuilder: (BuildContext context, int index){
-                            return OptionTile(
-                              cardElevation: _values.cardElevation,
-                              height: _screenHeight / 11,
-                              alignment: MainAxisAlignment.spaceBetween,
-                              text: _values.menuOptions[index],
-                              textStyle: _values.titleTextStyle,
-                              icon: Icon(Icons.arrow_forward_ios),
-                              index: index,
-                              horizontalPadding: _screenWidth / 30,
-                              verticalPadding: 0.0,
-                              admin: false,
-                            );
-                          }
-                      ),
-                      SizedBox(height: _screenHeight / 18,),
-                      FlatButton(
-                        textColor: _hue.carmesi,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            Text(
-                              "Ir a página web",
-                              style: _values.launcherFlatButtonTextStyle,
-                            ),
-                            Icon(
-                              Icons.launch,
-                              color: _hue.carmesi,
-                            )
-                          ],
-                        ),
-                        onPressed: (){
-                          launchURL(_values.urlWebPage);
-                        },
-                      )
-                    ],
+                        _values.routeNames['login'],
+                      );
+                    },
                   ),
-                )
-              ],
-            )
-        )
-            :
-        Scaffold(
-            appBar: AppBar(
-              backgroundColor: _hue.carmesi,
-              title: Text("Inicio"),
-              actions: <Widget>[
-                IconButton(
-                  icon: Icon(
-                    Icons.assignment_ind,
-                    size: _values.toolbarIconSize,
-                  ),
-                  tooltip: 'Administrar',
-                  onPressed: (){
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => LoginScreen(),
-                        )
-                    );
-                  },
-                ),
-                Container(
-                  width: _values.containerWidth,
-                )
-              ],
-            ),
-            body: SingleChildScrollView(
-              controller: _scrollController,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  Column(
-                    children: <Widget>[
-                      ListView.builder(
-                          controller: _scrollController,
-                          shrinkWrap: true,
-                          itemCount: _values.menuOptions.length,
-                          itemBuilder: (BuildContext context, int index){
-                            return OptionTile(
-                              cardElevation: _values.cardElevation,
-                              height: _screenHeight / 5,
-                              alignment: MainAxisAlignment.spaceBetween,
-                              text: _values.menuOptions[index],
-                              textStyle: _values.titleTextStyle,
-                              icon: Icon(Icons.arrow_forward_ios),
-                              index: index,
-                              horizontalPadding: _screenWidth / 30,
-                              verticalPadding: 0.0,
-                              admin: false,
-                            );
-                          }
-                      ),
-                      SizedBox(height: _screenHeight / 10,),
-                      FlatButton(
-                        textColor: _hue.carmesi,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            Text(
-                              "Ir a página web",
-                              style: _values.launcherFlatButtonTextStyle,
-                            ),
-                            Icon(
-                              Icons.launch,
-                              color: _hue.carmesi,
-                            )
-                          ],
-                        ),
-                        onPressed: (){
-                          launchURL(_values.urlWebPage);
-                        },
-                      )
-                    ],
+                  Container(
+                    width: _values.containerWidth,
                   )
                 ],
               ),
-            )
-        );
-      },
+              body: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Expanded(
+                    child: Column(
+                      children: <Widget>[
+                        ListView.builder(
+                            controller: _scrollController,
+                            shrinkWrap: true,
+                            itemCount: _values.menuOptions.length,
+                            itemBuilder: (BuildContext context, int index){
+                              return OptionTile(
+                                cardElevation: _values.cardElevation,
+                                height: _screenHeight / 11,
+                                alignment: MainAxisAlignment.spaceBetween,
+                                text: _values.menuOptions[index],
+                                textStyle: _values.titleTextStyle,
+                                icon: Icon(Icons.arrow_forward_ios),
+                                index: index,
+                                horizontalPadding: _screenWidth / 30,
+                                verticalPadding: 0.0,
+                                admin: false,
+                              );
+                            }
+                        ),
+                        SizedBox(height: _screenHeight / 18,),
+                        FlatButton(
+                          textColor: _hue.carmesi,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              Text(
+                                "Ir a página web",
+                                style: _values.launcherFlatButtonTextStyle,
+                              ),
+                              Icon(
+                                Icons.launch,
+                                color: _hue.carmesi,
+                              )
+                            ],
+                          ),
+                          onPressed: (){
+                            launchURL(_values.urlWebPage);
+                          },
+                        )
+                      ],
+                    ),
+                  )
+                ],
+              )
+          )
+              :
+          Scaffold(
+              appBar: AppBar(
+                backgroundColor: _hue.carmesi,
+                title: Text("Inicio"),
+                actions: <Widget>[
+                  IconButton(
+                    icon: Icon(
+                      Icons.assignment_ind,
+                      size: _values.toolbarIconSize,
+                    ),
+                    tooltip: 'Administrar',
+                    onPressed: (){
+                      Navigator.pushNamed(
+                        context,
+                        _values.routeNames['login'],
+                      );
+                    },
+                  ),
+                  Container(
+                    width: _values.containerWidth,
+                  )
+                ],
+              ),
+              body: SingleChildScrollView(
+                controller: _scrollController,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Column(
+                      children: <Widget>[
+                        ListView.builder(
+                            controller: _scrollController,
+                            shrinkWrap: true,
+                            itemCount: _values.menuOptions.length,
+                            itemBuilder: (BuildContext context, int index){
+                              return OptionTile(
+                                cardElevation: _values.cardElevation,
+                                height: _screenHeight / 5,
+                                alignment: MainAxisAlignment.spaceBetween,
+                                text: _values.menuOptions[index],
+                                textStyle: _values.titleTextStyle,
+                                icon: Icon(Icons.arrow_forward_ios),
+                                index: index,
+                                horizontalPadding: _screenWidth / 30,
+                                verticalPadding: 0.0,
+                                admin: false,
+                              );
+                            }
+                        ),
+                        SizedBox(height: _screenHeight / 10,),
+                        FlatButton(
+                          textColor: _hue.carmesi,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              Text(
+                                "Ir a página web",
+                                style: _values.launcherFlatButtonTextStyle,
+                              ),
+                              Icon(
+                                Icons.launch,
+                                color: _hue.carmesi,
+                              )
+                            ],
+                          ),
+                          onPressed: (){
+                            launchURL(_values.urlWebPage);
+                          },
+                        )
+                      ],
+                    )
+                  ],
+                ),
+              )
+          );
+        },
+      ),
+      onWillPop: () => Future.value(false),
     );
   }
 
@@ -230,7 +228,7 @@ class AdminScreen extends StatefulWidget {
   _AdminScreen createState() => _AdminScreen();
 }
 
-class _AdminScreen extends State<AdminScreen> with SingleTickerProviderStateMixin{
+class _AdminScreen extends State<AdminScreen> with TickerProviderStateMixin{
 
   GlobalKey<ScaffoldState> _scaffoldKey;
   static Values _values;
@@ -251,6 +249,8 @@ class _AdminScreen extends State<AdminScreen> with SingleTickerProviderStateMixi
   TextEditingController _mailUpdateController;
   bool _editingMailState;
 
+  AdminScreen args;
+
   @override
   void initState() {
     super.initState();
@@ -259,8 +259,8 @@ class _AdminScreen extends State<AdminScreen> with SingleTickerProviderStateMixi
     _scaffoldKey = new GlobalKey<ScaffoldState>();
     _scrollController = new ScrollController();
     _mailUpdateController = new TextEditingController();
-    _mailUpdateController.text = widget.user.email;
     _editingMailState = false;
+    _mailUpdateController.text = "Tu correo";
     _mailUpdateEntry = Text(
       _mailUpdateController.text,
       textAlign: TextAlign.center,
@@ -268,15 +268,6 @@ class _AdminScreen extends State<AdminScreen> with SingleTickerProviderStateMixi
     );
     _tabIndex = 0;
     _floatingActionButton = null;
-
-    if(widget.user.masterAdmin == true){
-      _tabController = TabController(vsync: this, length: _values.numberOfAdminTabs + 1);
-    }
-    if(widget.user.admin == true){
-      _tabController = TabController(vsync: this, length: _values.numberOfAdminTabs);
-    }
-
-    _tabController.addListener(_handleTabSelection);
   }
 
   @override
@@ -285,6 +276,25 @@ class _AdminScreen extends State<AdminScreen> with SingleTickerProviderStateMixi
 
     double _screenWidth = MediaQuery.of(context).size.width; //lee el ancho de dispositivo
     double _screenHeight = MediaQuery.of(context).size.height; //lee el largo del dispositivo
+
+    if(args == null){
+      args = ModalRoute.of(context).settings.arguments;
+    }
+
+    _mailUpdateController.text = args.user.email;
+    _mailUpdateEntry = Text(
+      _mailUpdateController.text,
+      textAlign: TextAlign.center,
+      style: _values.contentTextStyle,
+    );
+
+    if(args.user.masterAdmin == true){
+      _tabController = TabController(vsync: this, length: _values.numberOfAdminTabs + 1);
+    }
+    if(args.user.admin == true){
+      _tabController = TabController(vsync: this, length: _values.numberOfAdminTabs);
+    }
+    _tabController.addListener(_handleTabSelection);
 
     _position = Offset(_screenWidth / 1.2, _screenHeight / 1.2);
 
@@ -297,7 +307,7 @@ class _AdminScreen extends State<AdminScreen> with SingleTickerProviderStateMixi
 
     List<Widget> _portraitScreenWidgets = List(), _landscapeScreenWidgets = List();
 
-    if(widget.user.masterAdmin == true){
+    if(args.user.masterAdmin == true){
       _tabs = [
         Tab(text: 'Menú'),
         Tab(text: 'Administradores',)
@@ -540,7 +550,7 @@ class _AdminScreen extends State<AdminScreen> with SingleTickerProviderStateMixi
       ];
     }
 
-    if(widget.user.admin == true){
+    if(args.user.admin == true){
       _tabs = [
         Tab(text: 'Menú'),
       ];
@@ -663,7 +673,7 @@ class _AdminScreen extends State<AdminScreen> with SingleTickerProviderStateMixi
                         children: <Widget>[
                           Expanded(
                             child: Text(
-                              widget.user.nickname,
+                              args.user.nickname,
                               textAlign: TextAlign.center,
                               style: _values.titleTextStyle,
                             ),
@@ -735,7 +745,7 @@ class _AdminScreen extends State<AdminScreen> with SingleTickerProviderStateMixi
                                                   dialogPurpose: _values.dialogPurposes['Cambiar correo']
                                               )
                                           ).then((pass){
-                                            widget.user.updateEmail(pass, _mailUpdateController.text).then((result){
+                                            args.user.updateEmail(pass, _mailUpdateController.text).then((result){
                                               if(result){
                                                 showDialog(
                                                     context: context,
@@ -745,7 +755,7 @@ class _AdminScreen extends State<AdminScreen> with SingleTickerProviderStateMixi
                                                     )
                                                 );
                                                 setState(() {
-                                                  widget.user.email = _mailUpdateController.text;
+                                                  args.user.email = _mailUpdateController.text;
                                                 });
                                               }else{
                                                 showDialog(
@@ -756,7 +766,7 @@ class _AdminScreen extends State<AdminScreen> with SingleTickerProviderStateMixi
                                                     )
                                                 );
                                                 setState(() {
-                                                  _mailUpdateController.text = widget.user.email;
+                                                  _mailUpdateController.text = args.user.email;
                                                 });
                                               }
                                               setState(() {
@@ -892,7 +902,7 @@ class _AdminScreen extends State<AdminScreen> with SingleTickerProviderStateMixi
                         children: <Widget>[
                           Expanded(
                             child: Text(
-                              widget.user.nickname,
+                              args.user.nickname,
                               textAlign: TextAlign.center,
                               style: _values.titleTextStyle,
                             ),
@@ -966,7 +976,7 @@ class _AdminScreen extends State<AdminScreen> with SingleTickerProviderStateMixi
                                                     dialogPurpose: _values.dialogPurposes['Cambiar correo']
                                                 )
                                             ).then((pass){
-                                              widget.user.updateEmail(pass, _mailUpdateController.text).then((result){
+                                              args.user.updateEmail(pass, _mailUpdateController.text).then((result){
                                                 if(result){
                                                   showDialog(
                                                       context: context,
@@ -976,7 +986,7 @@ class _AdminScreen extends State<AdminScreen> with SingleTickerProviderStateMixi
                                                       )
                                                   );
                                                   setState(() {
-                                                    widget.user.email = _mailUpdateController.text;
+                                                    args.user.email = _mailUpdateController.text;
                                                   });
                                                 }else{
                                                   showDialog(
@@ -987,7 +997,7 @@ class _AdminScreen extends State<AdminScreen> with SingleTickerProviderStateMixi
                                                       )
                                                   );
                                                   setState(() {
-                                                    _mailUpdateController.text = widget.user.email;
+                                                    _mailUpdateController.text = args.user.email;
                                                   });
                                                 }
                                                 setState(() {

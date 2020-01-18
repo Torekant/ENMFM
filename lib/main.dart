@@ -1,5 +1,6 @@
 import 'package:enmfm/announcements_screen.dart';
 import 'package:enmfm/events_screen.dart';
+import 'package:enmfm/login_screen.dart';
 import 'package:enmfm/news_screen.dart';
 import 'package:flutter/material.dart';
 import 'values.dart';
@@ -19,6 +20,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       routes: <String, WidgetBuilder>{
         _values.routeNames['user_home']: (context) => HomeScreen(),
+        _values.routeNames['login']: (context) => LoginScreen(),
         _values.routeNames['admin_home']: (context) => AdminScreen(),
         _values.routeNames['announcements']: (context) => AnnouncementsScreen(),
         _values.routeNames['events']: (context) => EventsScreen(),
@@ -33,8 +35,8 @@ class MyApp extends StatelessWidget {
         GlobalCupertinoLocalizations.delegate,
       ],
       supportedLocales: [
-        const Locale('es'),
-        const Locale('en')
+        const Locale('es', 'MX'),
+        const Locale('en', 'US'),
       ],
       title: 'Flutter Demo',
       theme: ThemeData(
@@ -78,9 +80,9 @@ class _SplashScreen extends State<SplashScreen> {
 
     //Inicio de timer para esperar a pasar a la pantalla principal
     Timer(Duration(seconds: _values.defaultTimer), () {
-      Navigator.pushNamed(
-          context,
-          _values.routeNames['user_home'],
+      Navigator.pushReplacementNamed(
+        context,
+        _values.routeNames['user_home'],
       );
     });
   }

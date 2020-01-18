@@ -607,6 +607,8 @@ class Event{
   Future<bool> createEvent(BuildContext context, var image) async{
     Values values = new Values();
 
+    Event _bubbleEvent = new Event(this.id, this.title, this.image, this.place, this.date, this.time, this.description, this.type, this.department); ///este evento se crea por que a mitad de proceso se pierden los datos
+                                                                                                                                                     ///title, place y description del evento, este los guarda y sube a la nube.
     String imageName = randomAlphaNumeric(20);
     imageName = imageName + DateTime.now().toString();
 
@@ -619,11 +621,11 @@ class Event{
       });
 
       await values.firestoreReference.collection('events').add({
-        'title': this.title,
-        'place': this.place,
+        'title': _bubbleEvent.title,
+        'place': _bubbleEvent.place,
         'date': this.date,
         'time': this.time,
-        'description': this.description,
+        'description': _bubbleEvent.description,
         'image': this.image,
         'type': values.eventType['ceremony'],
         'department': this.department
