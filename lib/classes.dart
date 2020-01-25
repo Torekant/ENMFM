@@ -556,13 +556,19 @@ class Event{
     StorageUploadTask uploadTask =  values.storageReference.child("events").child(newImageName + "/").putFile(image);
     await uploadTask.onComplete;
 
-    await values.storageReference.child("events").child(newImageName).getDownloadURL().then((fileURL){
-      values.firestoreReference.collection("events").document(this.id).updateData({"image": fileURL});
-      finalURL = fileURL;
-      values.storageReference.getStorage().getReferenceFromUrl(this.image).then((ref){
-        ref.delete();
+    if(this.id == null){
+      await values.storageReference.child('events').child(newImageName).getDownloadURL().then((fileURL){
+        finalURL = fileURL;
       });
-    });
+    }else{
+      await values.storageReference.child("events").child(newImageName).getDownloadURL().then((fileURL){
+        values.firestoreReference.collection("events").document(this.id).updateData({"image": fileURL});
+        finalURL = fileURL;
+        values.storageReference.getStorage().getReferenceFromUrl(this.image).then((ref){
+          ref.delete();
+        });
+      });
+    }
 
     return finalURL;
   }
@@ -604,7 +610,7 @@ class Event{
 
   }
 
-  Future<bool> createEvent(BuildContext context, var image) async{
+  Future<bool> createEvent(BuildContext context, var image, bool _imageChanged) async{
     Values values = new Values();
 
     Event _bubbleEvent = new Event(this.id, this.title, this.image, this.place, this.date, this.time, this.description, this.type, this.department); ///este evento se crea por que a mitad de proceso se pierden los datos
@@ -613,12 +619,15 @@ class Event{
     imageName = imageName + DateTime.now().toString();
 
     try{
-      StorageUploadTask uploadTask =  values.storageReference.child("events").child(imageName + "/").putFile(image);
-      await uploadTask.onComplete;
 
-      await values.storageReference.child("events").child(imageName).getDownloadURL().then((fileURL){
-        this.image = fileURL;
-      });
+      if(!_imageChanged){
+        StorageUploadTask uploadTask =  values.storageReference.child("events").child(imageName + "/").putFile(image);
+        await uploadTask.onComplete;
+
+        await values.storageReference.child("events").child(imageName).getDownloadURL().then((fileURL){
+          this.image = fileURL;
+        });
+      }
 
       await values.firestoreReference.collection('events').add({
         'title': _bubbleEvent.title,

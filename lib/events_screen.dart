@@ -943,7 +943,7 @@ class _EventsScreen extends State<EventsScreen>{
         backgroundColor: _hue.ocean,
         child: Icon(Icons.add),
         onPressed: (){
-          Navigator.pushReplacementNamed(
+          Navigator.pushNamed(
             context,
             _values.routeNames['event_details'],
             arguments: EventDetailsScreen(
@@ -1112,7 +1112,7 @@ class _EventsScreen extends State<EventsScreen>{
                               trailing: _eventIcon,
                               onTap: () {
                                 if (ds.type == _values.eventType['ceremony']) {
-                                  Navigator.pushReplacementNamed(
+                                  Navigator.pushNamed(
                                       context,
                                       _values.routeNames['event_details'],
                                       arguments: EventDetailsScreen(
@@ -1530,6 +1530,7 @@ class _EventsScreen extends State<EventsScreen>{
           return orientation == Orientation.portrait
               ?
           Scaffold(
+            resizeToAvoidBottomPadding: false,
             appBar: AppBar(
               backgroundColor: _hue.carmesi,
               title: Text("Eventos"),
@@ -1563,6 +1564,7 @@ class _EventsScreen extends State<EventsScreen>{
           )
               :
           Scaffold(
+            resizeToAvoidBottomPadding: false,
             appBar: AppBar(
               backgroundColor: _hue.carmesi,
               title: Text("Eventos"),
@@ -1617,7 +1619,7 @@ class EventDetailsScreen extends StatefulWidget {
 
   final Event event;
   final bool adminView;
-  final DateTime newEventDateTime;
+  DateTime newEventDateTime;
 
   @override
   _EventDetailsScreen createState() => _EventDetailsScreen();
@@ -1632,7 +1634,7 @@ class _EventDetailsScreen extends State<EventDetailsScreen>{
   String _spanishFormattedText;
   Widget _floatingButton;
   Offset _position;
-  var _imageNewEvent, _passedDependencies;
+  var _imageNewEvent, _passedDependencies, _imagechanged;
   var _formKey;
   Widget _widgetPortraitColumn;
   String _departmentSelected;
@@ -1648,18 +1650,16 @@ class _EventDetailsScreen extends State<EventDetailsScreen>{
     _scrollController = new ScrollController();
     _position = Offset(20.0, 20.0);
     _passedDependencies = false;
+    _imagechanged = false;
     _formKey = GlobalKey<FormState>();
     BackButtonInterceptor.add(backPressInterceptor);
   }
 
   bool backPressInterceptor(bool stopDefaultButtonEvent) {
 
-    Navigator.pushReplacementNamed(
-        context,
-        _values.routeNames['events'],
-        arguments: EventsScreen(
-          adminView: args.adminView,
-        )
+    Navigator.pop(
+      context,
+      false
     );
     // Do some stuff.
     return true;
@@ -1709,7 +1709,6 @@ class _EventDetailsScreen extends State<EventDetailsScreen>{
 
     double _screenWidth = MediaQuery.of(context).size.width; //lee el ancho de dispositivo
     double _screenHeight = MediaQuery.of(context).size.height; //lee el largo del dispositivo
-    //double _symmetricPadding; //padding lateral de la pantalla
 
     //_symmetricPadding =  (_screenWidth * values.widthPaddingUnit) / 10; //Función que nos permite hacer un padding responsivo a cualquier resolución en ancho
     double _responsiveHeight = _screenHeight / _values.defaultDivisionForResponsiveHeight; //Función para altura responsiva de cada card en la lista
@@ -1722,6 +1721,9 @@ class _EventDetailsScreen extends State<EventDetailsScreen>{
         TextEditingController _titleTextController = new TextEditingController(text: _eventDetailed.title);
         TextEditingController _placeTextController = new TextEditingController(text: _eventDetailed.place);
         TextEditingController _descriptionTextController = new TextEditingController(text: _eventDetailed.description);
+
+        _titleTextController.selection = TextSelection.fromPosition(TextPosition(offset: _titleTextController.text.length));
+        _placeTextController.selection = TextSelection.fromPosition(TextPosition(offset: _placeTextController.text.length));
 
         _widgetPortraitColumn = Column(
           children: <Widget>[
@@ -2004,12 +2006,10 @@ class _EventDetailsScreen extends State<EventDetailsScreen>{
 
                   _eventDetailed.deleteEvent(context).then((result){
                     if(result == true){
-                      Navigator.pushReplacementNamed(
-                          context,
-                          _values.routeNames['events'],
-                          arguments: EventsScreen(
-                            adminView: args.adminView,
-                          )
+                      Navigator.pop(context);
+                      Navigator.pop(
+                        context,
+                        true
                       );
                     }
                   });
@@ -2029,42 +2029,6 @@ class _EventDetailsScreen extends State<EventDetailsScreen>{
         if(_eventDetailed.image == null){
           _eventDetailed.image = _values.grayLogo;
         }
-
-        final _titleField = new TextFormField(
-          controller: _titleTextController,
-          decoration: InputDecoration(
-              labelText: "Título",
-              labelStyle: _values.textFieldTextStyle,
-              fillColor: Colors.white,
-              filled: true,
-              border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(_values.standardBorderRadius),
-                  borderSide: BorderSide()
-              ),
-              focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(_values.standardBorderRadius),
-                  borderSide: _values.textFieldFocusBorderSide
-              )
-          ),
-          validator: (val){
-            if(val.length == 0){
-              return "Este campo no puede estar vacío.";
-            }else{
-              return null;
-            }
-          },
-          onChanged: (content){
-            _titleTextController.text = content;
-          },
-          onEditingComplete: (){
-            setState(() {
-              args.event.title = _titleTextController.text;
-            });
-            FocusScope.of(context).requestFocus(FocusNode());
-          },
-          keyboardType: TextInputType.text,
-          style: _values.textFieldTextStyle,
-        );
 
         _widgetPortraitColumn = Form(
           key: _formKey,
@@ -2105,6 +2069,7 @@ class _EventDetailsScreen extends State<EventDetailsScreen>{
                               setState(() {
                                 _eventDetailed.image = val;
                               });
+                              _imagechanged = true;
                             }
                           });
                         },
@@ -2115,7 +2080,40 @@ class _EventDetailsScreen extends State<EventDetailsScreen>{
               ),
               SizedBox(height: _responsiveHeight / 22,),
               Container(
-                child: _titleField
+                child: TextFormField(
+                  controller: _titleTextController,
+                  decoration: InputDecoration(
+                      labelText: "Título",
+                      labelStyle: _values.textFieldTextStyle,
+                      fillColor: Colors.white,
+                      filled: true,
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(_values.standardBorderRadius),
+                          borderSide: BorderSide()
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(_values.standardBorderRadius),
+                          borderSide: _values.textFieldFocusBorderSide
+                      )
+                  ),
+                  validator: (val){
+                    if(val.length == 0){
+                      return "Este campo no puede estar vacío.";
+                    }else{
+                      return null;
+                    }
+                  },
+                  onEditingComplete: (){
+                    setState(() {
+                      _eventDetailed.title = _titleTextController.text;
+                    });
+                    FocusScope.of(context).requestFocus(FocusNode());
+                  },
+                  onChanged: (content){
+                    _eventDetailed.title = _titleTextController.text;
+                  },
+                  style: _values.textFieldTextStyle,
+                ),
               ),
               SizedBox(height: _responsiveHeight / 22,),
               Container(
@@ -2214,6 +2212,7 @@ class _EventDetailsScreen extends State<EventDetailsScreen>{
                           onConfirm: (date){
                             String format = date.toString().substring(0, 10);
                             setState(() {
+                              args.newEventDateTime = date;
                               _eventDetailed.date = format;
                               _spanishFormattedText = buildEventDayText(_eventDetailed.date, 1);
                             });
@@ -2315,13 +2314,12 @@ class _EventDetailsScreen extends State<EventDetailsScreen>{
                     builder: (BuildContext context) => CustomLoadDialog()
                 );
 
-                _eventDetailed.createEvent(context, _imageNewEvent).then((result){
-                  Navigator.pushReplacementNamed(
-                      context,
-                      _values.routeNames['events'],
-                      arguments: EventsScreen(
-                        adminView: args.adminView,
-                      )
+                _eventDetailed.createEvent(context, _imageNewEvent, _imagechanged).then((result){
+                  Navigator.pop(context);
+
+                  Navigator.pop(
+                    context,
+                    true
                   );
                 });
 
@@ -2417,12 +2415,9 @@ class _EventDetailsScreen extends State<EventDetailsScreen>{
             leading: IconButton(
               icon: Icon(Icons.arrow_back),
               onPressed: (){
-                Navigator.pushReplacementNamed(
+                Navigator.pop(
                       context,
-                      _values.routeNames['events'],
-                      arguments: EventsScreen(
-                        adminView: args.adminView,
-                      )
+                      false
                   );
               },
             ),
