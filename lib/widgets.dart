@@ -1,8 +1,4 @@
 import 'package:flutter/material.dart';
-import 'schedule_screen.dart';
-import 'agenda_screen.dart';
-import 'administration_screen.dart';
-import 'grades_screen.dart';
 import 'announcements_screen.dart';
 import 'events_screen.dart';
 import 'news_screen.dart';
@@ -68,35 +64,27 @@ class _OptionTile extends State<OptionTile>{
       onTap: (){
         switch(widget.index){
           case 0:
-            Navigator.push(
+            Navigator.pushNamed(
                 context,
-                MaterialPageRoute(
-                    builder: (context) => ScheduleScreen()
-                )
+                _values.routeNames['schedule']
             );
             break;
           case 1:
-            Navigator.push(
+            Navigator.pushNamed(
                 context,
-                MaterialPageRoute(
-                    builder: (context) => AgendaScreen()
-                )
+                _values.routeNames['agenda']
             );
             break;
           case 2:
-            Navigator.push(
+            Navigator.pushNamed(
                 context,
-                MaterialPageRoute(
-                    builder: (context) => AdministrationScreen()
-                )
+                _values.routeNames['administration']
             );
             break;
           case 3:
-            Navigator.push(
+            Navigator.pushNamed(
                 context,
-                MaterialPageRoute(
-                    builder: (context) => GradesScreen()
-                )
+                _values.routeNames['grades']
             );
             break;
           case 4:

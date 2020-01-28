@@ -1,7 +1,11 @@
+import 'package:enmfm/administration_screen.dart';
+import 'package:enmfm/agenda_screen.dart';
 import 'package:enmfm/announcements_screen.dart';
 import 'package:enmfm/events_screen.dart';
+import 'package:enmfm/grades_screen.dart';
 import 'package:enmfm/login_screen.dart';
 import 'package:enmfm/news_screen.dart';
+import 'package:enmfm/schedule_screen.dart';
 import 'package:flutter/material.dart';
 import 'values.dart';
 import 'dart:async';
@@ -22,6 +26,10 @@ class MyApp extends StatelessWidget {
         _values.routeNames['user_home']: (context) => HomeScreen(),
         _values.routeNames['login']: (context) => LoginScreen(),
         _values.routeNames['admin_home']: (context) => AdminScreen(),
+        _values.routeNames['schedule']: (context) => ScheduleScreen(),
+        _values.routeNames['agenda']: (context) => AgendaScreen(),
+        _values.routeNames['administration']: (context) => AdministrationScreen(),
+        _values.routeNames['grades']: (context) => GradesScreen(),
         _values.routeNames['announcements']: (context) => AnnouncementsScreen(),
         _values.routeNames['events']: (context) => EventsScreen(),
         _values.routeNames['event_details']: (context) => EventDetailsScreen(),
