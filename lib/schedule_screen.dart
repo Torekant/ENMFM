@@ -33,9 +33,6 @@ class _ScheduleScreen extends State<ScheduleScreen>{
     double _screenWidth = MediaQuery.of(context).size.width; //lee el ancho de dispositivo
     double _screenHeight = MediaQuery.of(context).size.height; //lee el largo del dispositivo
 
-    double _responsiveHeight = _screenHeight / _values.defaultDivisionForResponsiveHeight; //Función para altura responsiva de cada card en la lista
-    double _responsiveWidth = _screenWidth / _values.defaultDivisionForResponsiveWidth; //Función para altura responsiva de cada card en la lista
-
     return OrientationBuilder(
       builder: (context, orientation){
         return orientation == Orientation.portrait
@@ -62,8 +59,8 @@ class _ScheduleScreen extends State<ScheduleScreen>{
                   ),
                   Image.asset(
                     _values.screenOnWork,
-                    height: _responsiveHeight / 1.5,
-                    width: _responsiveWidth * 1.5,
+                    height: _screenHeight / 3,
+                    width: _screenWidth / 1.5,
                     fit: BoxFit.fill,
                   )
                 ],
@@ -93,8 +90,8 @@ class _ScheduleScreen extends State<ScheduleScreen>{
                   ),
                   Image.asset(
                     _values.screenOnWork,
-                    height: _responsiveHeight * 1.5,
-                    width: _responsiveWidth,
+                    height: _screenHeight / 1.8,
+                    width: _screenWidth / 3,
                     fit: BoxFit.fill,
                   )
                 ],

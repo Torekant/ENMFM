@@ -29,12 +29,7 @@ class _AdministrationScreen extends State<AdministrationScreen>{
   Widget build(BuildContext context) {
 
     double _screenWidth = MediaQuery.of(context).size.width; //lee el ancho de dispositivo
-    double _screenHeight = MediaQuery.of(context).size.height; //lee el largo del dispositivo
-    //double _symmetricPadding; //padding lateral de la pantalla
-
-    //_symmetricPadding =  (_screenWidth * values.widthPaddingUnit) / 10; //Función que nos permite hacer un padding responsivo a cualquier resolución en ancho
-    double _responsiveHeight = _screenHeight / _values.defaultDivisionForResponsiveHeight; //Función para altura responsiva de cada card en la lista
-    double _responsiveWidth = _screenWidth / _values.defaultDivisionForResponsiveWidth; //Función para altura responsiva de cada card en la lista
+    double _screenHeight = MediaQuery.of(context).size.height; //lee el largo del dispositivo//Función para altura responsiva de cada card en la lista
 
     return OrientationBuilder(
       builder: (context, orientation){
@@ -62,8 +57,8 @@ class _AdministrationScreen extends State<AdministrationScreen>{
                   ),
                   Image.asset(
                     _values.screenOnWork,
-                    height: _responsiveHeight / 1.5,
-                    width: _responsiveWidth * 1.5,
+                    height: _screenHeight / 3,
+                    width: _screenWidth / 1.5,
                     fit: BoxFit.fill,
                   )
                 ],
@@ -93,8 +88,8 @@ class _AdministrationScreen extends State<AdministrationScreen>{
                   ),
                   Image.asset(
                     _values.screenOnWork,
-                    height: _responsiveHeight * 1.5,
-                    width: _responsiveWidth,
+                    height: _screenHeight / 1.8,
+                    width: _screenWidth / 3,
                     fit: BoxFit.fill,
                   )
                 ],

@@ -77,14 +77,14 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreen extends State<SplashScreen> {
 
   static Values _values;
-  static Hues hue;
+  static Hues _hue;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     _values = new Values();
-    hue  = new Hues();
+    _hue  = new Hues();
 
     //Inicio de timer para esperar a pasar a la pantalla principal
     Timer(Duration(seconds: _values.defaultTimer), () {
@@ -102,9 +102,9 @@ class _SplashScreen extends State<SplashScreen> {
 
     return Scaffold(
         appBar: AppBar(
-          backgroundColor: hue.carmesi,
+          backgroundColor: _hue.carmesi,
         ),
-        backgroundColor: hue.background,
+        backgroundColor: _hue.background,
         body: Center(
           child: Container(
             alignment: Alignment.center,

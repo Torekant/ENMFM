@@ -22,13 +22,14 @@ class _AnnouncementsScreen extends State<AnnouncementsScreen>{
   ScrollController _scrollController;
 
   FloatingActionButton _floatingActionButton;
-  Offset _position;
 
-  Widget _finalPortraitScreen, _finalLandscapeScreen;
+  Widget _finalScreen;
 
   bool _editingMode;
   double _pastScreenWidth;
   var _formKey; //la llave para identificar el form de los updates
+
+  AnnouncementsScreen args;
 
   @override
   void initState() {
@@ -37,12 +38,7 @@ class _AnnouncementsScreen extends State<AnnouncementsScreen>{
     _values = new Values();
     _hue = new Hues();
     _scrollController = new ScrollController();
-    _finalPortraitScreen = Center(
-      child: Image.asset(
-          _values.loadingAnimation
-      ),
-    );
-    _finalLandscapeScreen = Center(
+    _finalScreen = Center(
       child: Image.asset(
           _values.loadingAnimation
       ),
@@ -52,12 +48,11 @@ class _AnnouncementsScreen extends State<AnnouncementsScreen>{
     _formKey = GlobalKey<FormState>();
   }
 
-  void updateListView(int _orientationMode, List _list){
+  void updateListView(Orientation _orientationMode, List _list){
     double _screenWidth = MediaQuery.of(context).size.width; //lee el ancho de dispositivo
     double _screenHeight = MediaQuery.of(context).size.height; //lee el largo del dispositivo
-    double _responsivePadding = _screenWidth / _values.defaultSymmetricPadding; //lee el ancho de dispositivo
 
-    _orientationMode == 0 ? _finalPortraitScreen = Column(
+    _orientationMode == Orientation.portrait ? _finalScreen = Column(
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         SizedBox(height: _screenHeight / 100,),
@@ -88,7 +83,7 @@ class _AnnouncementsScreen extends State<AnnouncementsScreen>{
           ),
         ),
         ListView.builder(
-            padding: EdgeInsets.symmetric(horizontal: _responsivePadding),
+            padding: EdgeInsets.symmetric(horizontal: _screenWidth / _values.defaultSymmetricPadding),
             controller: _scrollController,
             shrinkWrap: true,
             itemCount: _list.length,
@@ -120,7 +115,7 @@ class _AnnouncementsScreen extends State<AnnouncementsScreen>{
                               ),
                               Container(
                                 alignment: Alignment.center,
-                                padding: EdgeInsets.symmetric(horizontal: _responsivePadding),
+                                padding: EdgeInsets.symmetric(horizontal: _screenWidth / _values.defaultSymmetricPadding),
                                 child: Text(
                                   _list[index].text,
                                   style: _values.subtitleTextStyle,
@@ -157,13 +152,14 @@ class _AnnouncementsScreen extends State<AnnouncementsScreen>{
                                   _list.removeAt(index);
                                   setState(() {
                                     if(_list.isEmpty){
-                                      _finalPortraitScreen = Center(
+                                      _finalScreen = Center(
                                         child: Image.asset(
                                             _values.noContentFound
                                         ),
                                       );
                                     }else{
-                                      updateListView(0, _list);
+                                      Orientation _orientation = MediaQuery.of(context).orientation;
+                                      updateListView(_orientation, _list);
                                     }
                                   });
                                   showDialog(
@@ -188,7 +184,7 @@ class _AnnouncementsScreen extends State<AnnouncementsScreen>{
             }
         )
       ],
-    ) : _finalLandscapeScreen = Column(
+    ) : _finalScreen = Column(
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         SizedBox(height: _screenHeight / 100,),
@@ -220,7 +216,7 @@ class _AnnouncementsScreen extends State<AnnouncementsScreen>{
           ),
         ),
         ListView.builder(
-            padding: EdgeInsets.symmetric(horizontal: _responsivePadding),
+            padding: EdgeInsets.symmetric(horizontal: _screenWidth / _values.defaultSymmetricPadding),
             controller: _scrollController,
             shrinkWrap: true,
             itemCount: _list.length,
@@ -252,7 +248,7 @@ class _AnnouncementsScreen extends State<AnnouncementsScreen>{
                               ),
                               Container(
                                 alignment: Alignment.center,
-                                padding: EdgeInsets.symmetric(horizontal: _responsivePadding),
+                                padding: EdgeInsets.symmetric(horizontal: _screenWidth / _values.defaultSymmetricPadding),
                                 child: Text(
                                   _list[index].text,
                                   style: _values.subtitleTextStyle,
@@ -290,13 +286,14 @@ class _AnnouncementsScreen extends State<AnnouncementsScreen>{
                                   setState(() {
                                     _list.removeAt(index);
                                     if(_list.isEmpty){
-                                      _finalLandscapeScreen = Center(
+                                      _finalScreen = Center(
                                         child: Image.asset(
                                             _values.noContentFound
                                         ),
                                       );
                                     }else{
-                                      updateListView(1, _list);
+                                      Orientation _orientation = MediaQuery.of(context).orientation;
+                                      updateListView(_orientation, _list);
                                     }
                                   });
                                   showDialog(
@@ -324,13 +321,13 @@ class _AnnouncementsScreen extends State<AnnouncementsScreen>{
     );
   }
 
-  void enterEditMode(int _orientationMode, List _list){
+  void enterEditMode(Orientation _orientationMode, List _list){
     double _screenWidth = MediaQuery.of(context).size.width; //lee el ancho de dispositivo
     double _screenHeight = MediaQuery.of(context).size.height; //lee el largo del dispositivo
     double _responsivePadding = _screenWidth / _values.defaultSymmetricPadding; //lee el ancho de dispositivo
 
     if(_editingMode){
-      _orientationMode == 0 ? _finalPortraitScreen = Column(
+      _orientationMode == Orientation.portrait ? _finalScreen = Column(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           SizedBox(height: _screenHeight / 100,),
@@ -354,7 +351,8 @@ class _AnnouncementsScreen extends State<AnnouncementsScreen>{
                     tooltip: "Editar",
                     onPressed: (){
                       setState(() {
-                        enterEditMode(0, _list);
+                        Orientation _orientation = MediaQuery.of(context).orientation;
+                        enterEditMode(_orientation, _list);
                       });
                     },
                   ),
@@ -432,13 +430,14 @@ class _AnnouncementsScreen extends State<AnnouncementsScreen>{
                                     _list.removeAt(index);
                                     setState(() {
                                       if(_list.isEmpty){
-                                        _finalPortraitScreen = Center(
+                                        _finalScreen = Center(
                                           child: Image.asset(
                                               _values.noContentFound
                                           ),
                                         );
                                       }else{
-                                        updateListView(0, _list);
+                                        Orientation _orientation = MediaQuery.of(context).orientation;
+                                        updateListView(_orientation, _list);
                                       }
                                     });
                                     showDialog(
@@ -463,7 +462,7 @@ class _AnnouncementsScreen extends State<AnnouncementsScreen>{
               }
           )
         ],
-      ) : _finalLandscapeScreen = Column(
+      ) : _finalScreen = Column(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           SizedBox(height: _screenHeight / 100,),
@@ -488,7 +487,8 @@ class _AnnouncementsScreen extends State<AnnouncementsScreen>{
                     tooltip: "Editar",
                     onPressed: (){
                       setState(() {
-                        enterEditMode(1, _list);
+                        Orientation _orientation = MediaQuery.of(context).orientation;
+                        enterEditMode(_orientation, _list);
                       });
                     },
                   ),
@@ -567,13 +567,14 @@ class _AnnouncementsScreen extends State<AnnouncementsScreen>{
                                     setState(() {
                                       _list.removeAt(index);
                                       if(_list.isEmpty){
-                                        _finalLandscapeScreen = Center(
+                                        _finalScreen = Center(
                                           child: Image.asset(
                                               _values.noContentFound
                                           ),
                                         );
                                       }else{
-                                        updateListView(1, _list);
+                                        Orientation _orientation = MediaQuery.of(context).orientation;
+                                        updateListView(_orientation, _list);
                                       }
                                     });
                                     showDialog(
@@ -601,7 +602,7 @@ class _AnnouncementsScreen extends State<AnnouncementsScreen>{
       );
       _editingMode = false;
     }else{
-      _orientationMode == 0 ? _finalPortraitScreen = Column(
+      _orientationMode == Orientation.portrait ? _finalScreen = Column(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           SizedBox(height: _screenHeight / 100,),
@@ -625,7 +626,8 @@ class _AnnouncementsScreen extends State<AnnouncementsScreen>{
                     tooltip: "Editar",
                     onPressed: (){
                       setState(() {
-                        enterEditMode(0, _list);
+                        Orientation _orientation = MediaQuery.of(context).orientation;
+                        enterEditMode(_orientation, _list);
                       });
                     },
                   ),
@@ -714,7 +716,8 @@ class _AnnouncementsScreen extends State<AnnouncementsScreen>{
                                               _list[index].updateAnnouncement(_textController.text).then((returnedData){
                                                 setState(() {
                                                   _list[index].text = returnedData;
-                                                  enterEditMode(0, _list);
+                                                  Orientation _orientation = MediaQuery.of(context).orientation;
+                                                  enterEditMode(_orientation, _list);
                                                 });
                                                 Navigator.pop(context);
                                               });
@@ -759,13 +762,14 @@ class _AnnouncementsScreen extends State<AnnouncementsScreen>{
                                     _list.removeAt(index);
                                     setState(() {
                                       if(_list.isEmpty){
-                                        _finalPortraitScreen = Center(
+                                        _finalScreen = Center(
                                           child: Image.asset(
                                               _values.noContentFound
                                           ),
                                         );
                                       }else{
-                                        updateListView(0, _list);
+                                        Orientation _orientation = MediaQuery.of(context).orientation;
+                                        updateListView(_orientation, _list);
                                       }
                                     });
                                     showDialog(
@@ -790,7 +794,7 @@ class _AnnouncementsScreen extends State<AnnouncementsScreen>{
               }
           )
         ],
-      ) : _finalLandscapeScreen = Column(
+      ) : _finalScreen = Column(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           SizedBox(height: _screenHeight / 100,),
@@ -815,7 +819,8 @@ class _AnnouncementsScreen extends State<AnnouncementsScreen>{
                     tooltip: "Editar",
                     onPressed: (){
                       setState(() {
-                        enterEditMode(1, _list);
+                        Orientation _orientation = MediaQuery.of(context).orientation;
+                        enterEditMode(_orientation, _list);
                       });
                     },
                   ),
@@ -904,7 +909,8 @@ class _AnnouncementsScreen extends State<AnnouncementsScreen>{
                                               _list[index].updateAnnouncement(_textController.text).then((returnedData){
                                                 setState(() {
                                                   _list[index].text = returnedData;
-                                                  enterEditMode(1, _list);
+                                                  Orientation _orientation = MediaQuery.of(context).orientation;
+                                                  enterEditMode(_orientation, _list);
                                                 });
                                                 Navigator.pop(context);
                                               });
@@ -950,13 +956,14 @@ class _AnnouncementsScreen extends State<AnnouncementsScreen>{
                                     setState(() {
                                       _list.removeAt(index);
                                       if(_list.isEmpty){
-                                        _finalLandscapeScreen = Center(
+                                        _finalScreen = Center(
                                           child: Image.asset(
                                               _values.noContentFound
                                           ),
                                         );
                                       }else{
-                                        updateListView(1, _list);
+                                        Orientation _orientation = MediaQuery.of(context).orientation;
+                                        updateListView(_orientation, _list);
                                       }
                                     });
                                     showDialog(
@@ -986,14 +993,422 @@ class _AnnouncementsScreen extends State<AnnouncementsScreen>{
     }
   }
 
+  void updateScreen() async{
+    double _screenWidth = MediaQuery.of(context).size.width; //lee el ancho de dispositivo
+    double _screenHeight = MediaQuery.of(context).size.height; //lee el largo del dispositivo
+
+    await retrieveAnnouncements(context).then((list){
+      if(list.isNotEmpty){
+        if(args.adminView == true){
+          Orientation _orientation = MediaQuery.of(context).orientation;
+          setState(() {
+            _orientation == Orientation.portrait ? _finalScreen = Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                SizedBox(height: _screenHeight / 100,),
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: _screenWidth / 20),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: <Widget>[
+                      Container(
+                        height: _screenHeight / 18,
+                        width:  _screenWidth / 5,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.all(Radius.circular(_values.standardBorderRadius * 2)),
+                          color: _hue.ocean,
+                        ),
+                        child: IconButton(
+                          icon: Icon(
+                            Icons.edit,
+                            color: _hue.background,
+                          ),
+                          tooltip: "Editar",
+                          onPressed: (){
+                            setState(() {
+                              Orientation _orientation = MediaQuery.of(context).orientation;
+                              enterEditMode(_orientation, list);
+                            });
+                          },
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+                ListView.builder(
+                    padding: EdgeInsets.symmetric(horizontal: _screenWidth / 20),
+                    controller: _scrollController,
+                    shrinkWrap: true,
+                    itemCount: list.length,
+                    itemBuilder: (BuildContext context, int index){
+                      DateFormat df = new DateFormat('dd-MM-yyyy');
+                      String _announcementDate = df.format(list[index].timestamp);
+                      return Stack(
+                        children: <Widget>[
+                          Container(
+                            padding: EdgeInsets.fromLTRB(0.0, _screenHeight / 50, 0.0, 0.0),
+                            child: GestureDetector(
+                              child: Card(
+                                elevation: _values.cardElevation,
+                                child: Container(
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: <Widget>[
+                                      SingleChildScrollView(
+                                        scrollDirection: Axis.horizontal,
+                                        controller: _scrollController,
+                                        child: Text(
+                                          _announcementDate,
+                                          style: _values.subtitleTextStyle,
+                                        ),
+                                      ),
+                                      Container(
+                                        color: _hue.carmesi,
+                                        height: _values.lineSizedBoxHeight,
+                                      ),
+                                      Container(
+                                        alignment: Alignment.center,
+                                        padding: EdgeInsets.symmetric(horizontal: _screenWidth / 20),
+                                        child: Text(
+                                          list[index].text,
+                                          style: _values.subtitleTextStyle,
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          Positioned(
+                            top: 0.0,
+                            left: 0.0,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: <Widget>[
+                                Container(
+                                  height: _screenHeight / 18,
+                                  width:  _screenWidth / 9,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.all(Radius.circular(_values.standardBorderRadius * 5)),
+                                    color: _hue.carmesi,
+                                  ),
+                                  child: IconButton(
+                                    icon: Icon(
+                                      Icons.delete,
+                                      color: _hue.background,
+                                    ),
+                                    tooltip: "Eliminar",
+                                    onPressed: (){
+                                      list[index].deleteAnnouncement().then((result){
+                                        if(result){
+                                          if(list.isNotEmpty){
+                                            list.removeAt(index);
+                                          }
+                                          setState(() {
+                                            if(list.isEmpty){
+                                              _finalScreen = Center(
+                                                child: Image.asset(
+                                                    _values.noContentFound
+                                                ),
+                                              );
+                                            }else{
+                                              Orientation _orientation = MediaQuery.of(context).orientation;
+                                              updateListView(_orientation, list);
+                                            }
+                                          });
+                                          showDialog(
+                                              context: context,
+                                              builder: (context) => CustomDialog(description: "El anunció se ha borrado exitosamente.", acceptButtonText: "Aceptar",)
+                                          );
+                                        }else{
+                                          showDialog(
+                                              context: context,
+                                              builder: (context) => CustomDialog(description: "Sucedió un problema inesperado, intente más tarde.", acceptButtonText: "Aceptar",)
+                                          );
+                                        }
+                                      });
+                                    },
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
+                        ],
+                      );
+                    }
+                )
+              ],
+            ) : _finalScreen = Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                SizedBox(height: _screenHeight / 100,),
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: _screenWidth / 20),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: <Widget>[
+                      Container(
+                        height: _screenHeight / 10,
+                        width:  _screenWidth / 10,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.all(Radius.circular(_values.standardBorderRadius * 2)),
+                          color: _hue.ocean,
+                        ),
+                        child: IconButton(
+                          icon: Icon(
+                            Icons.edit,
+                            color: _hue.background,
+                            size: _screenHeight / 18,
+                          ),
+                          tooltip: "Editar",
+                          onPressed: (){
+                            setState(() {
+                              Orientation _orientation = MediaQuery.of(context).orientation;
+                              enterEditMode(_orientation, list);
+                            });
+                          },
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+                ListView.builder(
+                    padding: EdgeInsets.symmetric(horizontal: _screenWidth / 20),
+                    controller: _scrollController,
+                    shrinkWrap: true,
+                    itemCount: list.length,
+                    itemBuilder: (BuildContext context, int index){
+                      DateFormat df = new DateFormat('dd-MM-yyyy');
+                      String _announcementDate = df.format(list[index].timestamp);
+                      return Stack(
+                        children: <Widget>[
+                          Container(
+                            padding: EdgeInsets.fromLTRB(0.0, _screenHeight / 50, 0.0, 0.0),
+                            child: GestureDetector(
+                              child: Card(
+                                elevation: _values.cardElevation,
+                                child: Container(
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: <Widget>[
+                                      SingleChildScrollView(
+                                        scrollDirection: Axis.horizontal,
+                                        controller: _scrollController,
+                                        child: Text(
+                                          _announcementDate,
+                                          style: _values.subtitleTextStyle,
+                                        ),
+                                      ),
+                                      Container(
+                                        color: _hue.carmesi,
+                                        height: _values.lineSizedBoxHeight,
+                                      ),
+                                      Container(
+                                        alignment: Alignment.center,
+                                        padding: EdgeInsets.symmetric(horizontal: _screenWidth / 20),
+                                        child: Text(
+                                          list[index].text,
+                                          style: _values.subtitleTextStyle,
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          Positioned(
+                            top: 0.0,
+                            left: 0.0,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: <Widget>[
+                                Container(
+                                  height: _screenHeight / 10,
+                                  width:  _screenWidth / 20,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.all(Radius.circular(_values.standardBorderRadius * 5)),
+                                    color: _hue.carmesi,
+                                  ),
+                                  child: IconButton(
+                                    icon: Icon(
+                                      Icons.delete,
+                                      color: _hue.background,
+                                      size: _screenHeight / 18,
+                                    ),
+                                    tooltip: "Eliminar",
+                                    onPressed: (){
+                                      list[index].deleteAnnouncement().then((result){
+                                        if(result){
+                                          setState(() {
+                                            list.removeAt(index);
+                                            if(list.isEmpty){
+                                              _finalScreen = Center(
+                                                child: Image.asset(
+                                                    _values.noContentFound
+                                                ),
+                                              );
+                                            }else{
+                                              Orientation _orientation = MediaQuery.of(context).orientation;
+                                              updateListView(_orientation, list);
+                                            }
+                                          });
+                                          showDialog(
+                                              context: context,
+                                              builder: (context) => CustomDialog(description: "El anunció se ha borrado exitosamente.", acceptButtonText: "Aceptar",)
+                                          );
+                                        }else{
+                                          showDialog(
+                                              context: context,
+                                              builder: (context) => CustomDialog(description: "Sucedió un problema inesperado, intente más tarde.", acceptButtonText: "Aceptar",)
+                                          );
+                                        }
+                                      });
+                                    },
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
+                        ],
+                      );
+                    }
+                )
+              ],
+            );
+          });
+        }else{
+          Orientation _orientation = MediaQuery.of(context).orientation;
+          setState(() {
+            _orientation == Orientation.portrait ? _finalScreen = Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                SizedBox(height: _screenHeight / 100,),
+                ListView.builder(
+                    padding: EdgeInsets.symmetric(horizontal: _screenWidth / 20),
+                    controller: _scrollController,
+                    shrinkWrap: true,
+                    itemCount: list.length,
+                    itemBuilder: (BuildContext context, int index){
+                      DateFormat df = new DateFormat('dd-MM-yyyy');
+                      String _announcementDate = df.format(list[index].timestamp);
+                      return Container(
+                        padding: EdgeInsets.fromLTRB(0.0, _screenHeight / 150, 0.0, 0.0),
+                        child: GestureDetector(
+                          child: Card(
+                            elevation: _values.cardElevation,
+                            child: Container(
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: <Widget>[
+                                  SingleChildScrollView(
+                                    scrollDirection: Axis.horizontal,
+                                    controller: _scrollController,
+                                    child: Text(
+                                      _announcementDate,
+                                      style: _values.subtitleTextStyle,
+                                    ),
+                                  ),
+                                  Container(
+                                    color: _hue.carmesi,
+                                    height: _values.lineSizedBoxHeight,
+                                  ),
+                                  Container(
+                                    alignment: Alignment.center,
+                                    padding: EdgeInsets.symmetric(horizontal: _screenWidth / 20),
+                                    child: Text(
+                                      list[index].text,
+                                      style: _values.subtitleTextStyle,
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
+                    }
+                )
+              ],
+            ) : _finalScreen = Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                SizedBox(height: _screenHeight / 100,),
+                ListView.builder(
+                    padding: EdgeInsets.symmetric(horizontal: _screenWidth / 20),
+                    controller: _scrollController,
+                    shrinkWrap: true,
+                    itemCount: list.length,
+                    itemBuilder: (BuildContext context, int index){
+                      DateFormat df = new DateFormat('dd-MM-yyyy');
+                      String _announcementDate = df.format(list[index].timestamp);
+                      return Container(
+                        padding: EdgeInsets.fromLTRB(0.0, _screenHeight / 100, 0.0, 0.0),
+                        child: GestureDetector(
+                          child: Card(
+                            elevation: _values.cardElevation,
+                            child: Container(
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: <Widget>[
+                                  SingleChildScrollView(
+                                    scrollDirection: Axis.horizontal,
+                                    controller: _scrollController,
+                                    child: Text(
+                                      _announcementDate,
+                                      style: _values.subtitleTextStyle,
+                                    ),
+                                  ),
+                                  Container(
+                                    color: _hue.carmesi,
+                                    height: _values.lineSizedBoxHeight,
+                                  ),
+                                  Container(
+                                    alignment: Alignment.center,
+                                    padding: EdgeInsets.symmetric(horizontal: _screenWidth / 20),
+                                    child: Text(
+                                      list[index].text,
+                                      style: _values.subtitleTextStyle,
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
+                    }
+                )
+              ],
+            );
+          });
+        }
+      }else{
+        Orientation _orientation = MediaQuery.of(context).orientation;
+        setState(() {
+          _orientation == Orientation.portrait ? _finalScreen = Center(
+            child: Image.asset(
+                _values.noContentFound
+            ),
+          ) : _finalScreen = Center(
+            child: Image.asset(
+                _values.noContentFound
+            ),
+          );
+        });
+      }
+    });
+  }
+
   @override
   void didChangeDependencies() async{
     // TODO: implement didChangeDependencies
     super.didChangeDependencies();
-    final AnnouncementsScreen args = ModalRoute.of(context).settings.arguments;
 
     double _screenWidth = MediaQuery.of(context).size.width; //lee el ancho de dispositivo
-    double _screenHeight = MediaQuery.of(context).size.height; //lee el largo del dispositivo
+
+    args = ModalRoute.of(context).settings.arguments;//lee el largo del dispositivo
 
     if(args.adminView == true){
       _floatingActionButton = FloatingActionButton(
@@ -1017,6 +1432,9 @@ class _AnnouncementsScreen extends State<AnnouncementsScreen>{
               );
               createAnnouncement(context, result).then((result){
                 Navigator.pop(context);
+                setState(() {
+                  updateScreen();
+                });
                 showDialog(
                     context: context,
                     builder: (BuildContext context) => CustomDialog(
@@ -1030,12 +1448,7 @@ class _AnnouncementsScreen extends State<AnnouncementsScreen>{
         },
       );
     }else{
-      _position = Offset(0.0, 0.0);
       _floatingActionButton = null;
-    }
-
-    if(args.adminView == true){
-      _position = Offset(_screenWidth / 1.2, _screenHeight / 1.2);
     }
 
     //Stating flags on orientation change
@@ -1043,402 +1456,7 @@ class _AnnouncementsScreen extends State<AnnouncementsScreen>{
       _editingMode = false;
       _pastScreenWidth = _screenWidth;
 
-      await retrieveAnnouncements(context).then((list){
-        if(list.isNotEmpty){
-          if(args.adminView == true){
-            setState(() {
-              _finalPortraitScreen = Column(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  SizedBox(height: _screenHeight / 100,),
-                  Container(
-                    padding: EdgeInsets.symmetric(horizontal: _screenWidth / 20),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: <Widget>[
-                        Container(
-                          height: _screenHeight / 18,
-                          width:  _screenWidth / 5,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.all(Radius.circular(_values.standardBorderRadius * 2)),
-                            color: _hue.ocean,
-                          ),
-                          child: IconButton(
-                            icon: Icon(
-                              Icons.edit,
-                              color: _hue.background,
-                            ),
-                            tooltip: "Editar",
-                            onPressed: (){
-                              setState(() {
-                                enterEditMode(0, list);
-                              });
-                            },
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
-                  ListView.builder(
-                      padding: EdgeInsets.symmetric(horizontal: _screenWidth / 20),
-                      controller: _scrollController,
-                      shrinkWrap: true,
-                      itemCount: list.length,
-                      itemBuilder: (BuildContext context, int index){
-                        DateFormat df = new DateFormat('dd-MM-yyyy');
-                        String _announcementDate = df.format(list[index].timestamp);
-                        return Stack(
-                          children: <Widget>[
-                            Container(
-                              padding: EdgeInsets.fromLTRB(0.0, _screenHeight / 50, 0.0, 0.0),
-                              child: GestureDetector(
-                                child: Card(
-                                  elevation: _values.cardElevation,
-                                  child: Container(
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: <Widget>[
-                                        SingleChildScrollView(
-                                          scrollDirection: Axis.horizontal,
-                                          controller: _scrollController,
-                                          child: Text(
-                                            _announcementDate,
-                                            style: _values.subtitleTextStyle,
-                                          ),
-                                        ),
-                                        Container(
-                                          color: _hue.carmesi,
-                                          height: _values.lineSizedBoxHeight,
-                                        ),
-                                        Container(
-                                          alignment: Alignment.center,
-                                          padding: EdgeInsets.symmetric(horizontal: _screenWidth / 20),
-                                          child: Text(
-                                            list[index].text,
-                                            style: _values.subtitleTextStyle,
-                                          ),
-                                        )
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Positioned(
-                              top: 0.0,
-                              left: 0.0,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: <Widget>[
-                                  Container(
-                                    height: _screenHeight / 18,
-                                    width:  _screenWidth / 9,
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.all(Radius.circular(_values.standardBorderRadius * 5)),
-                                      color: _hue.carmesi,
-                                    ),
-                                    child: IconButton(
-                                      icon: Icon(
-                                        Icons.delete,
-                                        color: _hue.background,
-                                      ),
-                                      tooltip: "Eliminar",
-                                      onPressed: (){
-                                        list[index].deleteAnnouncement().then((result){
-                                          if(result){
-                                            list.removeAt(index);
-                                            setState(() {
-                                              if(list.isEmpty){
-                                                _finalPortraitScreen = Center(
-                                                  child: Image.asset(
-                                                      _values.noContentFound
-                                                  ),
-                                                );
-                                              }else{
-                                                updateListView(0, list);
-                                              }
-                                            });
-                                            showDialog(
-                                                context: context,
-                                                builder: (context) => CustomDialog(description: "El anunció se ha borrado exitosamente.", acceptButtonText: "Aceptar",)
-                                            );
-                                          }else{
-                                            showDialog(
-                                                context: context,
-                                                builder: (context) => CustomDialog(description: "Sucedió un problema inesperado, intente más tarde.", acceptButtonText: "Aceptar",)
-                                            );
-                                          }
-                                        });
-                                      },
-                                    ),
-                                  )
-                                ],
-                              ),
-                            ),
-                          ],
-                        );
-                      }
-                  )
-                ],
-              );
-              _finalLandscapeScreen = Column(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  SizedBox(height: _screenHeight / 100,),
-                  Container(
-                    padding: EdgeInsets.symmetric(horizontal: _screenWidth / 20),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: <Widget>[
-                        Container(
-                          height: _screenHeight / 10,
-                          width:  _screenWidth / 10,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.all(Radius.circular(_values.standardBorderRadius * 2)),
-                            color: _hue.ocean,
-                          ),
-                          child: IconButton(
-                            icon: Icon(
-                              Icons.edit,
-                              color: _hue.background,
-                              size: _screenHeight / 18,
-                            ),
-                            tooltip: "Editar",
-                            onPressed: (){
-                              setState(() {
-                                enterEditMode(1, list);
-                              });
-                            },
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
-                  ListView.builder(
-                      padding: EdgeInsets.symmetric(horizontal: _screenWidth / 20),
-                      controller: _scrollController,
-                      shrinkWrap: true,
-                      itemCount: list.length,
-                      itemBuilder: (BuildContext context, int index){
-                        DateFormat df = new DateFormat('dd-MM-yyyy');
-                        String _announcementDate = df.format(list[index].timestamp);
-                        return Stack(
-                          children: <Widget>[
-                            Container(
-                              padding: EdgeInsets.fromLTRB(0.0, _screenHeight / 50, 0.0, 0.0),
-                              child: GestureDetector(
-                                child: Card(
-                                  elevation: _values.cardElevation,
-                                  child: Container(
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: <Widget>[
-                                        SingleChildScrollView(
-                                          scrollDirection: Axis.horizontal,
-                                          controller: _scrollController,
-                                          child: Text(
-                                            _announcementDate,
-                                            style: _values.subtitleTextStyle,
-                                          ),
-                                        ),
-                                        Container(
-                                          color: _hue.carmesi,
-                                          height: _values.lineSizedBoxHeight,
-                                        ),
-                                        Container(
-                                          alignment: Alignment.center,
-                                          padding: EdgeInsets.symmetric(horizontal: _screenWidth / 20),
-                                          child: Text(
-                                            list[index].text,
-                                            style: _values.subtitleTextStyle,
-                                          ),
-                                        )
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Positioned(
-                              top: 0.0,
-                              left: 0.0,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: <Widget>[
-                                  Container(
-                                    height: _screenHeight / 10,
-                                    width:  _screenWidth / 20,
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.all(Radius.circular(_values.standardBorderRadius * 5)),
-                                      color: _hue.carmesi,
-                                    ),
-                                    child: IconButton(
-                                      icon: Icon(
-                                        Icons.delete,
-                                        color: _hue.background,
-                                        size: _screenHeight / 18,
-                                      ),
-                                      tooltip: "Eliminar",
-                                      onPressed: (){
-                                        list[index].deleteAnnouncement().then((result){
-                                          if(result){
-                                            setState(() {
-                                              list.removeAt(index);
-                                              if(list.isEmpty){
-                                                _finalLandscapeScreen = Center(
-                                                  child: Image.asset(
-                                                      _values.noContentFound
-                                                  ),
-                                                );
-                                              }else{
-                                                updateListView(1, list);
-                                              }
-                                            });
-                                            showDialog(
-                                                context: context,
-                                                builder: (context) => CustomDialog(description: "El anunció se ha borrado exitosamente.", acceptButtonText: "Aceptar",)
-                                            );
-                                          }else{
-                                            showDialog(
-                                                context: context,
-                                                builder: (context) => CustomDialog(description: "Sucedió un problema inesperado, intente más tarde.", acceptButtonText: "Aceptar",)
-                                            );
-                                          }
-                                        });
-                                      },
-                                    ),
-                                  )
-                                ],
-                              ),
-                            ),
-                          ],
-                        );
-                      }
-                  )
-                ],
-              );
-            });
-          }else{
-            setState(() {
-              _finalPortraitScreen = Column(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  SizedBox(height: _screenHeight / 100,),
-                  ListView.builder(
-                      padding: EdgeInsets.symmetric(horizontal: _screenWidth / 20),
-                      controller: _scrollController,
-                      shrinkWrap: true,
-                      itemCount: list.length,
-                      itemBuilder: (BuildContext context, int index){
-                        DateFormat df = new DateFormat('dd-MM-yyyy');
-                        String _announcementDate = df.format(list[index].timestamp);
-                        return Container(
-                          padding: EdgeInsets.fromLTRB(0.0, _screenHeight / 150, 0.0, 0.0),
-                          child: GestureDetector(
-                            child: Card(
-                              elevation: _values.cardElevation,
-                              child: Container(
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: <Widget>[
-                                    SingleChildScrollView(
-                                      scrollDirection: Axis.horizontal,
-                                      controller: _scrollController,
-                                      child: Text(
-                                        _announcementDate,
-                                        style: _values.subtitleTextStyle,
-                                      ),
-                                    ),
-                                    Container(
-                                      color: _hue.carmesi,
-                                      height: _values.lineSizedBoxHeight,
-                                    ),
-                                    Container(
-                                      alignment: Alignment.center,
-                                      padding: EdgeInsets.symmetric(horizontal: _screenWidth / 20),
-                                      child: Text(
-                                        list[index].text,
-                                        style: _values.subtitleTextStyle,
-                                      ),
-                                    )
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                        );
-                      }
-                  )
-                ],
-              );
-              _finalLandscapeScreen = Column(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  SizedBox(height: _screenHeight / 100,),
-                  ListView.builder(
-                      padding: EdgeInsets.symmetric(horizontal: _screenWidth / 20),
-                      controller: _scrollController,
-                      shrinkWrap: true,
-                      itemCount: list.length,
-                      itemBuilder: (BuildContext context, int index){
-                        DateFormat df = new DateFormat('dd-MM-yyyy');
-                        String _announcementDate = df.format(list[index].timestamp);
-                        return Container(
-                          padding: EdgeInsets.fromLTRB(0.0, _screenHeight / 100, 0.0, 0.0),
-                          child: GestureDetector(
-                            child: Card(
-                              elevation: _values.cardElevation,
-                              child: Container(
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: <Widget>[
-                                    SingleChildScrollView(
-                                      scrollDirection: Axis.horizontal,
-                                      controller: _scrollController,
-                                      child: Text(
-                                        _announcementDate,
-                                        style: _values.subtitleTextStyle,
-                                      ),
-                                    ),
-                                    Container(
-                                      color: _hue.carmesi,
-                                      height: _values.lineSizedBoxHeight,
-                                    ),
-                                    Container(
-                                      alignment: Alignment.center,
-                                      padding: EdgeInsets.symmetric(horizontal: _screenWidth / 20),
-                                      child: Text(
-                                        list[index].text,
-                                        style: _values.subtitleTextStyle,
-                                      ),
-                                    )
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                        );
-                      }
-                  )
-                ],
-              );
-            });
-          }
-        }else{
-          setState(() {
-            _finalPortraitScreen = Center(
-              child: Image.asset(
-                  _values.noContentFound
-              ),
-            );
-            _finalLandscapeScreen = Center(
-              child: Image.asset(
-                  _values.noContentFound
-              ),
-            );
-          });
-        }
-      });
+      updateScreen();
     }
 
   }
@@ -1446,72 +1464,14 @@ class _AnnouncementsScreen extends State<AnnouncementsScreen>{
   @override
   Widget build(BuildContext context) {
 
-    return OrientationBuilder(
-      builder: (context, orientation){
-        return orientation == Orientation.portrait
-            ?
-        Scaffold(
-          backgroundColor: _hue.background,
-          appBar: AppBar(
-            backgroundColor: _hue.carmesi,
-            title: Text("Avisos"),
-          ),
-          body: _finalPortraitScreen,
-          floatingActionButton: Stack(
-            children: <Widget>[
-              Positioned(
-                left: _position.dx,
-                top:  _position.dy,
-                child: Draggable(
-                  feedback: Container(
-                    child: _floatingActionButton,
-                  ),
-                  child: Container(
-                    child: _floatingActionButton,
-                  ),
-                  childWhenDragging: Container(),
-                  onDragEnd: (details){
-                    setState(() {
-                      _position = details.offset;
-                    });
-                  },
-                ),
-              )
-            ],
-          ),
-        )
-            :
-        Scaffold(
-          backgroundColor: _hue.background,
-          appBar: AppBar(
-            backgroundColor: _hue.carmesi,
-            title: Text("Avisos"),
-          ),
-          body: _finalLandscapeScreen,
-          floatingActionButton: Stack(
-            children: <Widget>[
-              Positioned(
-                left: _position.dx,
-                top:  _position.dy,
-                child: Draggable(
-                  feedback: Container(
-                    child: _floatingActionButton,
-                  ),
-                  child: Container(
-                    child: _floatingActionButton,
-                  ),
-                  childWhenDragging: Container(),
-                  onDragEnd: (details){
-                    setState(() {
-                      _position = details.offset;
-                    });
-                  },
-                ),
-              )
-            ],
-          ),
-        );
-      },
+    return Scaffold(
+      backgroundColor: _hue.background,
+      appBar: AppBar(
+        backgroundColor: _hue.carmesi,
+        title: Text("Avisos"),
+      ),
+      body: _finalScreen,
+      floatingActionButton: _floatingActionButton,
     );
   }
 
