@@ -61,34 +61,17 @@ class _AnnouncementsScreen extends State<AnnouncementsScreen>{
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             SizedBox(height: _screenHeight / 100,),
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: _screenWidth / 20),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: <Widget>[
-                  Container(
-                    height: _screenHeight / 18,
-                    width:  _screenWidth / 5,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.all(Radius.circular(_values.standardBorderRadius * 2)),
-                      color: _hue.ocean,
-                    ),
-                    child: IconButton(
-                      icon: Icon(
-                        Icons.edit,
-                        color: _hue.background,
-                      ),
-                      tooltip: "Editar",
-                      onPressed: (){
-                        setState(() {
-                          Orientation _orientation = MediaQuery.of(context).orientation;
-                          enterEditMode(_orientation, _list);
-                        });
-                      },
-                    ),
-                  )
-                ],
-              ),
+            PillButton(
+              height: _screenHeight,
+              width: _screenWidth,
+              orientation: _orientation,
+              buttonTooltip: "Editar",
+              onPressed: (){
+                setState(() {
+                  Orientation _orientation = MediaQuery.of(context).orientation;
+                  enterEditMode(_orientation, _list);
+                });
+              },
             ),
             ListView.builder(
                 padding: EdgeInsets.symmetric(horizontal: 10),
@@ -105,8 +88,8 @@ class _AnnouncementsScreen extends State<AnnouncementsScreen>{
                     width: _screenWidth,
                     text: _list[index].text,
                     date: _announcementDate,
-                    editable: _editingMode,
                     orientation: _orientation,
+                    editable: _editingMode,
                     onUpdate: (text){
                       showDialog(
                           context: context,
@@ -154,34 +137,17 @@ class _AnnouncementsScreen extends State<AnnouncementsScreen>{
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             SizedBox(height: _screenHeight / 100,),
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: _screenWidth / 20),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: <Widget>[
-                  Container(
-                    height: _screenHeight / 10,
-                    width:  _screenWidth / 6,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.all(Radius.circular(_values.standardBorderRadius * 2)),
-                      color: _hue.ocean,
-                    ),
-                    child: IconButton(
-                      icon: Icon(
-                        Icons.edit,
-                        color: _hue.background,
-                      ),
-                      tooltip: "Editar",
-                      onPressed: (){
-                        setState(() {
-                          Orientation _orientation = MediaQuery.of(context).orientation;
-                          enterEditMode(_orientation, _list);
-                        });
-                      },
-                    ),
-                  )
-                ],
-              ),
+            PillButton(
+              height: _screenHeight,
+              width: _screenWidth,
+              orientation: _orientation,
+              buttonTooltip: "Editar",
+              onPressed: (){
+                setState(() {
+                  Orientation _orientation = MediaQuery.of(context).orientation;
+                  enterEditMode(_orientation, _list);
+                });
+              },
             ),
             ListView.builder(
                 padding: EdgeInsets.symmetric(horizontal: 10),
@@ -204,8 +170,8 @@ class _AnnouncementsScreen extends State<AnnouncementsScreen>{
                     width: _screenWidth,
                     text: _list[index].text,
                     date: _announcementDate,
-                    editable: _editingMode,
                     orientation: _orientation,
+                    editable: _editingMode,
                     onUpdate: (text){
                       showDialog(
                           context: context,

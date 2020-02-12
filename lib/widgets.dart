@@ -132,8 +132,9 @@ class AnnouncementCard extends StatefulWidget{
    @required this.width,
    @required this.text,
    @required this.date,
+   this.orientation,
    this.editable : false,
-   this.orientation : Orientation.portrait,
+   this.barColor : const Color(0xFFed1c22),
    this.onUpdate,
    this.onDestroy
   }) : super (key:key);
@@ -142,8 +143,9 @@ class AnnouncementCard extends StatefulWidget{
   final double width;
   String text;
   final String date;
-  final bool editable;
   final Orientation orientation;
+  final bool editable;
+  final Color barColor;
 
   final void Function(String) onUpdate;
   final VoidCallback onDestroy;
@@ -162,7 +164,7 @@ class _AnnouncementCard extends State<AnnouncementCard>{
   ScrollController _scrollController = new ScrollController();
   GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
 
-  int _widthValue, _heightValue;
+  double _widthValue, _heightValue;
 
   @override
   Widget build(BuildContext context) {
@@ -262,7 +264,7 @@ class _AnnouncementCard extends State<AnnouncementCard>{
                 width:  widget.width / _widthValue,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.all(Radius.circular(_values.standardBorderRadius * 5)),
-                  color: _hue.carmesi,
+                  color: widget.barColor,
                 ),
                 child: IconButton(
                   icon: Icon(
@@ -297,7 +299,7 @@ class _AnnouncementCard extends State<AnnouncementCard>{
                   ),
                 ),
                 Container(
-                  color: _hue.carmesi,
+                  color: widget.barColor,
                   height: _values.lineSizedBoxHeight,
                 ),
                 Container(
@@ -316,4 +318,73 @@ class _AnnouncementCard extends State<AnnouncementCard>{
     );
   }
 
+}
+
+class PillButton extends StatefulWidget{
+
+  PillButton({
+    Key key,
+    @required this.width,
+    @required this.height,
+    this.orientation : Orientation.portrait,
+    this.buttonColor : const Color(0xFF2e3192),
+    this.buttonIcon : Icons.edit,
+    this.iconColor : const Color(0xFFffffff),
+    this.buttonTooltip,
+    this.onPressed
+  }) : super (key:key);
+
+  final double width;
+  final double height;
+  final Orientation orientation;
+  final Color buttonColor;
+  final IconData buttonIcon;
+  final Color iconColor;
+  final String buttonTooltip;
+
+  final VoidCallback onPressed;
+
+  @override
+  State<StatefulWidget> createState() {
+    // TODO: implement createState
+    return _PillButton();
+  }
+}
+
+class _PillButton extends State<PillButton>{
+  Values _values = new Values();
+  double _widthDivider, _heightDivider;
+
+  @override
+  Widget build(BuildContext context) {
+
+    widget.orientation == Orientation.portrait ? { _heightDivider = 18, _widthDivider = 5 } : { _heightDivider = 10, _widthDivider = 6 };
+    // TODO: implement build
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: widget.width / 20),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: <Widget>[
+          Container(
+            height: widget.height / _heightDivider,
+            width:  widget.width / _widthDivider,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.all(Radius.circular(_values.standardBorderRadius * 2)),
+              color: widget.buttonColor,
+            ),
+            child: IconButton(
+              icon: Icon(
+                widget.buttonIcon,
+                color: widget.iconColor,
+              ),
+              tooltip: widget.buttonTooltip,
+              onPressed: (){
+                widget.onPressed();
+              },
+            ),
+          )
+        ],
+      ),
+    );
+  }
 }
