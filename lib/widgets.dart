@@ -3,6 +3,7 @@ import 'announcements_screen.dart';
 import 'events_screen.dart';
 import 'news_screen.dart';
 import 'values.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class OptionTile extends StatefulWidget{
   OptionTile({
@@ -385,6 +386,96 @@ class _PillButton extends State<PillButton>{
           )
         ],
       ),
+    );
+  }
+}
+
+class EventCard extends StatefulWidget{
+  EventCard({
+    Key key,
+    @required this.height,
+    @required this.width,
+    this.orientation : Orientation.portrait,
+    @required this.date,
+    @required this.image,
+    @required this.time,
+    @required this.department,
+    this.onTap
+  }) : super(key:key);
+
+  final double height;
+  final double width;
+  final Orientation orientation;
+  final String date;
+  final String image;
+  final String time;
+  final String department;
+
+  VoidCallback onTap;
+
+  @override
+  State<StatefulWidget> createState() {
+    // TODO: implement createState
+    return _EventCard();
+  }
+}
+
+class _EventCard extends State<EventCard>{
+
+  @override
+  Widget build(BuildContext context) {
+    Values _values = new Values();
+    ScrollController _scrollController = new ScrollController();
+
+    double _heightDivider;
+    widget.orientation == Orientation.portrait ? _heightDivider = 2.5 : _heightDivider = 2.5;
+
+    // TODO: implement build
+    return GestureDetector(
+      child: Card(
+        child: Container(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              CachedNetworkImage(
+                width: double.maxFinite,
+                height: widget.height / _heightDivider,
+                fit: BoxFit.cover,
+                imageUrl: widget.image,
+                placeholder: (context, url) => Image.asset(_values.loadingAnimation, fit: BoxFit.fill, width: double.maxFinite, height: widget.height,),
+                errorWidget: (context,url,error) => new Center(
+                  child: Icon(Icons.error),
+                ),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: <Widget>[
+                  Text(
+                    widget.date + " a las " + widget.time + "hrs.",
+                    style: _values.subtitleTextStyle,
+                  ),
+                ],
+              ),
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                controller: _scrollController,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: <Widget>[
+                    Text(
+                      "Subdirección " + widget.department,
+                      style: _values.subtitleTextStyle,
+                    )
+                  ],
+                ),
+              )
+            ],
+          ),
+        ),
+      ),
+      onTap: (){
+        widget.onTap();
+      },
     );
   }
 }
