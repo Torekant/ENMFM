@@ -119,41 +119,28 @@ class _EventsScreen extends State<EventsScreen>{
                           break;
                       }
 
-                      return new Container(
-                        color: _hue.outlines,
-                        padding: EdgeInsets.fromLTRB(0.0, 3.0, 0.0, 0.0),
-                        child: Container(
-                          color: _hue.background,
-                          child: ListTile(
-                            title: Container(
-                              alignment: Alignment.centerLeft,
-                              child: Text(ds.title),
-                            ),
-                            subtitle: Container(
-                              alignment: Alignment.centerLeft,
-                              child: Text(ds.type + ' - ' + ds.time + 'hrs.'),
-                            ),
-                            trailing: _eventIcon,
-                            onTap: () {
-                              if (ds.type == _values.eventType['ceremony']) {
-                                Navigator.pushNamed(
-                                    context,
-                                    _values.routeNames['event_details'],
-                                    arguments: EventDetailsScreen(
-                                      event: ds,
-                                      adminView: true,
-                                    )
-                                );
-                              }
-                            },
-                          ),
-                        ),
+                      return new EventTile(
+                        event: ds,
+                        eventIcon: _eventIcon,
+                        onReturnedFromDetails: (response){
+                          if(response){
+                            setState(() {
+                              _eventsRetrieved = false;
+                            });
+                          }
+                          inflateScreen(_contentFound, null);
+                        },
                       );
                     }
                 );
               }
             });
           }
+        });
+      }else{
+        setState(() {
+          _calendarEvents = {};
+          _eventListView = ListView(shrinkWrap: true,);
         });
       }
       setState(() {
@@ -197,8 +184,8 @@ class _EventsScreen extends State<EventsScreen>{
           tooltip: "Crear evento",
           backgroundColor: _hue.ocean,
           child: Icon(Icons.add),
-          onPressed: (){
-            Navigator.pushNamed(
+          onPressed: ()async{
+            await Navigator.pushNamed(
                 context,
                 _values.routeNames['event_details'],
                 arguments: EventDetailsScreen(
@@ -206,7 +193,14 @@ class _EventsScreen extends State<EventsScreen>{
                   adminView: true,
                   newEventDateTime: _calendarController.selectedDay,
                 )
-            );
+            ).then((response){
+              if(response){
+                setState(() {
+                  _eventsRetrieved = false;
+                });
+              }
+              inflateScreen(_contentFound, null);
+            });
           },
         );
       }else{
@@ -280,35 +274,17 @@ class _EventsScreen extends State<EventsScreen>{
                             break;
                         }
 
-                        return new Container(
-                          color: _hue.outlines,
-                          padding: EdgeInsets.fromLTRB(0.0, 3.0, 0.0, 0.0),
-                          child: Container(
-                            color: _hue.background,
-                            child: ListTile(
-                              title: Container(
-                                alignment: Alignment.centerLeft,
-                                child: Text(ds.title),
-                              ),
-                              subtitle: Container(
-                                alignment: Alignment.centerLeft,
-                                child: Text(ds.type + ' - ' + ds.time + 'hrs.'),
-                              ),
-                              trailing: _eventIcon,
-                              onTap: () {
-                                if (ds.type == _values.eventType['ceremony']) {
-                                  Navigator.pushReplacementNamed(
-                                      context,
-                                      _values.routeNames['event_details'],
-                                      arguments: EventDetailsScreen(
-                                        event: ds,
-                                        adminView: true,
-                                      )
-                                  );
-                                }
-                              },
-                            ),
-                          ),
+                        return new EventTile(
+                          event: ds,
+                          eventIcon: _eventIcon,
+                          onReturnedFromDetails: (response){
+                            if(response){
+                              setState(() {
+                                _eventsRetrieved = false;
+                              });
+                            }
+                            inflateScreen(_contentFound, null);
+                          },
                         );
                       }
                   );
@@ -392,35 +368,17 @@ class _EventsScreen extends State<EventsScreen>{
                               break;
                           }
 
-                          return new Container(
-                            color: _hue.outlines,
-                            padding: EdgeInsets.fromLTRB(0.0, 3.0, 0.0, 0.0),
-                            child: Container(
-                              color: _hue.background,
-                              child: ListTile(
-                                title: Container(
-                                  alignment: Alignment.centerLeft,
-                                  child: Text(ds.title),
-                                ),
-                                subtitle: Container(
-                                  alignment: Alignment.centerLeft,
-                                  child: Text(ds.type + ' - ' + ds.time + 'hrs.'),
-                                ),
-                                trailing: _eventIcon,
-                                onTap: (){
-                                  if(ds.type == _values.eventType['ceremony']){
-                                    Navigator.pushReplacementNamed(
-                                        context,
-                                        _values.routeNames['event_details'],
-                                        arguments: EventDetailsScreen(
-                                          event: ds,
-                                          adminView: true,
-                                        )
-                                    );
-                                  }
-                                },
-                              ),
-                            ),
+                          return new EventTile(
+                            event: ds,
+                            eventIcon: _eventIcon,
+                            onReturnedFromDetails: (response){
+                              if(response){
+                                setState(() {
+                                  _eventsRetrieved = false;
+                                });
+                              }
+                              inflateScreen(_contentFound, null);
+                            },
                           );
                         }
                     );
@@ -606,7 +564,7 @@ class _EventsScreen extends State<EventsScreen>{
                             time: _eventList[index].time,
                             department: _eventList[index].department,
                             onTap: (){
-                              Navigator.pushReplacementNamed(
+                               Navigator.pushReplacementNamed(
                                   context,
                                   _values.routeNames['event_details'],
                                   arguments: EventDetailsScreen(
@@ -739,10 +697,15 @@ class _EventsScreen extends State<EventsScreen>{
   }
 
   @override
-  void didChangeDependencies() async{
+  void didChangeDependencies(){
     // TODO: implement didChangeDependencies
     super.didChangeDependencies();
     _finalScreen = inflateScreen(_contentFound, null);
+    if(!_eventsRetrieved){
+      _finalScreen = Center(
+        child: Image.asset(_values.loadingAnimation),
+      );
+    }
   }
 
   @override
@@ -845,7 +808,7 @@ class _EventDetailsScreen extends State<EventDetailsScreen>{
       context,
       false
     );
-    // Do some stuff.
+
     return true;
   }
 
@@ -1182,14 +1145,14 @@ class _EventDetailsScreen extends State<EventDetailsScreen>{
                     cancelButtonText: "No",
                   )
               ).then((result){
-                if(result == true){
+                if(result){
                   showDialog(
                       context: context,
                       builder: (BuildContext context) => CustomLoadDialog()
                   );
 
                   _eventDetailed.deleteEvent(context).then((result){
-                    if(result == true){
+                    if(result){
                       Navigator.pop(context);
                       Navigator.pop(
                         context,

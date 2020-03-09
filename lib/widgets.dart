@@ -1,3 +1,4 @@
+import 'package:enmfm/classes.dart';
 import 'package:flutter/material.dart';
 import 'announcements_screen.dart';
 import 'events_screen.dart';
@@ -476,6 +477,68 @@ class _EventCard extends State<EventCard>{
       onTap: (){
         widget.onTap();
       },
+    );
+  }
+}
+
+class EventTile extends StatefulWidget{
+  EventTile({
+    Key key,
+    @required this.event,
+    this.eventIcon,
+    this.onReturnedFromDetails
+  }) : super(key:key);
+
+  final Event event;
+  final Icon eventIcon;
+
+  final void Function(bool) onReturnedFromDetails;
+
+  @override
+  State<StatefulWidget> createState() {
+    // TODO: implement createState
+    return _EventTile();
+  }
+}
+
+class _EventTile extends State<EventTile>{
+  Values _values = new Values();
+  Hues _hue = new Hues();
+
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    return Container(
+      color: _hue.outlines,
+      padding: EdgeInsets.fromLTRB(0.0, 3.0, 0.0, 0.0),
+      child: Container(
+        color: _hue.background,
+        child: ListTile(
+          title: Container(
+            alignment: Alignment.centerLeft,
+            child: Text(widget.event.title),
+          ),
+          subtitle: Container(
+            alignment: Alignment.centerLeft,
+            child: Text(widget.event.type + ' - ' + widget.event.time + 'hrs.'),
+          ),
+          trailing: widget.eventIcon,
+          onTap: () async{
+            if (widget.event.type == _values.eventType['ceremony']) {
+              await Navigator.pushNamed(
+                context,
+                _values.routeNames['event_details'],
+                arguments: EventDetailsScreen(
+                  event: widget.event,
+                  adminView: true,
+                )
+              ).then((response){
+                widget.onReturnedFromDetails(response);
+              });
+            }
+          },
+        ),
+      ),
     );
   }
 }
